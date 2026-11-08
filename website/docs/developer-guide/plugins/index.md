@@ -34,7 +34,7 @@ Hermes has several distinct pluggable interfaces — some use Python `register_*
 | **External tools via MCP** (filesystem, GitHub, Linear, any MCP server) | [MCP](../../user-guide/features/mcp.md) — declare `mcp_servers.<name>` in `config.yaml` |
 | **Gateway event hooks** (fire on startup, session events, commands) | [Event Hooks](../../user-guide/features/hooks.md#gateway-event-hooks) — drop `HOOK.yaml` + `handler.py` into `~/.hermes/hooks/<name>/` |
 | **Shell hooks** (run a shell command on events) | [Shell Hooks](../../user-guide/features/hooks.md#shell-hooks) — declare under `hooks:` in `config.yaml` |
-| **Additional skill sources** (custom GitHub repos, private skill indexes) | [Skills](../../user-guide/features/skills.md) — `hermes skills tap add <repo>` · [Publishing a tap](../../user-guide/features/skills.md#publishing-a-custom-skill-tap) |
+| **Additional skill sources** (custom GitHub repos, private skill indexes) | [Skills](../../user-guide/features/skills.md) — `seraph skills tap add <repo>` · [Publishing a tap](../../user-guide/features/skills.md#publishing-a-custom-skill-tap) |
 | A first-class **core** inference provider (not a plugin) | [Adding Providers](../adding-providers.md) |
 
 See the full [Pluggable interfaces table](../../user-guide/features/plugins.md#pluggable-interfaces--where-to-go-for-each) for a consolidated view of every extension surface including config-driven (TTS, STT, MCP, shell hooks) and drop-in directory (gateway hooks) styles.
@@ -47,9 +47,9 @@ Plugins that integrate **someone else's product or project** — observability/m
 :::tip Already built in: check here before you hand-roll it
 Hermes already ships these for plugin authors:
 
-- **Run the catalog check locally:** `hermes plugins validate /path/to/your-plugin --install-deps` runs the same check catalog CI runs. See [Submitting to the Plugin Catalog](./catalog-submission.md).
-- **Test your plugin in isolation:** `hermes plugins doctor [path-or-id]` runs the same discovery, manifest parser, `register(ctx)` and registries Hermes uses, with a temporary `HERMES_HOME`. See [Validate with Plugin Doctor](#validate-with-plugin-doctor).
-- **Keep state across updates:** `plugin_data_dir()` and `plugin_db()` give your plugin a data directory that survives `hermes plugins update` and `remove` and follows the active profile. See [Store durable state](#store-durable-state).
+- **Run the catalog check locally:** `seraph plugins validate /path/to/your-plugin --install-deps` runs the same check catalog CI runs. See [Submitting to the Plugin Catalog](./catalog-submission.md).
+- **Test your plugin in isolation:** `seraph plugins doctor [path-or-id]` runs the same discovery, manifest parser, `register(ctx)` and registries Hermes uses, with a temporary `HERMES_HOME`. See [Validate with Plugin Doctor](#validate-with-plugin-doctor).
+- **Keep state across updates:** `plugin_data_dir()` and `plugin_db()` give your plugin a data directory that survives `seraph plugins update` and `remove` and follows the active profile. See [Store durable state](#store-durable-state).
 - **Declare Python dependencies:** list them under `python_dependencies` in `plugin.yaml`, or in a `pyproject.toml` next to it. See [Python dependencies](#python-dependencies).
 - **Ship skills with your plugin:** register them with `ctx.register_skill()`. See [Bundle skills](#bundle-skills).
 - **Ask for privileged host surfaces:** declare them under `capabilities:` so users get a single consent screen. See [Declaring capabilities](#declaring-capabilities).
@@ -76,9 +76,9 @@ my-portable-plugin/
 Install and activate a portable package through the normal workflow:
 
 ```bash
-hermes plugins install owner/repository --no-enable
-hermes plugins list
-hermes plugins enable <plugin-name>
+seraph plugins install owner/repository --no-enable
+seraph plugins list
+seraph plugins enable <plugin-name>
 ```
 
 Portable packages are disabled after installation unless you explicitly enable
@@ -210,12 +210,12 @@ any server-internal analysis deadline separately and leave time for its result
 to reach the client. Other harnesses ignore this extension.
 
 A server entry key this Hermes does not know (one a newer release added) is
-ignored with a warning, which `hermes plugins validate` lists, and the package
+ignored with a warning, which `seraph plugins validate` lists, and the package
 still installs. Releases from before this rule reject the package instead, and a
 release that ignores a key may behave less safely than intended, so declare a new
 key together with a catalog `requires_hermes` floor. `plugin.json` has no
 `requires_hermes` field, so that catalog floor is a portable package's only one: an install by
-catalog name refuses on an older Hermes, and `hermes plugins update` keeps the
+catalog name refuses on an older Hermes, and `seraph plugins update` keeps the
 installed pin until Hermes is updated.
 
 An explicit per-server MCP call budget also reaches Hermes' outer tool executor. A call
@@ -273,7 +273,7 @@ functions, methods, module attributes or private tables at runtime (assigning
 `AIAgent.<method>`, `setattr` on a Hermes module, writing into
 `sys.modules` or a core dict) is not a supported extension point. It breaks
 whenever the internals move, and it collides with every other plugin patching
-the same seam. The plugin catalog refuses it at admission (`hermes plugins
+the same seam. The plugin catalog refuses it at admission (`seraph plugins
 validate`, `no core override` check). If a public hook you need is missing,
 open an issue describing it.
 
@@ -305,7 +305,7 @@ than internal symbol lists or source-code shape.
 Hermes's internals were split into `<stem>_<topic>` sibling modules in Sep 2026 (PR #102117). **Internal
 import paths were never part of the plugin contract** above. A temporary compatibility layer kept the old
 paths resolving until 2026-09-14; it has been removed, so a plugin that still imports an old path fails to
-load with an `ImportError` (the reason shows in `hermes plugins list`).
+load with an `ImportError` (the reason shows in `seraph plugins list`).
 
 To fix such a plugin, import the name from the module that defines it now, or better, use `ctx` and the
 documented ABCs instead of internals. The full old-to-new map is the
@@ -331,7 +331,7 @@ cd ~/.hermes/plugins/calculator
 
 ### Validate with Plugin Doctor
 
-`hermes plugins doctor [path-or-id]` runs the same directory discovery,
+`seraph plugins doctor [path-or-id]` runs the same directory discovery,
 manifest parser, namespaced import, `register(ctx)`, hook registry, and tool
 registry used by Hermes itself. It reports invalid hook names, callbacks that do
 not accept `**kwargs`, registration failures, and drift between declared and
@@ -341,7 +341,7 @@ when the Desktop app is running a stale copy of it (see
 Pass `--ci` to exit non-zero on an error:
 
 ```bash
-hermes plugins doctor . --ci
+seraph plugins doctor . --ci
 ```
 
 Doctor uses a temporary `HERMES_HOME`, restores plugin registration state after
@@ -369,9 +369,9 @@ This tells Hermes: "I'm a plugin called calculator, I provide tools and hooks." 
 
 List every tool your `register()` registers in `provides_tools`. The field does **not** decide whether a user-installed plugin's tools load: once the plugin is enabled, everything `register()` registers is available, declared or not. What it does drive:
 
-- **`hermes plugins validate`**: the "declared tools" check fails when the registered tools don't match the list, which blocks catalog admission.
+- **`seraph plugins validate`**: the "declared tools" check fails when the registered tools don't match the list, which blocks catalog admission.
 - **Catalog listing**: the "N tools" chips and tool-name search in the catalog and the dashboard/Desktop Plugins page.
-- **Dashboard auth hint**: only declared tools' availability checks are used to show "needs auth" and the `hermes auth <name>` command.
+- **Dashboard auth hint**: only declared tools' availability checks are used to show "needs auth" and the `seraph auth <name>` command.
 - **Bundled `kind: platform` plugins only**: the field is the switch that loads `tools.py` in CLI/TUI sessions while the adapter stays deferred. See [Outbound client tools](../adding-platform-adapters.md#outbound-client-tools-provides_tools).
 
 Optional fields you could add:
@@ -431,7 +431,7 @@ calculator = "my_pkg:register"
 ```
 
 Hermes reads these from installed metadata without importing your code, so
-`hermes plugins capabilities` and the consent flow stay accurate for pip
+`seraph plugins capabilities` and the consent flow stay accurate for pip
 installs.
 
 ### Use the user's Codex sign-in (core-made requests)
@@ -494,13 +494,13 @@ The rules:
 - **No redirects.** A 3xx response comes back as-is and is never followed, so
   the header cannot reach a third host.
 - **Profile-scoped.** The credential is the active profile's Codex sign-in, the
-  same one chat uses (`hermes auth add openai-codex`, or the Codex sign-in in the
+  same one chat uses (`seraph auth add openai-codex`, or the Codex sign-in in the
   desktop app). When there is none you get `ProviderNotSignedIn`, whose message
   names the sign-in command.
 - Your own `headers` are sent too, except any that would replace the
   `Authorization` (or account) headers Hermes attaches.
 
-`requires_auth` appears in `hermes plugins show <name>` and at install time, and
+`requires_auth` appears in `seraph plugins show <name>` and at install time, and
 a catalog re-pin that adds it asks the user before updating. Like capabilities,
 this is consent and visibility. It is **not a sandbox**: in-process plugin code
 can still read any file the user can, and reviewers reject plugins that do.
@@ -510,7 +510,7 @@ can still read any file the user can, and reviewers reject plugins that do.
 returns an `AccountUsageSnapshot` (plan, session/weekly windows with
 `used_percent` and `reset_at`) and never refreshes or rotates a credential.
 **Sign-out** belongs to Hermes, not to a plugin: point users at
-`hermes auth logout openai-codex` instead of deleting credential files.
+`seraph auth logout openai-codex` instead of deleting credential files.
 
 ### Use your own OAuth client (Google and other APIs)
 
@@ -538,11 +538,11 @@ oauth:
     authorize_params: {access_type: offline, prompt: consent}  # Google issues a refresh token only with these
 ```
 
-The user signs in once from a terminal with `hermes auth add gemini-voice:google`
+The user signs in once from a terminal with `seraph auth add gemini-voice:google`
 (the plugin's key, a colon, the entry's `id`). That is the same PKCE login the
 model-provider helper runs: a loopback redirect on `127.0.0.1`, with an SSH
 tunnel hint when Hermes runs on a remote host. If the IdP grants fewer scopes
-than declared, nothing is saved. `hermes auth status|refresh|logout
+than declared, nothing is saved. `seraph auth status|refresh|logout
 gemini-voice:google` show, refresh and remove the grant. It lives in the active
 profile's `auth.json`; Hermes refreshes it on use once less than two minutes
 remain and never starts a sign-in under the gateway or cron.
@@ -559,7 +559,7 @@ def create_document(title: str) -> dict:
         resp = credentialed_provider_request(
             "google", "POST", "https://docs.googleapis.com/v1/documents", json={"title": title}, timeout=20)
     except ProviderNotSignedIn as exc:
-        return {"ok": False, "error": str(exc)}  # names `hermes auth add gemini-voice:google`
+        return {"ok": False, "error": str(exc)}  # names `seraph auth add gemini-voice:google`
     except AuthError as exc:
         return {"ok": False, "error": f"{exc.code}: {exc}"}
     return {"ok": resp.status < 300, "status": resp.status, "body": resp.json()}
@@ -568,7 +568,7 @@ def create_document(title: str) -> dict:
 The Codex rules above apply, plus:
 
 - **HTTPS only.** `authorize_url`, `token_url` and every `hosts` entry are
-  `https` (there is no loopback exception); `hermes plugins validate` and
+  `https` (there is no loopback exception); `seraph plugins validate` and
   catalog admission fail anything else.
 - **Declared hosts only.** The bearer goes to `https://<host>` (port 443) for
   the entry's `hosts`, matched exactly (no subdomains). Any other URL, `http`,
@@ -594,13 +594,13 @@ The Codex rules above apply, plus:
   network until the next sign-in. Errors reach the plugin without a traceback,
   chain or request object, so none leads back to the token, refresh token or
   client secret.
-- **Sign-in and removal.** `hermes auth add` prints which hosts get the code,
+- **Sign-in and removal.** `seraph auth add` prints which hosts get the code,
   the client secret and the token before opening the browser, and refuses to
-  run from the gateway, cron or an agent session. `hermes plugins remove` drops
-  the plugin's grants, and `hermes auth logout <plugin>:<id>` still works after
+  run from the gateway, cron or an agent session. `seraph plugins remove` drops
+  the plugin's grants, and `seraph auth logout <plugin>:<id>` still works after
   the plugin is gone.
 
-`hermes plugins validate` checks the `oauth:` block and that its client
+`seraph plugins validate` checks the `oauth:` block and that its client
 variables are declared, and warns when plugin code names the token URL. Like
 `requires_auth`, this is consent and visibility, not a sandbox.
 
@@ -620,13 +620,13 @@ this Hermes understands still loads with a warning.
 | `python_dependencies` | list of str | Declared Python requirements (e.g. `"requests>=2.0,<3"`). Installation requests consent; enabling admits the candidate through PM with the existing core, extras, and enabled-plugin union. Successful preparation publishes the environment and configuration transactionally; failure preserves the previous selection and enabled set. Declining leaves the installed plugin disabled. Pin upper bounds. |
 | `python_runtime` | str | `external` — the plugin manages its own interpreter/venv (sidecar pattern); Hermes installs nothing and leaves any `pyproject.toml` alone. |
 | `config_schema` | mapping | JSON-schema-ish description of keys under `plugins.entries.<id>.settings`: `api_url: {type: str, default: "", description: "...", required: false}`. Validated at load; mismatches log actionable warnings naming the key and expected type — never load failures. Types: `str`, `int`, `float`, `bool`, `list`, `dict` (plus JSON-schema aliases) and `secret`. Also drives the settings form in the Desktop Plugins tab — see [Settings form in the Desktop](#settings-form-in-the-desktop). |
-| `config_keys` | list | Dotted paths in Hermes' own config sections that your code reads (e.g. `memory.retaindb`). Each path covers itself and everything below it, so `hermes config get/set` recognizes those keys instead of warning "not a recognized config key", but only while the plugin is active (enabled, or the selected `memory.provider`). A path must be at least two segments deep, and paths Hermes already defines are ignored, so a declaration never hides a typo elsewhere in the section. Settings for your plugin alone belong in `config_schema`; use this only for a core section your plugin reads. Portable `plugin.json` packages put it under `extensions."com.nousresearch.hermes".config_keys`. |
+| `config_keys` | list | Dotted paths in Hermes' own config sections that your code reads (e.g. `memory.retaindb`). Each path covers itself and everything below it, so `seraph config get/set` recognizes those keys instead of warning "not a recognized config key", but only while the plugin is active (enabled, or the selected `memory.provider`). A path must be at least two segments deep, and paths Hermes already defines are ignored, so a declaration never hides a typo elsewhere in the section. Settings for your plugin alone belong in `config_schema`; use this only for a core section your plugin reads. Portable `plugin.json` packages put it under `extensions."com.nousresearch.hermes".config_keys`. |
 | `license` | str | SPDX-style license id (e.g. `MIT`). |
 | `homepage` | str | Project URL. |
 | `tags` | list of str | Free-form discovery tags (e.g. `[gateway, telegram]`). |
 | `provides_locales` | list | Language pack declaration: ids (`- pl`) or `{id, endonym, rtl}` mappings whose `locales/<id>[.tui\|.desktop].yaml` the loader registers automatically — see [Ship a language pack](#ship-a-language-pack). |
-| `requires_auth` | list of str | Providers whose sign-in the plugin uses through Hermes (today: `openai-codex`). Required by `credentialed_provider_request`; shown at install and in `hermes plugins show`. See [Use the user's Codex sign-in](#use-the-users-codex-sign-in-core-made-requests). |
-| `oauth` | list of mappings | OAuth clients the plugin uses through Hermes: `id`, `authorize_url`, `token_url`, `scopes`, `client_id_env`, optional `client_secret_env`, `hosts`, optional `authorize_params`. Signed in with `hermes auth add <plugin>:<id>`, used through `credentialed_provider_request`. See [Use your own OAuth client](#use-your-own-oauth-client-google-and-other-apis). |
+| `requires_auth` | list of str | Providers whose sign-in the plugin uses through Hermes (today: `openai-codex`). Required by `credentialed_provider_request`; shown at install and in `seraph plugins show`. See [Use the user's Codex sign-in](#use-the-users-codex-sign-in-core-made-requests). |
+| `oauth` | list of mappings | OAuth clients the plugin uses through Hermes: `id`, `authorize_url`, `token_url`, `scopes`, `client_id_env`, optional `client_secret_env`, `hosts`, optional `authorize_params`. Signed in with `seraph auth add <plugin>:<id>`, used through `credentialed_provider_request`. See [Use your own OAuth client](#use-your-own-oauth-client-google-and-other-apis). |
 
 ```yaml
 # plugin.yaml — manifest v2 example
@@ -682,8 +682,8 @@ When both exist the `pyproject.toml` wins. What Hermes does with them:
 - **Atomic publication** — PM prepares a fresh environment generation before publishing
   an enablement or an active plugin replacement. Resolution, download, or build failure
   preserves the previous environment and plugin selection; no existing plugin is sacrificed.
-- **Updates retain the union** — `hermes update` includes enabled plugins while preparing
-  its new generation. There is no post-update pip reinstall. `hermes plugins update` prepares
+- **Updates retain the union** — `seraph update` includes enabled plugins while preparing
+  its new generation. There is no post-update pip reinstall. `seraph plugins update` prepares
   active replacements before swapping their code and dependency generation together.
 - **Requirement hygiene** — malformed PEP 508 requirements are refused. Environment markers
   remain intact for the target interpreter to evaluate. `hermes-agent` self-dependencies are
@@ -699,13 +699,13 @@ When both exist the `pyproject.toml` wins. What Hermes does with them:
   the plugin leaves the dependency environment as it is.
 - **`python_runtime: external`** keeps a sidecar's dependencies out of the shared union.
   Hermes does not install that Python runtime or modify its declaration.
-- **Nothing to load is an error** — `hermes plugins validate` rejects `plugin.yaml` without
+- **Nothing to load is an error** — `seraph plugins validate` rejects `plugin.yaml` without
   `__init__.py`, `desktop/plugin.js`, or `plugin.json` beside it. Pip-layout packages need
   a directory-plugin wrapper.
 - `security.allow_lazy_installs: false` blocks on-demand acquisition. Explicit dependency
   consent and explicit enablement authorize PM preparation; discovery never installs.
 
-`HERMES_HOME/plugins/` survives `hermes update` and Desktop updates: the updater only rebuilds the
+`HERMES_HOME/plugins/` survives `seraph update` and Desktop updates: the updater only rebuilds the
 venv and the checkout, never the home directory.
 
 ### Dependency security policy
@@ -935,7 +935,7 @@ def register(ctx):
 - Called exactly once at startup
 - `ctx.register_tool()` puts your tool in the registry — the model sees it immediately
 - `ctx.register_hook()` subscribes to lifecycle events
-- `ctx.register_cli_command()` registers a CLI subcommand (e.g. `hermes my-plugin <subcommand>`)
+- `ctx.register_cli_command()` registers a CLI subcommand (e.g. `seraph my-plugin <subcommand>`)
 - `ctx.register_command()` registers an in-session slash command (e.g. `/myplugin <args>` inside CLI / gateway chat) — see [Register slash commands](#register-slash-commands) below
 - `ctx.dispatch_tool(name, arguments)` — call any other tool (built-in or from another plugin) with the parent agent's context (approvals, credentials, task_id) wired up automatically. Useful from slash-command handlers that need to invoke `terminal`, `read_file`, or any other tool as if the model had called it directly.
 - `ctx.get_config()` / `ctx.set_config()` access only this plugin's settings namespace; `ctx.state` stores plugin-owned runtime data under the active profile.
@@ -1109,12 +1109,12 @@ You'll see, for every plugin source (bundled, user, project, entry-points):
 The same logs are always written to `~/.hermes/logs/agent.log` at WARNING level (failures only) and DEBUG level (everything) when the env var is set. So if you can't run with the env var (e.g. from inside the gateway), tail the log file instead:
 
 ```bash
-hermes logs --level WARNING | grep -i plugin
+seraph logs --level WARNING | grep -i plugin
 ```
 
 Common reasons a plugin doesn't appear:
 
-- **Not enabled in config** — plugins are opt-in. Run `hermes plugins enable <name>` (the name comes from the `plugins list` output, which can be `<category>/<plugin>` for nested layouts).
+- **Not enabled in config** — plugins are opt-in. Run `seraph plugins enable <name>` (the name comes from the `plugins list` output, which can be `<category>/<plugin>` for nested layouts).
 - **Wrong directory layout:** Native packages use `~/.hermes/plugins/<plugin-name>/plugin.yaml` (flat) or one category level. Portable packages use root `plugin.json` in the same locations. Anything deeper is ignored.
 - **Missing `__init__.py`:** Native packages need both `plugin.yaml` and `__init__.py` with a `register(ctx)` function. Portable packages do not import Python and do not require `__init__.py`.
 - **Wrong `kind`** — gateway adapters need `kind: platform` in their manifest. Memory providers are auto-detected as `kind: exclusive` and routed through the `memory.provider` config instead of `plugins.enabled`.
@@ -1159,7 +1159,7 @@ section.
 ### Store durable state
 
 Never write runtime state into your plugin directory: that's the install
-tree, and `hermes plugins update` / `remove` git-pull or delete it — your
+tree, and `seraph plugins update` / `remove` git-pull or delete it — your
 users' data dies with it. The sanctioned home is the per-plugin data root,
 which survives both and follows the active profile:
 
@@ -1258,7 +1258,7 @@ returns the on-disk catalog only.
 ### Ship a language pack
 
 A plugin can add a UI language or override the wording of an existing one for every surface at once —
-Python (`agent.i18n.t()`: approval prompts, gateway replies, tool verbs, tips), the `hermes --tui`
+Python (`agent.i18n.t()`: approval prompts, gateway replies, tool verbs, tips), the `seraph --tui`
 interface and the Desktop app. Declare `provides_locales` and ship the YAML; **no Python is needed**:
 
 ```
@@ -1299,7 +1299,7 @@ def register(ctx):
     ctx.register_locale_dir(here / "locales")                                         # every <lang>[.surface].yaml
 ```
 
-`hermes plugins validate` checks each declared id has a parseable, text-only `locales/<id>.yaml`
+`seraph plugins validate` checks each declared id has a parseable, text-only `locales/<id>.yaml`
 (a non-text leaf is an error) and **warns** with the names of keys absent from the English catalog of
 that surface. Renderers fetch the pack layer through the `i18n.languages` / `i18n.catalog` RPCs.
 User-facing guide: [Language Packs](../../user-guide/features/language-packs.md).
@@ -1316,7 +1316,7 @@ requires_env:
 
 If `WEATHER_API_KEY` isn't set, the plugin is disabled with a clear message. No crash, no error in the agent — just "Plugin weather disabled (missing: WEATHER_API_KEY)".
 
-When users run `hermes plugins install`, they're **prompted interactively** for any missing `requires_env` variables. Values are saved to `.env` automatically.
+When users run `seraph plugins install`, they're **prompted interactively** for any missing `requires_env` variables. Values are saved to `.env` automatically.
 
 For a better install experience, use the rich format with descriptions and signup URLs:
 
@@ -1484,7 +1484,7 @@ per-plugin opt-in in `config.yaml`:
 ```yaml
 plugins:
   entries:
-    my-plugin:                    # the plugin's registry key from `hermes plugins list`
+    my-plugin:                    # the plugin's registry key from `seraph plugins list`
       allow_tool_override: true
 ```
 
@@ -1496,7 +1496,7 @@ like `shell_exec` or `write_file` could intercept everything the model
 routes through it. Bundled plugins are exempt: an override there is a
 maintainer decision. If config cannot be loaded, the gate fails closed.
 
-You normally never edit this key by hand. `hermes plugins enable <name>`
+You normally never edit this key by hand. `seraph plugins enable <name>`
 asks whether to grant the capability only when the plugin's manifest
 declares it under `capabilities:` (the consent screen, defaulting to no);
 a plugin that declares no capabilities is enabled without any grant
@@ -1559,7 +1559,7 @@ Most hooks are fire-and-forget observers — their return values are ignored. Th
 
 All callbacks should accept `**kwargs` for forward compatibility. If a hook callback crashes, it's logged and skipped. Other hooks and the agent continue normally.
 
-The kanban lifecycle hooks fire **after** the board DB change commits, so a callback always sees durable state and can never hold the SQLite write lock. Because kanban workers run as separate `hermes -p <profile> chat -q` subprocesses, `kanban_task_claimed` fires in the **dispatcher** process while `kanban_task_completed` / `kanban_task_blocked` fire in the **worker** process — hook in the dispatcher to observe every transition centrally, or in the worker for per-task in-session context.
+The kanban lifecycle hooks fire **after** the board DB change commits, so a callback always sees durable state and can never hold the SQLite write lock. Because kanban workers run as separate `seraph -p <profile> chat -q` subprocesses, `kanban_task_claimed` fires in the **dispatcher** process while `kanban_task_completed` / `kanban_task_blocked` fire in the **worker** process — hook in the dispatcher to observe every transition centrally, or in the worker for per-task in-session context.
 
 The **API request hooks** are observers for the raw provider request, one level below the per-turn `pre_llm_call` / `post_llm_call` pair: a single turn that calls tools makes several API requests, and these hooks fire around each one. They exist for observability plugins (tracing, cost accounting, latency dashboards). The `request` and `response` kwargs are sanitized, size-capped JSON views of the provider payload (sensitive keys redacted, long strings truncated, SDK objects normalized), and `usage` is a plain token-summary dict. Every payload carries the correlation fields `turn_id`, `api_request_id`, `task_id`, `session_id`, and `api_call_count`, so a plugin can stitch requests, tool calls, and turns together. `api_request_error` fires when a provider call raises and adds `status_code`, `retry_count` / `max_retries`, `retryable`, `reason`, and an `error` dict with `type` and `message`.
 
@@ -1747,7 +1747,7 @@ def register(ctx):
 
 ### Register CLI commands
 
-Plugins can add their own `hermes <plugin>` subcommand tree:
+Plugins can add their own `seraph <plugin>` subcommand tree:
 
 ```python
 def _my_command(args):
@@ -1777,7 +1777,7 @@ def register(ctx):
     )
 ```
 
-After registration, users can run `hermes my-plugin status`, `hermes my-plugin config`, etc.
+After registration, users can run `seraph my-plugin status`, `seraph my-plugin config`, etc.
 
 **Memory provider plugins** use a convention-based approach instead: add a `register_cli(subparser)` function to your plugin's `cli.py` file. The memory plugin discovery system finds it automatically — no `ctx.register_cli_command()` call needed. See the [Memory Provider Plugin guide](../memory-provider-plugin.md#adding-cli-commands) for details.
 
@@ -1816,7 +1816,7 @@ After registration, users can type `/mystatus` in any session. The command appea
 
 | | `register_command()` | `register_cli_command()` |
 |---|---|---|
-| Invoked as | `/name` in a session | `hermes name` in a terminal |
+| Invoked as | `/name` in a session | `seraph name` in a terminal |
 | Where it works | CLI sessions, Telegram, Discord, etc. | Terminal only |
 | Handler receives | Raw args string (+ opt-in session context) | argparse `Namespace` |
 | Use case | Diagnostics, status, quick actions | Complex subcommand trees, setup wizards |
@@ -1845,11 +1845,11 @@ def register(ctx):
 
 `source` is transport identity, not an authorization grant: authorize from stable ids (`source.user_id`, `source.chat_id`), never from display names or the command text, and fail closed when a sensitive command gets `source=None`. Handler exceptions propagate; Hermes never retries the call with fewer arguments.
 
-**Where handlers run:** a slash command handler runs in the gateway process that owns the session, also when the user types the command in the classic `hermes chat` CLI. The handler is not running in the user's terminal or directory, so:
+**Where handlers run:** a slash command handler runs in the gateway process that owns the session, also when the user types the command in the classic `seraph chat` CLI. The handler is not running in the user's terminal or directory, so:
 
 - Return the text to show. `print()` writes to the gateway's stdout, and the user never sees it.
 - Take the session's working directory from `agent.runtime_cwd.resolve_agent_cwd()`, not `os.getcwd()`, which is the gateway's own directory. Resolve relative paths against it.
-- Read session identity with `get_session_env("HERMES_SESSION_PLATFORM")`, `get_session_env("HERMES_SESSION_CHAT_ID")` and the other `HERMES_SESSION_*` names, not `os.environ`. Import the function itself with `from gateway.session_context import get_session_env`: that name is the public seam, and `hermes plugins validate` reports `import gateway.session_context` as a private import.
+- Read session identity with `get_session_env("HERMES_SESSION_PLATFORM")`, `get_session_env("HERMES_SESSION_CHAT_ID")` and the other `HERMES_SESSION_*` names, not `os.environ`. Import the function itself with `from gateway.session_context import get_session_env`: that name is the public seam, and `seraph plugins validate` reports `import gateway.session_context` as a private import.
 
 ```python
 from agent.runtime_cwd import resolve_agent_cwd
@@ -1936,7 +1936,7 @@ This is the public, stable interface for tool dispatch from plugin commands. Plu
 
 ### Act from inside a hook (profile + tools)
 
-`ctx._cli_ref` is only populated in an **interactive CLI** session. It is `None` in the gateway, in non-interactive `hermes chat -q` runs, and in **kanban-spawned worker sessions** — so any plugin logic that reaches through `_cli_ref` silently no-ops in exactly those contexts. Two stable, session-agnostic APIs cover what hooks actually need:
+`ctx._cli_ref` is only populated in an **interactive CLI** session. It is `None` in the gateway, in non-interactive `seraph chat -q` runs, and in **kanban-spawned worker sessions** — so any plugin logic that reaches through `_cli_ref` silently no-ops in exactly those contexts. Two stable, session-agnostic APIs cover what hooks actually need:
 
 - **`ctx.profile_name`** — the active profile name (e.g. `"default"`, or the assignee profile in a kanban worker). Derived from `HERMES_HOME`, so it works everywhere with no `_cli_ref` dependency.
 - **`ctx.dispatch_tool(name, args)`** — invoke any registered tool (built-in or plugin), including the `kanban_*` tools, `delegate_task`, `terminal`, `read_file`, etc. Works from hook callbacks regardless of which process the hook fires in.
@@ -1954,7 +1954,7 @@ def register(ctx):
     ctx.register_hook("kanban_task_blocked", on_blocked)
 ```
 
-For running a full `hermes <subcommand>` (e.g. `hermes kanban show`), shell out with the `terminal` tool via `ctx.dispatch_tool("terminal", {"command": "hermes kanban show ..."})` — there is no in-process slash-command bridge for headless worker sessions, and tools are the supported way to drive Hermes from a hook.
+For running a full `seraph <subcommand>` (e.g. `seraph kanban show`), shell out with the `terminal` tool via `ctx.dispatch_tool("terminal", {"command": "hermes kanban show ..."})` — there is no in-process slash-command bridge for headless worker sessions, and tools are the supported way to drive Hermes from a hook.
 
 ### Talk to your own frontend: plugin RPC methods and session events
 
@@ -2010,8 +2010,8 @@ listens for the event frame of type `plugin.<plugin_id>.pane.changed`:
   started (the host may not know which plugin it belongs to), so use `ctx.emit_to_session` there. In-process the helper takes
   `plugin_id` as given.
 - **Where it works:** on a gateway that owns sessions (its session authority, as on the shared
-  `hermes gateway run` gateway that attached frontends use). A backend without one answers the method
-  with `-32601`. In a process without one (`hermes chat`, cron, a
+  `seraph gateway run` gateway that attached frontends use). A backend without one answers the method
+  with `-32601`. In a process without one (`seraph chat`, cron, a
   `dashboard.turn_isolation` compute child) `emit_to_session` returns `False`.
 - **Detect it first.** An owner that serves plugin methods lists `plugin-rpc-v1` in
   `runtime.describe`'s `capabilities`. With it, `-32601` means that plugin method is not loaded (the
@@ -2047,8 +2047,8 @@ it performs no origin, consent or ownership checks for you. Full contract:
 | Field | Meaning |
 |---|---|
 | `job_id`, `job_name` | The cron job. |
-| `execution_id` | This run's row in the executions ledger (`hermes cron runs`). |
-| `source` | Which path fired the run: `"builtin"` (the built-in scheduler), `"direct"` (a run fired outside it, e.g. `hermes cron run`), or an external scheduler's name. |
+| `execution_id` | This run's row in the executions ledger (`seraph cron runs`). |
+| `source` | Which path fired the run: `"builtin"` (the built-in scheduler), `"direct"` (a run fired outside it, e.g. `seraph cron run`), or an external scheduler's name. |
 | `scheduled_instant` | The schedule occurrence this run fires. `None` for a manual or other off-schedule run, so check this field to tell a scheduled run from a manual one. |
 | `started_at` | When the run started. |
 | `profile` | The profile that owns the job. |
@@ -2210,7 +2210,7 @@ def register(ctx):
 
 ### Mid-run plugin loading: what activates now vs next session
 
-A plugin can load while the gateway (or the TUI/Desktop server) is already running: `hermes plugins
+A plugin can load while the gateway (or the TUI/Desktop server) is already running: `seraph plugins
 install`/`enable`, a Desktop or dashboard install, a catalog re-pin, or a tool-triggered force
 re-discovery. Every one of those paths runs a **real forced rescan** (`discover_plugins(force=True)`) and
 `PluginManager.on_plugin_loaded(callback)` fires from inside it with one summary per **newly** loaded plugin
@@ -2234,7 +2234,7 @@ re-discovery. Every one of those paths runs a **real forced rescan** (`discover_
 - There is no un-wire: disabling a plugin mid-run keeps its already-wired handlers until the gateway
   restarts, and the surfaces say so.
 
-Install surfaces report exactly this split: `hermes plugins install/enable` prints it after nudging the running
+Install surfaces report exactly this split: `seraph plugins install/enable` prints it after nudging the running
 gateway (`reload-plugins` control-socket verb), `plugins.manage install/toggle/update` returns `activation` +
 `gateway_reloaded` (`restart_required` is true only when no gateway answered).
 
@@ -2311,7 +2311,7 @@ def register(ctx):
         check_fn=check_requirements,
         required_env=["MYPLATFORM_TOKEN"],
         # Auto-populate PlatformConfig.extra from env so env-only setups
-        # show up in `hermes gateway status` without SDK instantiation.
+        # show up in `seraph gateway status` without SDK instantiation.
         env_enablement_fn=_env_enablement,
         # Opt in to cron delivery: `deliver=myplatform` routes to this var.
         cron_deliver_env_var="MYPLATFORM_HOME_CHANNEL",
@@ -2480,7 +2480,7 @@ class MyDriverProvider(ComputerUseProvider):
     def is_available(self):                 # gates the tool; cheap, no network
         return True
 
-    def doctor(self):                       # optional: `hermes computer-use doctor`
+    def doctor(self):                       # optional: `seraph computer-use doctor`
         print("my-driver: ok")
         return 0
 
@@ -2495,7 +2495,7 @@ version: 1.0.0
 description: Alternative computer-use driver   # shown in the picker
 ```
 
-Select it in `hermes tools` → Computer Use (installed providers are listed under cua-driver, in the
+Select it in `seraph tools` → Computer Use (installed providers are listed under cua-driver, in the
 CLI and in the Desktop toolset panel), or set it directly. No `plugins.enabled` entry is needed:
 
 ```yaml
@@ -2516,7 +2516,7 @@ Rules:
   swap. Report gaps per action with `ActionResult(ok=False, code="unsupported_action", ...)`.
 - Approval gating, the Bot Desktop lease, screenshot dedup, element caps and vision routing all run
   in the tool, above the backend. The backend only drives the screen.
-- `hermes computer-use status`/`doctor`/`permissions` run cua-driver checks only when `cua` is
+- `seraph computer-use status`/`doctor`/`permissions` run cua-driver checks only when `cua` is
   selected. For any other provider they report its `is_available()` and run its `doctor()` if it has one.
 - Providers return live driver sessions, so they load in-process only. Under
   `plugins.isolation: host`, a user provider is refused and the call reports that it could not be loaded.
@@ -2589,9 +2589,9 @@ Supports all the same events as Python plugin hooks (`pre_tool_call`, `post_tool
 If you maintain a GitHub repo of skills (or want to pull from a community index beyond the built-in sources), add it as a **tap**:
 
 ```bash
-hermes skills tap add myorg/skills-repo
-hermes skills search my-workflow --source myorg/skills-repo
-hermes skills install myorg/skills-repo/my-workflow
+seraph skills tap add myorg/skills-repo
+seraph skills search my-workflow --source myorg/skills-repo
+seraph skills install myorg/skills-repo/my-workflow
 ```
 
 Publishing your own tap is just a GitHub repo with `skills/<skill-name>/SKILL.md` directories — no server or registry signup needed.
@@ -2631,9 +2631,9 @@ Entry-point discovery remains supported when the distribution is present in the
 environment supplied by the installation owner (for example, a Nix derivation).
 It is discovery, not permission to inject packages into a PM-selected generation.
 For managed installs, distribute a directory plugin with `pyproject.toml` or
-manifest Python requirements and use `hermes plugins install` / `enable` so PM
+manifest Python requirements and use `seraph plugins install` / `enable` so PM
 can admit it transactionally. Restart Hermes after a new environment is selected.
-`hermes pm install` accepts managed tool names, not arbitrary PyPI packages.
+`seraph pm install` accepts managed tool names, not arbitrary PyPI packages.
 
 ## Distribute for NixOS
 

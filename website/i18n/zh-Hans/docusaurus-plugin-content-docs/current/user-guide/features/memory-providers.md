@@ -6,17 +6,17 @@ description: "外部记忆提供者插件 — Honcho、OpenViking、Mem0、Hinds
 
 # Memory Providers
 
-Hermes Agent 内置 8 个外部记忆提供者插件，为 Agent 提供跨会话的持久化知识，超越内置的 MEMORY.md 和 USER.md。同一时间只能激活**一个**外部提供者——内置记忆始终与其并行工作。
+Seraph Agent 3.0 内置 8 个外部记忆提供者插件，为 Agent 提供跨会话的持久化知识，超越内置的 MEMORY.md 和 USER.md。同一时间只能激活**一个**外部提供者——内置记忆始终与其并行工作。
 
 ## 快速开始
 
 ```bash
-hermes memory setup      # 交互式选择器 + 配置
-hermes memory status     # 查看当前激活状态
-hermes memory off        # 禁用外部提供者
+seraph memory setup      # 交互式选择器 + 配置
+seraph memory status     # 查看当前激活状态
+seraph memory off        # 禁用外部提供者
 ```
 
-也可以通过 `hermes plugins` → Provider Plugins → Memory Provider 选择激活的记忆提供者。
+也可以通过 `seraph plugins` → Provider Plugins → Memory Provider 选择激活的记忆提供者。
 
 或在 `~/.hermes/config.yaml` 中手动设置：
 
@@ -43,7 +43,7 @@ memory:
 ### Honcho
 
 :::info 插件目录
-Honcho 由 [Plastic Labs](https://github.com/plastic-labs/honcho/tree/main/hermes-plugin-honcho) 维护，从[插件目录](./plugins.md)安装，不再随 Hermes 内置。它就是之前内置的同一个提供者：工具、配置文件和 `hermes honcho` 命令都没有变化。
+Honcho 由 [Plastic Labs](https://github.com/plastic-labs/honcho/tree/main/hermes-plugin-honcho) 维护，从[插件目录](./plugins.md)安装，不再随 Hermes 内置。它就是之前内置的同一个提供者：工具、配置文件和 `seraph honcho` 命令都没有变化。
 :::
 
 AI 原生的跨会话用户建模，具备辩证推理、会话范围上下文注入、语义搜索和持久化结论。基础上下文现在包含会话摘要以及用户表示和 peer card，使 Agent 能感知已讨论的内容。
@@ -51,7 +51,7 @@ AI 原生的跨会话用户建模，具备辩证推理、会话范围上下文�
 | | |
 |---|---|
 | **适合场景** | 具有跨会话上下文的多 Agent 系统、用户-Agent 对齐 |
-| **依赖** | `hermes plugins install honcho`（同时安装 `honcho-ai` SDK）；[API key](https://app.honcho.dev) 或自托管实例 |
+| **依赖** | `seraph plugins install honcho`（同时安装 `honcho-ai` SDK）；[API key](https://app.honcho.dev) 或自托管实例 |
 | **数据存储** | Honcho Cloud 或自托管 |
 | **费用** | Honcho 定价（云端）/ 免费（自托管） |
 
@@ -67,10 +67,10 @@ AI 原生的跨会话用户建模，具备辩证推理、会话范围上下文�
 
 **安装向导：**
 ```bash
-hermes memory setup        # 选择 "honcho" — 运行 Honcho 专属的安装后配置
+seraph memory setup        # 选择 "honcho" — 运行 Honcho 专属的安装后配置
 ```
 
-旧版 `hermes honcho setup` 命令仍然有效（现在会重定向到 `hermes memory setup`），但只有在 Honcho 被选为激活记忆提供者后才会注册。
+旧版 `seraph honcho setup` 命令仍然有效（现在会重定向到 `seraph memory setup`），但只有在 Honcho 被选为激活记忆提供者后才会注册。
 
 **配置：** `$HERMES_HOME/honcho.json`（profile 本地）或 `~/.honcho/config.json`（全局）。解析顺序：`$HERMES_HOME/honcho.json` > `~/.hermes/honcho.json` > `~/.honcho/config.json`。参见[插件 README](https://github.com/plastic-labs/honcho/tree/main/hermes-plugin-honcho)和 [Honcho 集成指南](https://docs.honcho.dev/v3/guides/integrations/hermes)。
 
@@ -140,8 +140,8 @@ hermes memory setup        # 选择 "honcho" — 运行 Honcho 专属的安装�
 
 </details>
 
-:::tip 从 `hermes honcho` 迁移
-如果你之前使用过 `hermes honcho setup`，你的配置和所有服务端数据均完好无损。只需通过安装向导重新启用，或手动设置 `memory.provider: honcho`，即可通过新系统重新激活。
+:::tip 从 `seraph honcho` 迁移
+如果你之前使用过 `seraph honcho setup`，你的配置和所有服务端数据均完好无损。只需通过安装向导重新启用，或手动设置 `memory.provider: honcho`，即可通过新系统重新激活。
 :::
 
 **多 peer 配置：**
@@ -160,7 +160,7 @@ Honcho 将对话建模为 peer 之间的消息交换——每个 Hermes profile 
 ### 新建 profile，创建新 Honcho peer
 
 ```bash
-hermes profile create coder --clone
+seraph profile create coder --clone
 ```
 
 `--clone` 在 `honcho.json` 中创建一个 `hermes.coder` host 块，包含 `aiPeer: "coder"`、共享的 `workspace`、继承的 `peerName`、`recallMode`、`writeFrequency`、`observation` 等。AI peer 会在 Honcho 中提前创建，确保在第一条消息之前就已存在。
@@ -168,7 +168,7 @@ hermes profile create coder --clone
 ### 为现有 profile 补充 Honcho peer
 
 ```bash
-hermes honcho sync
+seraph honcho sync
 ```
 
 扫描所有 Hermes profile，为没有 host 块的 profile 创建 host 块，从默认 `hermes` 块继承设置，并提前创建新的 AI peer。幂等操作——跳过已有 host 块的 profile。
@@ -263,7 +263,7 @@ hermes honcho sync
 
 #### 从内置 Honcho 升级
 
-早期 Hermes 版本内置了 Honcho。如果某个 profile 仍配置 `memory.provider: honcho`，Hermes 会在下次启动或运行 `hermes update` 时自动安装插件目录中的插件——你的 `~/.honcho/config.json`（或 `$HERMES_HOME/honcho.json`）、host 块、peer 和会话映射都按原样读取，记忆不会丢失。如需手动安装，或启动时机器无法联网，请运行 `hermes plugins install honcho`。
+早期 Hermes 版本内置了 Honcho。如果某个 profile 仍配置 `memory.provider: honcho`，Hermes 会在下次启动或运行 `seraph update` 时自动安装插件目录中的插件——你的 `~/.honcho/config.json`（或 `$HERMES_HOME/honcho.json`）、host 块、peer 和会话映射都按原样读取，记忆不会丢失。如需手动安装，或启动时机器无法联网，请运行 `seraph plugins install honcho`。
 
 
 ---
@@ -275,7 +275,7 @@ hermes honcho sync
 | | |
 |---|---|
 | **适合场景** | 具有结构化浏览功能的自托管知识管理 |
-| **依赖** | 独立部署的 OpenViking 服务器；通过 `hermes memory setup` 准备 Hermes 端依赖 |
+| **依赖** | 独立部署的 OpenViking 服务器；通过 `seraph memory setup` 准备 Hermes 端依赖 |
 | **数据存储** | 自托管（本地或云端） |
 | **费用** | 免费（开源，AGPL-3.0） |
 
@@ -289,9 +289,9 @@ openviking-server doctor
 openviking-server
 
 # 然后配置 Hermes
-hermes memory setup    # 选择 "openviking"
+seraph memory setup    # 选择 "openviking"
 # 或手动配置：
-hermes config set memory.provider openviking
+seraph config set memory.provider openviking
 echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.hermes/.env
 ```
 
@@ -311,7 +311,7 @@ echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.hermes/.env
 | | |
 |---|---|
 | **适合场景** | 免维护的记忆管理——Mem0 自动处理提取 |
-| **依赖** | `hermes memory setup` 通过 PM 准备 Mem0 SDK；API key 或自托管/OSS 服务配置 |
+| **依赖** | `seraph memory setup` 通过 PM 准备 Mem0 SDK；API key 或自托管/OSS 服务配置 |
 | **数据存储** | Mem0 Cloud |
 | **费用** | Mem0 定价 |
 
@@ -319,9 +319,9 @@ echo "OPENVIKING_ENDPOINT=http://localhost:1933" >> ~/.hermes/.env
 
 **安装：**
 ```bash
-hermes memory setup    # 选择 "mem0"
+seraph memory setup    # 选择 "mem0"
 # 或手动配置：
-hermes config set memory.provider mem0
+seraph config set memory.provider mem0
 echo "MEM0_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
@@ -349,9 +349,9 @@ echo "MEM0_API_KEY=your-key" >> ~/.hermes/.env
 
 **安装：**
 ```bash
-hermes memory setup    # 选择 "hindsight"
+seraph memory setup    # 选择 "hindsight"
 # 或手动配置：
-hermes config set memory.provider hindsight
+seraph config set memory.provider hindsight
 echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
@@ -370,7 +370,7 @@ echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
 | `auto_retain` | `true` | 自动保留对话轮次 |
 | `auto_recall` | `true` | 每轮对话前自动召回记忆 |
 | `retain_async` | `true` | 在服务器上异步处理保留操作 |
-| `retain_context` | `conversation between Hermes Agent and the User` | 保留记忆的上下文标签 |
+| `retain_context` | `conversation between Seraph Agent 3.0 and the User` | 保留记忆的上下文标签 |
 | `retain_tags` | — | 应用于保留记忆的默认标签；与每次工具调用的标签合并 |
 | `retain_source` | — | 附加到保留记忆的可选 `metadata.source` |
 | `retain_user_prefix` | `User` | 自动保留的对话记录中用户轮次前的标签 |
@@ -396,9 +396,9 @@ echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
 
 **安装：**
 ```bash
-hermes memory setup    # 选择 "holographic"
+seraph memory setup    # 选择 "holographic"
 # 或手动配置：
-hermes config set memory.provider holographic
+seraph config set memory.provider holographic
 ```
 
 **配置：** `plugins.hermes-memory-store` 下的 `config.yaml`
@@ -432,9 +432,9 @@ hermes config set memory.provider holographic
 
 **安装：**
 ```bash
-hermes memory setup    # 选择 "retaindb"
+seraph memory setup    # 选择 "retaindb"
 # 或手动配置：
-hermes config set memory.provider retaindb
+seraph config set memory.provider retaindb
 echo "RETAINDB_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
@@ -459,9 +459,9 @@ echo "RETAINDB_API_KEY=your-key" >> ~/.hermes/.env
 curl -fsSL https://byterover.dev/install.sh | sh
 
 # 然后配置 Hermes
-hermes memory setup    # 选择 "byterover"
+seraph memory setup    # 选择 "byterover"
 # 或手动配置：
-hermes config set memory.provider byterover
+seraph config set memory.provider byterover
 ```
 
 **主要特性：**
@@ -478,7 +478,7 @@ hermes config set memory.provider byterover
 | | |
 |---|---|
 | **适合场景** | 带用户 profile 和会话级图谱构建的语义召回 |
-| **依赖** | `hermes memory setup` 通过 PM 准备 Supermemory SDK；[云端 API key](http://app.supermemory.ai/integrations?connect=hermes)，或[自托管服务器](https://supermemory.ai/docs/self-hosting/overview) |
+| **依赖** | `seraph memory setup` 通过 PM 准备 Supermemory SDK；[云端 API key](http://app.supermemory.ai/integrations?connect=hermes)，或[自托管服务器](https://supermemory.ai/docs/self-hosting/overview) |
 | **数据存储** | Supermemory 云端或自托管 |
 | **费用** | 云端按 Supermemory 定价 / 自托管免费 |
 
@@ -486,9 +486,9 @@ hermes config set memory.provider byterover
 
 **安装：**
 ```bash
-hermes memory setup    # 选择 "supermemory"
+seraph memory setup    # 选择 "supermemory"
 # 或手动配置：
-hermes config set memory.provider supermemory
+seraph config set memory.provider supermemory
 echo 'SUPERMEMORY_API_KEY=***' >> ~/.hermes/.env
 ```
 
@@ -498,7 +498,7 @@ echo 'SUPERMEMORY_API_KEY=***' >> ~/.hermes/.env
 npx supermemory local
 ```
 
-在运行 `hermes memory setup` **之前**，先在
+在运行 `seraph memory setup` **之前**，先在
 `$HERMES_HOME/supermemory.json` 中设置 `base_url`：
 
 ```json
@@ -507,7 +507,7 @@ npx supermemory local
 }
 ```
 
-然后运行 `hermes memory setup` 并输入本地服务器打印的 API key。先配置端点可确保安装连接探测也只访问本地服务器。
+然后运行 `seraph memory setup` 并输入本地服务器打印的 API key。先配置端点可确保安装连接探测也只访问本地服务器。
 
 **配置：** `$HERMES_HOME/supermemory.json`
 

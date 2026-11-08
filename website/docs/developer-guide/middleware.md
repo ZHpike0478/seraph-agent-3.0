@@ -127,7 +127,7 @@ rewritten path, command, or URL is the value downstream policy will evaluate.
 Middleware only runs for enabled plugins. For a bundled plugin:
 
 ```bash
-hermes plugins enable <plugin-name>
+seraph plugins enable <plugin-name>
 ```
 
 For isolated local testing, use one `HERMES_HOME` for plugin enablement and the
@@ -136,8 +136,8 @@ agent run:
 ```bash
 export HERMES_HOME=$HOME/.hermes/cache/scratch/hermes-middleware-test
 mkdir -p "$HERMES_HOME"
-hermes plugins enable <plugin-name>
-hermes chat --query 'Reply exactly ok'
+seraph plugins enable <plugin-name>
+seraph chat --query 'Reply exactly ok'
 ```
 
 For source checkouts, use the [PM developer workflow](../reference/package-management.md#developer-workflow)

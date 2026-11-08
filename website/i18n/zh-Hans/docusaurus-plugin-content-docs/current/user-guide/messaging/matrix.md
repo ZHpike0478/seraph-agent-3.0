@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Matrix"
-description: "将 Hermes Agent 设置为 Matrix 机器人"
+description: "将 Seraph Agent 3.0 设置为 Matrix 机器人"
 ---
 
 # Matrix 设置
@@ -9,7 +9,7 @@ description: "将 Hermes Agent 设置为 Matrix 机器人"
 本页的 Python 依赖命令使用 [PM 准备的源码环境](../../reference/package-management.md#developer-workflow)。
 依赖变更后，请重新激活该 checkout 并重启 Hermes。
 
-Hermes Agent 与 Matrix 集成，Matrix 是一种开放的联邦消息协议。Matrix 允许你运行自己的 homeserver，也可以使用 matrix.org 等公共 homeserver——无论哪种方式，你都保持对通信的控制权。机器人通过 `mautrix` Python SDK 连接，通过 Hermes Agent 管道（包括工具调用、记忆和推理）处理消息，并实时响应。它支持文本、文件附件、图片、音频、视频，以及可选的端对端加密（E2EE）。
+Seraph Agent 3.0 与 Matrix 集成，Matrix 是一种开放的联邦消息协议。Matrix 允许你运行自己的 homeserver，也可以使用 matrix.org 等公共 homeserver——无论哪种方式，你都保持对通信的控制权。机器人通过 `mautrix` Python SDK 连接，通过 Seraph Agent 3.0 管道（包括工具调用、记忆和推理）处理消息，并实时响应。它支持文本、文件附件、图片、音频、视频，以及可选的端对端加密（E2EE）。
 
 Hermes 兼容任何 Matrix homeserver——Synapse、Conduit、Dendrite 或 matrix.org。
 
@@ -158,7 +158,7 @@ MATRIX_PASSWORD=your-password
 
 ## 第三步：找到你的 Matrix 用户 ID
 
-Hermes Agent 使用你的 Matrix 用户 ID 来控制谁可以与机器人交互。Matrix 用户 ID 的格式为 `@username:server`。
+Seraph Agent 3.0 使用你的 Matrix 用户 ID 来控制谁可以与机器人交互。Matrix 用户 ID 的格式为 `@username:server`。
 
 查找方式：
 
@@ -170,14 +170,14 @@ Hermes Agent 使用你的 Matrix 用户 ID 来控制谁可以与机器人交互�
 Matrix 用户 ID 始终以 `@` 开头，并包含 `:` 后跟服务器名称。例如：`@alice:matrix.org`、`@bob:your-server.com`。
 :::
 
-## 第四步：配置 Hermes Agent
+## 第四步：配置 Seraph Agent 3.0
 
 ### 方式 A：交互式设置（推荐）
 
 运行引导式设置命令：
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 在提示时选择 **Matrix**，然后按提示提供你的 homeserver URL、访问令牌（或用户 ID + 密码）以及允许的用户 ID。
@@ -228,13 +228,13 @@ group_sessions_per_user: true
 配置完成后，启动 Matrix gateway：
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 机器人应在几秒内连接到你的 homeserver 并开始同步。发送一条消息——DM 或机器人已加入的房间——进行测试。
 
 :::tip
-你可以在后台运行 `hermes gateway`，或将其作为 systemd 服务以持续运行。详情请参阅部署文档。
+你可以在后台运行 `seraph gateway`，或将其作为 systemd 服务以持续运行。详情请参阅部署文档。
 :::
 
 ## 端对端加密（E2EE）
@@ -467,7 +467,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['matrix'], expl
        "type": "m.login.password",
        "identifier": {"type": "m.id.user", "user": "@hermes:your-server.org"},
        "password": "***",
-       "initial_device_display_name": "Hermes Agent"
+       "initial_device_display_name": "Seraph Agent 3.0"
      }'
    ```
 
@@ -493,7 +493,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['matrix'], expl
 5. **重启 gateway**：
 
    ```bash
-   hermes gateway run
+   seraph gateway run
    ```
 
    如果设置了 `MATRIX_RECOVERY_KEY`，你应在日志中看到 `Matrix: cross-signing verified via recovery key`。
@@ -552,7 +552,7 @@ API_SERVER_HOST=0.0.0.0
 启动 gateway：
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 你应该看到 API 服务器与其他已配置的平台一起启动。从虚拟机验证其可达性：
@@ -594,7 +594,7 @@ services:
 
 1. 先启动主机 gateway：
    ```bash
-   hermes gateway
+   seraph gateway
    ```
 
 2. 启动 Docker 容器：
@@ -645,7 +645,7 @@ services:
 
 **原因**：Hermes gateway 未运行，或连接失败。
 
-**解决方法**：检查 `hermes gateway` 是否正在运行。查看终端输出中的错误消息。常见问题：homeserver URL 错误、访问令牌过期、homeserver 不可达。
+**解决方法**：检查 `seraph gateway` 是否正在运行。查看终端输出中的错误消息。常见问题：homeserver URL 错误、访问令牌过期、homeserver 不可达。
 
 ### "用户不被允许"/机器人忽略你
 
@@ -659,7 +659,7 @@ services:
 始终设置 `MATRIX_ALLOWED_USERS` 以限制可与机器人交互的用户。若不设置，gateway 默认拒绝所有用户作为安全措施。只添加你信任的人的用户 ID——授权用户可完整访问 agent 的所有功能，包括工具调用和系统访问。
 :::
 
-有关保护 Hermes Agent 部署的更多信息，请参阅[安全指南](../security.md)。
+有关保护 Seraph Agent 3.0 部署的更多信息，请参阅[安全指南](../security.md)。
 
 ## 注意事项
 

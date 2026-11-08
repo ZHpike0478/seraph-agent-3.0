@@ -48,7 +48,7 @@ Concretely, on every successful `write_file` or `patch`:
    diagnostics introduced by your earlier edit of <path>`. If the model
    tries to finish the turn while a check is still running, Hermes waits
    up to 5 s for it. Any problems it finds go to the model as a new
-   message before the answer is accepted, so a one-shot `hermes chat -q`
+   message before the answer is accepted, so a one-shot `seraph chat -q`
    run still sees them. Earlier messages are never rewritten.
 
 If the same file is edited again before its check finishes, the newer
@@ -89,7 +89,7 @@ not for a repository the agent has just cloned.
 Hermes therefore treats every workspace as untrusted unless it is:
 
 - the git worktree of a directory you pointed Hermes at: where you
-  launched it (`cd my-app && hermes`), the worktree `hermes -w`
+  launched it (`cd my-app && hermes`), the worktree `seraph -w`
   created, the project a Desktop or TUI session is opened in, or a
   gateway's `terminal.cwd`, or
 - a directory listed under `lsp.trusted_workspaces` (or any
@@ -113,7 +113,7 @@ haskell-language-server, lua-language-server, terraform-ls, prisma,
 astro, vue-language-server (it loads the `vueCompilerOptions.plugins`
 a project's `tsconfig.json` names) and any server you declare under `lsp.servers`. The diagnostics
 log records `skipped: untrusted workspace …; add it to
-lsp.trusted_workspaces`, and `hermes lsp status` marks those servers
+lsp.trusted_workspaces`, and `seraph lsp status` marks those servers
 `[trusted workspaces only]`.
 
 | Server | Untrusted workspace |
@@ -198,7 +198,7 @@ host. Setup:
    - extract it to `<HERMES_HOME>/lsp/PowerShellEditorServices`, or
    - export `PSES_BUNDLE_PATH=/path/to/bundle`.
 
-`hermes lsp status` reports `installed` once `pwsh` is found; if the
+`seraph lsp status` reports `installed` once `pwsh` is found; if the
 bundle is missing you'll see a one-time warning in the logs with the
 download link.
 
@@ -215,7 +215,7 @@ export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 ```
 
 Hermes launches it as `laravel-lsp lsp` (stdio). There is no
-auto-install recipe; `hermes lsp status` shows `manual-only` until the
+auto-install recipe; `seraph lsp status` shows `manual-only` until the
 binary is found.
 
 A few servers are installed alongside a peer dependency that npm
@@ -223,8 +223,8 @@ won't auto-pull. `typescript-language-server` and `@vue/language-server`
 require the `typescript` SDK importable from the same `node_modules`
 tree — Hermes installs `typescript@6` (the last JavaScript-based line;
 TypeScript 7 is the Go port and ships no `tsserver.js`) together with
-the server when you run `hermes lsp install typescript` /
-`hermes lsp install vue-language-server` or auto-install fires on first use.
+the server when you run `seraph lsp install typescript` /
+`seraph lsp install vue-language-server` or auto-install fires on first use.
 
 Vue is pinned to `@vue/language-server@2`, started with
 `vue.hybridMode: false` so it hosts its own TypeScript service. The 3.x
@@ -233,21 +233,21 @@ Neovim setup) that Hermes's generic client does not run, so it never
 publishes diagnostics. If an earlier Hermes installed 3.x, the log shows a
 one-time `vue-language-server: ... 3.x` warning; delete
 `<HERMES_HOME>/lsp/node_modules/@vue` and `<HERMES_HOME>/lsp/bin/vue-language-server*`,
-then run `hermes lsp install vue-language-server` (the recipe co-installs the
+then run `seraph lsp install vue-language-server` (the recipe co-installs the
 TypeScript SDK).
 
 ## CLI
 
 ```
-hermes lsp status          # service state + per-server install status
-hermes lsp list            # registry, optionally --installed-only
-hermes lsp install <id>    # eagerly install one server
-hermes lsp install-all     # try every server with a known recipe
-hermes lsp restart         # tear down running clients
-hermes lsp which <id>      # print resolved binary path
+seraph lsp status          # service state + per-server install status
+seraph lsp list            # registry, optionally --installed-only
+seraph lsp install <id>    # eagerly install one server
+seraph lsp install-all     # try every server with a known recipe
+seraph lsp restart         # tear down running clients
+seraph lsp which <id>      # print resolved binary path
 ```
 
-`hermes lsp status` is the best starting point — it shows which
+`seraph lsp status` is the best starting point — it shows which
 languages will get semantic diagnostics today and which need a
 binary installed.
 
@@ -283,7 +283,7 @@ lsp:
 
   # After a server fails for a workspace (spawn error, or the request
   # outran its budget) that (server, root) pair is skipped. 0 = for the
-  # rest of the process (until `hermes lsp restart`); N = retried after
+  # rest of the process (until `seraph lsp restart`); N = retried after
   # N seconds, so one transient stall does not silence a workspace
   # forever. Skips are logged once per root at INFO with the retry time.
   broken_retry_seconds: 0
@@ -381,7 +381,7 @@ lsp:
 ```
 
 Custom servers are never auto-installed: put the binary on PATH (or
-give an absolute path) and `hermes lsp status` lists it as
+give an absolute path) and `seraph lsp status` lists it as
 `installed`. A malformed entry is logged and skipped without
 affecting the other servers.
 
@@ -421,7 +421,7 @@ which would let every later edit block for the cold-build duration.
 A server that fails for a workspace — spawn error, or a request that
 outran its budget — marks that `(server, root)` pair broken and every
 later request for it is skipped (logged once per root at INFO). By
-default the pair stays broken until `hermes lsp restart` or process
+default the pair stays broken until `seraph lsp restart` or process
 exit; `lsp.broken_retry_seconds: N` retries it after N seconds so one
 transient stall does not cost the workspace its diagnostics for good.
 A root you never want served — one monorepo whose server cannot finish
@@ -444,7 +444,7 @@ respawned automatically on the next relevant file operation. Set
 for the life of the process.
 
 Servers are also released when their workspace goes away, even if they
-are not idle: removing a Hermes-managed worktree (`hermes -w` session
+are not idle: removing a Hermes-managed worktree (`seraph -w` session
 end, Kanban task cleanup, a delegated subagent's pruned worktree) shuts
 down that tree's language servers before `git worktree remove` runs, and
 the periodic sweep shuts down any server whose project root no longer
@@ -477,19 +477,19 @@ lsp:
 
 ## Troubleshooting
 
-**`hermes lsp status` shows a server as "missing"**
+**`seraph lsp status` shows a server as "missing"**
 
 The binary isn't on PATH and isn't in `<HERMES_HOME>/lsp/bin/`. Run
-`hermes lsp install <server_id>` to attempt an auto-install, or
+`seraph lsp install <server_id>` to attempt an auto-install, or
 install the binary manually through the language's normal toolchain.
 
-**`Backend warnings` section in `hermes lsp status`**
+**`Backend warnings` section in `seraph lsp status`**
 
 Some servers ship as thin wrappers around an external CLI for actual
 diagnostics — they spawn cleanly and accept requests but never emit
 errors when the sidecar binary is missing. The most common case is
 `bash-language-server`, which delegates diagnostics to `shellcheck`.
-When `hermes lsp status` shows a `Backend warnings` section, install
+When `seraph lsp status` shows a `Backend warnings` section, install
 the named tool through your OS package manager:
 
 ```
@@ -513,7 +513,7 @@ subsequent edits picking them up.
 **Server crashed**
 
 A crashed server is added to the broken-set and won't be retried for
-the rest of the session. Run `hermes lsp restart` to clear the set;
+the rest of the session. Run `seraph lsp restart` to clear the set;
 the next edit re-spawns.
 
 **Editing a file outside any git repo**

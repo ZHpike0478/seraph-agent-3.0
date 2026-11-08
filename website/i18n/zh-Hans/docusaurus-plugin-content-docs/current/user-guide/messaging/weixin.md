@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "微信（Weixin）"
-description: "通过 iLink Bot API 将 Hermes Agent 连接到个人微信账号"
+description: "通过 iLink Bot API 将 Seraph Agent 3.0 连接到个人微信账号"
 ---
 
 # 微信（Weixin / WeChat）
@@ -47,7 +47,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['messaging'], e
 连接微信账号最简便的方式是通过交互式配置向导：
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 在提示中选择 **Weixin**。向导将执行以下步骤：
@@ -91,7 +91,7 @@ WEIXIN_HOME_CHANNEL_NAME=Home
 ### 3. 启动网关
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 适配器将恢复已保存的凭据，连接到 iLink API，并开始长轮询消息。
@@ -99,7 +99,7 @@ hermes gateway
 ## 功能特性
 
 - **长轮询传输** — 无需公网端点、webhook 或 WebSocket
-- **扫码登录** — 通过 `hermes gateway setup` 扫码连接
+- **扫码登录** — 通过 `seraph gateway setup` 扫码连接
 - **私信（DM）消息** — 可配置访问策略；群消息功能取决于 iLink 是否实际为所连接身份推送群事件（iLink bot 账号通常不推送，详见上方警告）
 - **媒体支持** — 图片、视频、文件和语音消息
 - **AES-128-ECB 加密 CDN** — 所有媒体传输自动加解密
@@ -300,10 +300,10 @@ iLink Bot API 要求在每条出站消息中回传 `context_token`（针对特�
 | 问题 | 解决方法 |
 |---------|-----|
 | `Weixin startup failed: aiohttp and cryptography are required` | 安装两者：`python -c "import pm; pm.sync_venv(['messaging'], explicit=True)"` |
-| `Weixin startup failed: WEIXIN_TOKEN is required` | 运行 `hermes gateway setup` 完成扫码登录，或手动设置 `WEIXIN_TOKEN` |
-| `Weixin startup failed: WEIXIN_ACCOUNT_ID is required` | 在 `.env` 中设置 `WEIXIN_ACCOUNT_ID`，或运行 `hermes gateway setup` |
+| `Weixin startup failed: WEIXIN_TOKEN is required` | 运行 `seraph gateway setup` 完成扫码登录，或手动设置 `WEIXIN_TOKEN` |
+| `Weixin startup failed: WEIXIN_ACCOUNT_ID is required` | 在 `.env` 中设置 `WEIXIN_ACCOUNT_ID`，或运行 `seraph gateway setup` |
 | `Another local Hermes gateway is already using this Weixin token` | 先停止另一个网关实例——每个 token 只允许一个轮询器 |
-| 会话过期（`errcode=-14`） | 登录会话已过期。重新运行 `hermes gateway setup` 扫描新二维码 |
+| 会话过期（`errcode=-14`） | 登录会话已过期。重新运行 `seraph gateway setup` 扫描新二维码 |
 | 主动发送（cron / 通知）失败并报 `ret=-2 errmsg=prepare failed` 或 `unknown error` | 对方的 `context_token` 已失效（近期没有收到其入站消息）。适配器将其视为会话失效而非限流，并且会不带 token 重发一次，因此消息仍能送达。只有其他 `-2` 响应才会触发限流退避/冷却 |
 | 配置过程中二维码过期 | 二维码最多自动刷新 3 次。若持续过期，请检查网络连接 |
 | Bot 不响应私信 | 检查 `WEIXIN_DM_POLICY`——若设置为 `allowlist`，发送方必须在 `WEIXIN_ALLOWED_USERS` 中 |

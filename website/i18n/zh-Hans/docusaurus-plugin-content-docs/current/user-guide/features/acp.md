@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "ACP 宿主集成"
-description: "在兼容 ACP 的编辑器和协作平台中使用 Hermes Agent"
+description: "在兼容 ACP 的编辑器和协作平台中使用 Seraph Agent 3.0"
 ---
 
 # ACP 宿主集成
@@ -9,7 +9,7 @@ description: "在兼容 ACP 的编辑器和协作平台中使用 Hermes Agent"
 本页的 Python 依赖命令使用 [PM 准备的源码环境](../../reference/package-management.md#developer-workflow)。
 依赖变更后，请重新激活该 checkout 并重启 Hermes。
 
-Hermes Agent 可作为 ACP 服务器运行，让兼容 ACP 的编辑器通过 stdio 与 Hermes 通信并渲染：
+Seraph Agent 3.0 可作为 ACP 服务器运行，让兼容 ACP 的编辑器通过 stdio 与 Hermes 通信并渲染：
 
 - 聊天消息
 - 工具活动
@@ -44,7 +44,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['acp'], explici
 
 这将安装 `agent-client-protocol` 依赖并启用：
 
-- `hermes acp`
+- `seraph acp`
 - `hermes-acp`
 - `python -m acp_adapter`
 
@@ -53,7 +53,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['acp'], explici
 以下任意命令均可以 ACP 模式启动 Hermes：
 
 ```bash
-hermes acp
+seraph acp
 ```
 
 ```bash
@@ -69,8 +69,8 @@ Hermes 将日志输出到 stderr，以保留 stdout 用于 ACP JSON-RPC 流量�
 非交互式检查：
 
 ```bash
-hermes acp --version
-hermes acp --check
+seraph acp --version
+seraph acp --check
 ```
 
 ### 浏览器工具（可选）
@@ -78,11 +78,11 @@ hermes acp --check
 浏览器工具（`browser_exec` 以及 CDP 工具 `browser_cdp`、`browser_dialog`、`browser_vault`）需要本地 Chromium，它不包含在 Python wheel 中。通过以下命令安装：
 
 ```bash
-hermes acp --setup-browser           # 交互式（下载约 400 MB 前会提示确认）
-hermes acp --setup-browser --yes     # 非交互式接受下载
+seraph acp --setup-browser           # 交互式（下载约 400 MB 前会提示确认）
+seraph acp --setup-browser --yes     # 非交互式接受下载
 ```
 
-这是独立命令。终端认证流程（`hermes acp --setup`）在模型选择后也会将浏览器引导作为后续问题提供，因此大多数用户无需直接运行 `--setup-browser`。
+这是独立命令。终端认证流程（`seraph acp --setup`）在模型选择后也会将浏览器引导作为后续问题提供，因此大多数用户无需直接运行 `--setup-browser`。
 
 具体操作：
 
@@ -99,7 +99,7 @@ hermes acp --setup-browser --yes     # 非交互式接受下载
 其 `buzz-acp` harness 通过 stdio 将 Buzz 频道连接到任意 ACP agent：
 
 ```text
-Buzz relay <-- WebSocket --> buzz-acp <-- ACP over stdio --> Hermes Agent
+Buzz relay <-- WebSocket --> buzz-acp <-- ACP over stdio --> Seraph Agent 3.0
 ```
 
 这是一种传输层集成，不是第二个 Hermes 安装。由 `buzz-acp` 启动的子进程使用该主机上
@@ -110,7 +110,7 @@ Buzz relay <-- WebSocket --> buzz-acp <-- ACP over stdio --> Hermes Agent
 
 前置条件：
 
-- 完成上文的 ACP 安装并通过 `hermes acp --check`。
+- 完成上文的 ACP 安装并通过 `seraph acp --check`。
 - 从 [Buzz 仓库](https://github.com/block/buzz)构建 `buzz-acp` 和 `buzz` CLI
   （`cargo build --release -p buzz-acp`）。
 - 为 Hermes 铸造专用的 Nostr 密钥对（`buzz-admin generate-key`）并将其注册为
@@ -165,7 +165,7 @@ Desktop 会在该 agent 的 **Activity log** 中实时渲染生命周期、工�
 连接步骤：
 
 1. 从活动栏打开 ACP Client 面板。
-2. 从内置 agent 列表中选择 **Hermes Agent**。
+2. 从内置 agent 列表中选择 **Seraph Agent 3.0**。
 3. 连接并开始聊天。
 
 如需手动定义 Hermes，通过 VS Code 设置在 `acp.agents` 下添加：
@@ -173,7 +173,7 @@ Desktop 会在该 agent 的 **Activity log** 中实时渲染生命周期、工�
 ```json
 {
   "acp.agents": {
-    "Hermes Agent": {
+    "Seraph Agent 3.0": {
       "command": "hermes",
       "args": ["acp"]
     }
@@ -204,15 +204,15 @@ Desktop 会在该 agent 的 **Activity log** 中实时渲染生命周期、工�
 
 前提条件：
 
-- 先通过 `hermes model` 配置 Hermes provider 凭据，或在 `~/.hermes/.env` / `~/.hermes/config.yaml` 中设置。
+- 先通过 `seraph model` 配置 Hermes provider 凭据，或在 `~/.hermes/.env` / `~/.hermes/config.yaml` 中设置。
 
 ### JetBrains
 
-使用兼容 ACP 的插件并将其指向 `hermes acp` 或 `hermes-acp`。
+使用兼容 ACP 的插件并将其指向 `seraph acp` 或 `hermes-acp`。
 
 ### Buzz Desktop
 
-[Buzz](https://github.com/block/buzz) 将 Hermes Agent 作为预设运行时提供。
+[Buzz](https://github.com/block/buzz) 将 Seraph Agent 3.0 作为预设运行时提供。
 按常规方式安装 Hermes 后，Buzz 会自动发现它 —— 打开 **Settings → Runtimes**，
 Hermes 就会出现在你的运行时列表中。
 
@@ -223,7 +223,7 @@ command -v hermes-acp || command -v hermes
 ```
 
 较新的安装会将 `hermes` 和 `hermes-acp` 两个启动器写入 `~/.local/bin`；
-运行 `hermes update` 会为较旧的安装补上 `hermes-acp` 启动器。作为手动兜底方案，
+运行 `seraph update` 会为较旧的安装补上 `hermes-acp` 启动器。作为手动兜底方案，
 可以将 Buzz 的 agent 命令配置为 `hermes`，参数为 `["acp"]`。
 
 #### 将 Buzz agent 保持为 owner-only
@@ -311,7 +311,7 @@ ACP 桥接将这些选项映射到 Hermes 的内部审批语义——`allow_alwa
 
 检查：
 
-- 对于手动/本地开发，验证自定义 `agent_servers` 命令是否指向 `hermes acp`。
+- 对于手动/本地开发，验证自定义 `agent_servers` 命令是否指向 `seraph acp`。
 - Hermes 已安装且在 PATH 中。
 - ACP 扩展已安装（`cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['acp'], explicit=True)"`）。
 
@@ -320,10 +320,10 @@ ACP 桥接将这些选项映射到 Hermes 的内部审批语义——`allow_alwa
 尝试以下检查：
 
 ```bash
-hermes acp --version
-hermes acp --check
-hermes doctor
-hermes status
+seraph acp --version
+seraph acp --check
+seraph doctor
+seraph status
 ```
 
 ### 缺少凭据
@@ -331,10 +331,10 @@ hermes status
 ACP 模式使用 Hermes 现有的 provider 设置。通过以下方式配置凭据：
 
 ```bash
-hermes model
+seraph model
 ```
 
-或编辑 `~/.hermes/.env`。终端认证流程（`hermes acp --setup`）也可以触发交互式 provider/模型设置。
+或编辑 `~/.hermes/.env`。终端认证流程（`seraph acp --setup`）也可以触发交互式 provider/模型设置。
 
 ## 另请参阅
 

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 11
 title: "ACP Host Integration"
-description: "Use Hermes Agent inside ACP-compatible editors and collaboration platforms"
+description: "Use Seraph Agent 3.0 inside ACP-compatible editors and collaboration platforms"
 ---
 
 # ACP Host Integration
@@ -10,7 +10,7 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-Hermes Agent can run as an ACP server, letting ACP-compatible hosts talk to
+Seraph Agent 3.0 can run as an ACP server, letting ACP-compatible hosts talk to
 Hermes over stdio. Editors can render:
 
 - chat messages
@@ -46,7 +46,7 @@ list, such as enabled plugin toolsets, so ACP sessions get those too.
 `agent.disabled_toolsets` removes toolsets from every ACP session. MCP
 servers from `mcp_servers` follow the same rules too. By default ACP gets
 every enabled server. If you list server names in `platform_toolsets.acp`,
-only those servers are included, and `no_mcp` drops them all. `hermes tools`
+only those servers are included, and `no_mcp` drops them all. `seraph tools`
 has no ACP entry, so edit `config.yaml` directly:
 
 ```yaml
@@ -89,7 +89,7 @@ cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['acp'], explici
 
 This installs the `agent-client-protocol` dependency and enables:
 
-- `hermes acp`
+- `seraph acp`
 - `hermes-acp`
 - `python -m acp_adapter`
 
@@ -98,7 +98,7 @@ This installs the `agent-client-protocol` dependency and enables:
 Any of the following starts Hermes in ACP mode:
 
 ```bash
-hermes acp
+seraph acp
 ```
 
 ```bash
@@ -114,8 +114,8 @@ Hermes logs to stderr so stdout remains reserved for ACP JSON-RPC traffic.
 For non-interactive checks:
 
 ```bash
-hermes acp --version
-hermes acp --check
+seraph acp --version
+seraph acp --check
 ```
 
 ### Browser tools (optional)
@@ -125,11 +125,11 @@ Browser tools (`browser_exec` and the CDP tools `browser_cdp`,
 the Python wheel. Install it with:
 
 ```bash
-hermes acp --setup-browser           # interactive (prompts before ~400 MB download)
-hermes acp --setup-browser --yes     # accept the download non-interactively
+seraph acp --setup-browser           # interactive (prompts before ~400 MB download)
+seraph acp --setup-browser --yes     # accept the download non-interactively
 ```
 
-This is the standalone command. The terminal-auth flow (`hermes acp --setup`) also offers the browser bootstrap as a follow-up question after model selection, so most users never need to run `--setup-browser` directly.
+This is the standalone command. The terminal-auth flow (`seraph acp --setup`) also offers the browser bootstrap as a follow-up question after model selection, so most users never need to run `--setup-browser` directly.
 
 What it does:
 
@@ -147,7 +147,7 @@ for people and agents. Its `buzz-acp` harness connects Buzz channels to any ACP
 agent over stdio:
 
 ```text
-Buzz relay <-- WebSocket --> buzz-acp <-- ACP over stdio --> Hermes Agent
+Buzz relay <-- WebSocket --> buzz-acp <-- ACP over stdio --> Seraph Agent 3.0
 ```
 
 This is a transport integration, not a second Hermes installation. The
@@ -160,7 +160,7 @@ spawns Hermes locally as a preset harness. The relay bridge is for joining Buzz
 
 Prerequisites:
 
-- Complete the ACP installation and `hermes acp --check` above.
+- Complete the ACP installation and `seraph acp --check` above.
 - Build `buzz-acp` and the `buzz` CLI from the
   [Buzz repository](https://github.com/block/buzz)
   (`cargo build --release -p buzz-acp`).
@@ -221,7 +221,7 @@ Install the [ACP Client](https://marketplace.visualstudio.com/items?itemName=for
 To connect:
 
 1. Open the ACP Client panel from the Activity Bar.
-2. Select **Hermes Agent** from the built-in agent list.
+2. Select **Seraph Agent 3.0** from the built-in agent list.
 3. Connect and start chatting.
 
 If you want to define Hermes manually, add it through VS Code settings under `acp.agents`:
@@ -229,7 +229,7 @@ If you want to define Hermes manually, add it through VS Code settings under `ac
 ```json
 {
   "acp.agents": {
-    "Hermes Agent": {
+    "Seraph Agent 3.0": {
       "command": "hermes",
       "args": ["acp"]
     }
@@ -260,15 +260,15 @@ Configure Hermes as a custom agent server in Zed settings:
 
 Prerequisites:
 
-- Configure Hermes provider credentials first with `hermes model`, or set them in `~/.hermes/.env` / `~/.hermes/config.yaml`.
+- Configure Hermes provider credentials first with `seraph model`, or set them in `~/.hermes/.env` / `~/.hermes/config.yaml`.
 
 ### JetBrains
 
-Use an ACP-compatible plugin and point it at `hermes acp` or `hermes-acp`.
+Use an ACP-compatible plugin and point it at `seraph acp` or `hermes-acp`.
 
 ### Buzz Desktop
 
-[Buzz](https://github.com/block/buzz) ships Hermes Agent as a preset runtime.
+[Buzz](https://github.com/block/buzz) ships Seraph Agent 3.0 as a preset runtime.
 With Hermes installed the normal way, Buzz discovers it automatically —
 open **Settings → Runtimes** and Hermes appears under your runtimes.
 
@@ -280,7 +280,7 @@ command -v hermes-acp || command -v hermes
 ```
 
 Recent installs write both `hermes` and `hermes-acp` launchers into
-`~/.local/bin`; running `hermes update` adds the `hermes-acp` launcher to
+`~/.local/bin`; running `seraph update` adds the `hermes-acp` launcher to
 older installs. As a manual fallback, configure Buzz's agent command as
 `hermes` with args `["acp"]`.
 
@@ -289,13 +289,13 @@ older installs. As a manual fallback, configure Buzz's agent command as
 Buzz Desktop (v0.5.1+) renders Hermes' full model menu in the agent's runtime
 settings. The list comes from Hermes itself over ACP: it shows every model
 from providers you have authenticated in Hermes (the same inventory behind
-`hermes model` and the `/model` command), so a model missing from the menu
+`seraph model` and the `/model` command), so a model missing from the menu
 means its provider has no credentials configured on the Hermes side.
 
 Entry IDs take the form `provider:model` (e.g. `openrouter:z-ai/glm-5.1`), or
 `custom:<name>:<model>` for custom OpenAI-compatible endpoints defined in
 `config.yaml`. Picking a model applies to that agent's session; it does not
-change your Hermes-wide default — use `hermes model` for that.
+change your Hermes-wide default — use `seraph model` for that.
 
 #### Keep Buzz agents owner-only
 
@@ -354,7 +354,7 @@ spawn. It is not user configuration — do not set it by hand in `.env` or
 
 | Variable | Value | Effect |
 |----------|-------|--------|
-| `HERMES_ACP_SKIP_CONFIGURED_MCP` | `1` | **No effect.** Hermes no longer reads it. `hermes acp` / `hermes-acp` runs as a viewer of the gateway daemon and never starts the `config.yaml` MCP servers itself, so there is no ACP-side startup to skip. |
+| `HERMES_ACP_SKIP_CONFIGURED_MCP` | `1` | **No effect.** Hermes no longer reads it. `seraph acp` / `hermes-acp` runs as a viewer of the gateway daemon and never starts the `config.yaml` MCP servers itself, so there is no ACP-side startup to skip. |
 
 The ACP process does no MCP discovery. The gateway daemon starts the
 `mcp_servers` from its own profile's `config.yaml` once at gateway boot, and ACP
@@ -388,8 +388,8 @@ still be updated even when its current history is empty.
 
 Existing empty rows from older versions are not automatically deleted. An open ACP
 row does not prove its client has disconnected. After closing the relevant editor
-sessions, inspect unwanted rows with `hermes sessions show <id>` and remove only
-confirmed unwanted sessions with `hermes sessions delete <id>`.
+sessions, inspect unwanted rows with `seraph sessions show <id>` and remove only
+confirmed unwanted sessions with `seraph sessions delete <id>`.
 
 ## Working directory behavior
 
@@ -433,7 +433,7 @@ The ACP bridge maps these options onto Hermes' internal approval semantics — `
 
 Check:
 
-- For manual/local development, verify the host command points to `hermes acp`.
+- For manual/local development, verify the host command points to `seraph acp`.
 - Hermes is installed and on your PATH.
 - The ACP extra is installed (`cd ~/.hermes/hermes-agent && python -c "import pm; pm.sync_venv(['acp'], explicit=True)"`).
 
@@ -442,10 +442,10 @@ Check:
 Try these checks:
 
 ```bash
-hermes acp --version
-hermes acp --check
-hermes doctor
-hermes status
+seraph acp --version
+seraph acp --check
+seraph doctor
+seraph status
 ```
 
 ### Missing credentials
@@ -453,10 +453,10 @@ hermes status
 ACP mode uses Hermes' existing provider setup. Configure credentials with:
 
 ```bash
-hermes model
+seraph model
 ```
 
-or by editing `~/.hermes/.env`. The terminal auth flow (`hermes acp --setup`) can also trigger the interactive provider/model setup.
+or by editing `~/.hermes/.env`. The terminal auth flow (`seraph acp --setup`) can also trigger the interactive provider/model setup.
 
 ## See also
 

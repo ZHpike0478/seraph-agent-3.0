@@ -26,7 +26,7 @@
 
 最终效果：从页面角度看，`prompt()` 仍然返回 agent 提供的字符串。从 agent 角度看，无论哪种方式，都是同一套 `browser_dialog(action=...)` API。已针对真实 Browserbase 会话进行端到端测试——4/4（alert/prompt/confirm-accept/confirm-dismiss）全部通过，包括值回传到页面 JS 的验证。
 
-Camofox 目录插件（`hermes plugins install camofox`）驱动的是仅支持 REST、没有 CDP 接口的浏览器，因此 supervisor 不适用于它。
+Camofox 目录插件（`seraph plugins install camofox`）驱动的是仅支持 REST、没有 CDP 接口的浏览器，因此 supervisor 不适用于它。
 
 ## 架构
 

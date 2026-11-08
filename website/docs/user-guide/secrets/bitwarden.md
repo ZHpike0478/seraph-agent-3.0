@@ -36,7 +36,7 @@ Secrets Manager is included on the Bitwarden free tier with limits; no paid plan
 ### 2. Run the wizard
 
 ```bash
-hermes secrets bitwarden setup
+seraph secrets bitwarden setup
 ```
 
 It will:
@@ -51,7 +51,7 @@ It will:
 Non-interactive setup is also supported via flags:
 
 ```bash
-hermes secrets bitwarden setup \
+seraph secrets bitwarden setup \
   --access-token "$BWS_ACCESS_TOKEN" \
   --server-url https://vault.bitwarden.eu \
   --project-id <project-uuid>
@@ -60,7 +60,7 @@ hermes secrets bitwarden setup \
 ### 3. Confirm
 
 ```bash
-hermes secrets bitwarden status
+seraph secrets bitwarden status
 ```
 
 From now on, every `hermes` invocation pulls fresh secrets at startup. You'll see a one-line summary in stderr the first time secrets are applied in a process.
@@ -69,14 +69,14 @@ From now on, every `hermes` invocation pulls fresh secrets at startup. You'll se
 
 | Command | What it does |
 |---|---|
-| `hermes secrets bitwarden setup` | Interactive wizard (install binary, prompt for token, pick project, test fetch) |
-| `hermes secrets bitwarden status` | Show config + binary version + token presence/validation |
-| `hermes secrets bitwarden token` | Rotate the access token: validate the new token against Bitwarden, then store it in `.env` |
-| `hermes secrets bitwarden sync` | Dry-run: pull secrets now and show what would be applied |
-| `hermes secrets bitwarden sync --apply` | Pull and export into the current shell's environment |
-| `hermes secrets bitwarden install` | Install or repair the PM-pinned `bws` binary. No Bitwarden authentication required. |
-| `hermes secrets bitwarden install --force` | Check and repair the managed copy. Valid entries can be reused without another download. |
-| `hermes secrets bitwarden disable` | Flip `enabled: false`; leaves token + project id in place |
+| `seraph secrets bitwarden setup` | Interactive wizard (install binary, prompt for token, pick project, test fetch) |
+| `seraph secrets bitwarden status` | Show config + binary version + token presence/validation |
+| `seraph secrets bitwarden token` | Rotate the access token: validate the new token against Bitwarden, then store it in `.env` |
+| `seraph secrets bitwarden sync` | Dry-run: pull secrets now and show what would be applied |
+| `seraph secrets bitwarden sync --apply` | Pull and export into the current shell's environment |
+| `seraph secrets bitwarden install` | Install or repair the PM-pinned `bws` binary. No Bitwarden authentication required. |
+| `seraph secrets bitwarden install --force` | Check and repair the managed copy. Valid entries can be reused without another download. |
+| `seraph secrets bitwarden disable` | Flip `enabled: false`; leaves token + project id in place |
 
 ## Rotating an expired or revoked token
 
@@ -84,14 +84,14 @@ When the machine-account token expires, gets revoked, or the account is deleted,
 
 ```
 Bitwarden Secrets Manager: Bitwarden rejected the machine-account access token (BWS_ACCESS_TOKEN) — it was likely revoked, expired, or belongs to another region.  (...)
-Bitwarden Secrets Manager: → Run `hermes secrets bitwarden token` to paste a fresh access token ...
+Bitwarden Secrets Manager: → Run `seraph secrets bitwarden token` to paste a fresh access token ...
 ```
 
 Fix it without re-running the whole wizard:
 
 ```bash
-hermes secrets bitwarden token                     # masked prompt
-hermes secrets bitwarden token --access-token 0.…  # non-interactive
+seraph secrets bitwarden token                     # masked prompt
+seraph secrets bitwarden token --access-token 0.…  # non-interactive
 ```
 
 The command probes Bitwarden with the new token **before** writing anything — a rejected token leaves your current `.env` untouched. On success it stores the token, clears the fetch caches, and warns if the configured project is not visible to the new machine account.
@@ -133,11 +133,11 @@ Bitwarden never blocks Hermes startup. If anything goes wrong, you'll see a one-
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `BWS_ACCESS_TOKEN is not set` | Enabled in config but token cleared from `.env` | Re-run `hermes secrets bitwarden setup` |
-| `Bitwarden rejected the machine-account access token … invalid_client` | Token revoked, expired, machine account deleted — or the token belongs to another region (e.g. EU token hitting the US identity endpoint) | Run `hermes secrets bitwarden token` to paste a fresh token; for region mismatches re-run setup and pick EU/self-hosted (or set `secrets.bitwarden.server_url`) |
-| `bws exited 1: invalid access token` | Token revoked or wrong | Run `hermes secrets bitwarden token` with a new token |
+| `BWS_ACCESS_TOKEN is not set` | Enabled in config but token cleared from `.env` | Re-run `seraph secrets bitwarden setup` |
+| `Bitwarden rejected the machine-account access token … invalid_client` | Token revoked, expired, machine account deleted — or the token belongs to another region (e.g. EU token hitting the US identity endpoint) | Run `seraph secrets bitwarden token` to paste a fresh token; for region mismatches re-run setup and pick EU/self-hosted (or set `secrets.bitwarden.server_url`) |
+| `bws exited 1: invalid access token` | Token revoked or wrong | Run `seraph secrets bitwarden token` with a new token |
 | `bws timed out` | Network blocked or Bitwarden API slow | Check connectivity to `api.bitwarden.com` (or your `server_url`) |
-| `bws binary not available` | No PM selection or executable on `PATH`, and automatic installation is disabled or failed | Run `hermes secrets bitwarden install` and read its diagnostic. |
+| `bws binary not available` | No PM selection or executable on `PATH`, and automatic installation is disabled or failed | Run `seraph secrets bitwarden install` and read its diagnostic. |
 | Checksum failure | The download does not match the PM lock | Stop and investigate the download source. Do not bypass the hash check. |
 
 Startup warnings now include a `→` remediation line telling you exactly which command fixes the failure.

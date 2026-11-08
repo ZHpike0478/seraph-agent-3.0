@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Secret Source Plugins"
-description: "How to build a secret-manager backend plugin for Hermes Agent"
+description: "How to build a secret-manager backend plugin for Seraph Agent 3.0"
 ---
 
 # Building a Secret Source Plugin
@@ -22,7 +22,7 @@ plugin secret source is configured. Enablement uses the source's
 That closes the "replace Bitwarden with my vault" first-process gap (#64177).
 
 - Re-pull is idempotent and fail-open (never blocks startup).
-- `hermes update` never resolves external sources — not in the updater process
+- `seraph update` never resolves external sources — not in the updater process
   and not in the import-health probes it spawns. Nothing in the update path
   needs credentials, and a slow helper would otherwise be misreported as an
   import failure (#110823).

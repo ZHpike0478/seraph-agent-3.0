@@ -14,10 +14,10 @@ Debug Node.js via --inspect + Chrome DevTools Protocol CLI.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/software-development/node-inspect-debugger` |
+| Source | Optional — install with `seraph skills install official/software-development/node-inspect-debugger` |
 | Path | `optional-skills/software-development/node-inspect-debugger` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `debugging`, `nodejs`, `node-inspect`, `cdp`, `breakpoints`, `ui-tui` |
@@ -217,13 +217,13 @@ cont
 
 When it pauses, `repl` → inspect `props`, state refs, `useInput` handler values, etc.
 
-### Debugging a running `hermes --tui`
+### Debugging a running `seraph --tui`
 
 The TUI spawns Node from the Python CLI. Easiest path:
 
 ```bash
 # 1. Launch TUI
-hermes --tui &
+seraph --tui &
 TUI_PID=$(pgrep -f 'ui-tui/dist/entry' | head -1)
 
 # 2. Enable inspector on that Node PID

@@ -25,15 +25,15 @@ actual source and destination homes before changing installations.
 From the existing installation, run:
 
 ```bash
-hermes backup
-hermes gateway status
+seraph backup
+seraph gateway status
 ```
 
 Keep the backup outside any directory you plan to remove. Backups can contain
 credentials, so protect them accordingly.
 
 Quit the desktop and stop gateways/services that you own before the handoff.
-Desktop quit and `hermes gateway stop` are different operations: quitting the
+Desktop quit and `seraph gateway stop` are different operations: quitting the
 app does not necessarily stop an independently managed messaging gateway.
 
 The per-profile gateway lock prevents duplicate gateways. Session locks and
@@ -44,8 +44,8 @@ writing the same home while either version performs migrations.
 ## 2. Clone an independent checkout
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone https://github.com/ZHpike0478/seraph-agent-3.0.git
+cd seraph-agent-3.0
 ```
 
 For development, clone your fork instead and add the canonical repository as
@@ -61,14 +61,14 @@ bootstrap itself:
 
 ```bash
 source ./activate
-hermes --version
+seraph --version
 ```
 
 On native Windows, use PowerShell:
 
 ```powershell
 . .\activate.ps1
-hermes --version
+seraph --version
 ```
 
 The bootstrap reads tool pins from `pm/lock.json` and delegates installation
@@ -97,7 +97,7 @@ POSIX example:
 
 ```bash
 export HERMES_HOME="$HOME/hermes-source-data"
-hermes setup
+seraph setup
 hermes
 ```
 
@@ -105,7 +105,7 @@ PowerShell example:
 
 ```powershell
 $env:HERMES_HOME = Join-Path $HOME 'hermes-source-data'
-hermes setup
+seraph setup
 hermes
 ```
 
@@ -113,7 +113,7 @@ If you change the home after preparing PM state, run the bootstrap for that
 home before relying on its selected dependencies. Do not assume that changing
 the environment variable moves data or copies runtime state.
 
-To build a source desktop, run `hermes desktop` from the prepared
+To build a source desktop, run `seraph desktop` from the prepared
 checkout. Opening the old packaged app still starts its packaged backend.
 
 ## Docker users
@@ -160,11 +160,11 @@ diagnostics and garbage collection rather than deleting the shared data root.
 
 ## Troubleshooting
 
-- **Wrong version:** inspect command resolution, then use `hermes --version`
+- **Wrong version:** inspect command resolution, then use `seraph --version`
   from the activated checkout.
 - **Missing dependencies:** run `python -m pm.cli install` from the intended
   source environment, then restart the affected Hermes process.
-- **Gateway already running:** inspect `hermes gateway status` for the
+- **Gateway already running:** inspect `seraph gateway status` for the
   selected profile. Stop the identified owner; do not kill unrelated processes.
 - **Different skills after first run:** newer code can sync bundled skills into
   the data home. A source checkout is not a read-only view of that home.

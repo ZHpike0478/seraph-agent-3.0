@@ -15,7 +15,7 @@ When you want multiple agents on the **same machine**, prefer [delegation](../fe
 ## Enable
 
 ```bash
-hermes gateway setup      # pick A2A
+seraph gateway setup      # pick A2A
 ```
 
 Or in `~/.hermes/config.yaml`:
@@ -32,9 +32,9 @@ gateway:
 The outbound client tools ship as the `a2a` toolset, **off by default** — enable it per platform:
 
 ```bash
-hermes tools enable a2a --platform cli        # CLI/TUI sessions
-hermes tools enable a2a --platform telegram   # or any messaging platform
-hermes tools enable a2a --platform a2a        # let inbound A2A tasks call peers (agent chaining)
+seraph tools enable a2a --platform cli        # CLI/TUI sessions
+seraph tools enable a2a --platform telegram   # or any messaging platform
+seraph tools enable a2a --platform a2a        # let inbound A2A tasks call peers (agent chaining)
 ```
 
 The tools are available in every process type — CLI, TUI, gateway, and cron — without the inbound platform needing to be enabled.
@@ -80,7 +80,7 @@ Interoperability is verified against the official Python `a2a-sdk` (card resolut
 ## Forwarded profile sessions after the ownership cutover
 
 Forwarding to another local profile now submits to that profile's gateway owner;
-there is no fallback `hermes chat` process writing its session database. New
+there is no fallback `seraph chat` process writing its session database. New
 forwarded conversations retain the exact agent, tenant, authenticated peer and
 context ID in their owner binding.
 

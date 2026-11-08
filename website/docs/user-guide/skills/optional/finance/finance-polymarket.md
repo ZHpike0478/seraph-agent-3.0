@@ -14,10 +14,10 @@ Query Polymarket: markets, prices, orderbooks, history.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/finance/polymarket` |
+| Source | Optional — install with `seraph skills install official/finance/polymarket` |
 | Path | `optional-skills/finance/polymarket` |
 | Version | `1.0.0` |
-| Author | Hermes Agent + Teknium |
+| Author | Seraph Agent 3.0 + Teknium |
 | License | MIT |
 | Platforms | linux, macos, windows |
 

@@ -97,7 +97,7 @@ The agent can pause, resume, edit, and remove jobs the same way it creates them:
 >
 > **Hermes:** *(calls `cronjob(action='pause', job_id='abc123')`)*
 >
-> Paused. Resume with "turn it back on" or via `hermes cron resume abc123`.
+> Paused. Resume with "turn it back on" or via `seraph cron resume abc123`.
 
 > **You:** change it to every 15 minutes
 >
@@ -123,15 +123,15 @@ EOF
 chmod +x ~/.hermes/scripts/memory-watchdog.sh
 
 # 2. Schedule it
-hermes cron create "every 5m" \
+seraph cron create "every 5m" \
   --no-agent \
   --script memory-watchdog.sh \
   --deliver telegram \
   --name "memory-watchdog"
 
 # 3. Verify
-hermes cron list
-hermes cron run <job_id>    # fire it once to test
+seraph cron list
+seraph cron run <job_id>    # fire it once to test
 ```
 
 That's the whole thing. No prompt, no skill, no model.
@@ -174,14 +174,14 @@ uv venv ~/venvs/hermes-reporting --python 3.11
 uv pip install --python ~/venvs/hermes-reporting/bin/python openpyxl
 
 # 2. Schedule the job with that interpreter.
-hermes cron create "0 8 * * *" \
+seraph cron create "0 8 * * *" \
   --no-agent \
   --script daily-report.py \
   --interpreter ~/venvs/hermes-reporting/bin/python \
   --deliver telegram
 ```
 
-Like `--model`, this is a user-owned setting: set it with `hermes cron create/edit`; the agent's `cronjob` tool can't.
+Like `--model`, this is a user-owned setting: set it with `seraph cron create/edit`; the agent's `cronjob` tool can't.
 
 Rules:
 
@@ -191,17 +191,17 @@ Rules:
 - Applies **only to Python scripts**. `.sh` / `.bash` always run under bash regardless.
 - The job-level setting applies to both `script` and `monitor_script` when they are Python files.
 - It is validated **at run time**, not at creation — a cron job is long-lived, and the venv may be rebuilt or moved between when you create the job and when it fires. A missing or non-executable interpreter produces a clear script failure that is delivered like any other error.
-- To clear it later: `hermes cron edit <job_id> --interpreter ""`.
+- To clear it later: `seraph cron edit <job_id> --interpreter ""`.
 
 ## Schedule Syntax
 
 Same as all other cron jobs:
 
 ```bash
-hermes cron create "every 5m"        # interval
-hermes cron create "every 2h"
-hermes cron create "0 9 * * *"       # standard cron: 9am daily
-hermes cron create "30m"             # one-shot: run once in 30 minutes
+seraph cron create "every 5m"        # interval
+seraph cron create "every 2h"
+seraph cron create "0 9 * * *"       # standard cron: 9am daily
+seraph cron create "30m"             # one-shot: run once in 30 minutes
 ```
 
 See the [cron feature reference](../user-guide/features/cron.md) for the full syntax.
@@ -225,13 +225,13 @@ No running gateway is required at script-run time for bot-token platforms (Teleg
 ## Editing and Lifecycle
 
 ```bash
-hermes cron list                                    # see all jobs
-hermes cron pause <job_id>                          # stop firing, keep definition
-hermes cron resume <job_id>
-hermes cron edit <job_id> --schedule "every 10m"    # adjust cadence
-hermes cron edit <job_id> --agent                   # flip to LLM mode
-hermes cron edit <job_id> --no-agent --script …     # flip back
-hermes cron remove <job_id>                         # delete it
+seraph cron list                                    # see all jobs
+seraph cron pause <job_id>                          # stop firing, keep definition
+seraph cron resume <job_id>
+seraph cron edit <job_id> --schedule "every 10m"    # adjust cadence
+seraph cron edit <job_id> --agent                   # flip to LLM mode
+seraph cron edit <job_id> --no-agent --script …     # flip back
+seraph cron remove <job_id>                         # delete it
 ```
 
 Everything that works on LLM jobs (pause, resume, manual trigger, delivery target changes) works on no-agent jobs too.
@@ -251,7 +251,7 @@ df -h / /home 2>/dev/null | awk -v t="$THRESHOLD" '
 EOF
 chmod +x ~/.hermes/scripts/disk-alert.sh
 
-hermes cron create "*/15 * * * *" \
+seraph cron create "*/15 * * * *" \
   --no-agent \
   --script disk-alert.sh \
   --deliver telegram \

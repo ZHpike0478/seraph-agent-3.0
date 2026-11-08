@@ -4,15 +4,15 @@ import type * as Preset from '@docusaurus/preset-classic';
 import relativeDocLinks from './src/remark/relativeDocLinks';
 
 const config: Config = {
-  title: 'Hermes Agent',
-  tagline: 'The self-improving AI agent',
+  title: 'Seraph Agent 3.0',
+  tagline: 'A community fork of Nous Research’s Hermes Agent',
   favicon: 'img/favicon.ico',
 
   url: 'https://hermes-agent.nousresearch.com',
   baseUrl: '/docs/',
 
-  organizationName: 'NousResearch',
-  projectName: 'hermes-agent',
+  organizationName: 'ZHpike0478',
+  projectName: 'seraph-agent-3.0',
 
   onBrokenLinks: 'warn',
 
@@ -83,7 +83,7 @@ const config: Config = {
         docs: {
           routeBasePath: '/',  // Docs at the root of /docs/
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/NousResearch/hermes-agent/edit/main/website/',
+          editUrl: 'https://github.com/ZHpike0478/seraph-agent-3.0/edit/main/website/',
           // Relative `.md` links (readable on GitHub, #114428) must also resolve
           // across the zh-Hans fallback boundary; see src/remark/relativeDocLinks.js.
           beforeDefaultRemarkPlugins: [[relativeDocLinks, {siteDir: __dirname}]],
@@ -123,9 +123,9 @@ const config: Config = {
       },
     },
     navbar: {
-      title: 'Hermes Agent',
+      title: 'Seraph Agent 3.0',
       logo: {
-        alt: 'Hermes Agent',
+        alt: 'Seraph Agent 3.0',
         src: 'img/logo.png',
         srcDark: 'img/logo-dark.png',
       },
@@ -147,8 +147,8 @@ const config: Config = {
           position: 'left',
         },
         {
-          href: 'https://hermes-agent.nousresearch.com/',
-          label: 'Download',
+          href: 'https://github.com/ZHpike0478/seraph-agent-3.0',
+          label: 'Source and releases',
           position: 'left',
         },
         {
@@ -157,11 +157,11 @@ const config: Config = {
         },
         {
           href: 'https://hermes-agent.nousresearch.com',
-          label: 'Home',
+          label: 'Upstream Hermes site',
           position: 'right',
         },
         {
-          href: 'https://github.com/NousResearch/hermes-agent',
+          href: 'https://github.com/ZHpike0478/seraph-agent-3.0',
           label: 'GitHub',
           position: 'right',
         },
@@ -188,20 +188,20 @@ const config: Config = {
           title: 'Community',
           items: [
             { label: 'Discord', href: 'https://discord.gg/NousResearch' },
-            { label: 'GitHub Issues', href: 'https://github.com/NousResearch/hermes-agent/issues' },
+            { label: 'GitHub Issues', href: 'https://github.com/ZHpike0478/seraph-agent-3.0/issues' },
             { label: 'Skills Hub', href: 'https://agentskills.io' },
           ],
         },
         {
           title: 'More',
           items: [
-            { label: 'Desktop Download', href: 'https://hermes-agent.nousresearch.com/' },
-            { label: 'GitHub', href: 'https://github.com/NousResearch/hermes-agent' },
+            { label: 'Source and releases', href: 'https://github.com/ZHpike0478/seraph-agent-3.0/releases' },
+            { label: 'GitHub', href: 'https://github.com/ZHpike0478/seraph-agent-3.0' },
             { label: 'Nous Research', href: 'https://nousresearch.com' },
           ],
         },
       ],
-      copyright: `Built by <a href="https://nousresearch.com">Nous Research</a> · MIT License · ${new Date().getFullYear()}`,
+      copyright: `Seraph Agent 3.0 community fork of <a href="https://github.com/NousResearch/hermes-agent">Nous Research Hermes Agent</a> · MIT License · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,

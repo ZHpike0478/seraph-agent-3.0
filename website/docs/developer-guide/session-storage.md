@@ -1,10 +1,10 @@
 # Session Storage
 
-Hermes Agent uses a SQLite database (`~/.hermes/state.db`) to persist session
+Seraph Agent 3.0 uses a SQLite database (`~/.hermes/state.db`) to persist session
 metadata, full message history, and model configuration across CLI and gateway
 sessions. This replaces the earlier per-session JSONL file approach.
 
-The profile's gateway is the **only writer of canonical sessions**: `hermes chat`,
+The profile's gateway is the **only writer of canonical sessions**: `seraph chat`,
 the TUI, Desktop (local), the API server, ACP, cron, Bot Chat and Kanban workers are
 clients that admit input to its session authority over `/api/ws` (see
 [Gateway local sessions](./gateway-local-sessions.md)). Out-of-process managed
@@ -63,7 +63,7 @@ pytest run.
 ### Desktop profile isolation and compaction generations
 
 Each named profile stores its transcript in its own `$HERMES_HOME/state.db`,
-including when one process (the multiplex gateway, or a `hermes serve`) serves several profiles. In-session
+including when one process (the multiplex gateway, or a `seraph serve`) serves several profiles. In-session
 agent rebuilds (Bot Chat capability refresh and `tools.configure`) must retain
 that session's database handle and bind its profile home during construction.
 Releasing the outgoing agent must not close the handle inherited by its replacement.
@@ -146,13 +146,13 @@ rows in the same transaction and refuses while work is live or `unknown`. An inp
 was `started` when its owner died becomes `unknown` at the next owner start and is never
 replayed; its later inputs wait until it is resolved (`prompt.resolve_unknown`).
 
-`hermes sessions recover` copies the row-bearing tables above into the
+`seraph sessions recover` copies the row-bearing tables above into the
 recovered database (FTS indexes and `schema_version` are regenerated), including
 the lazily-created `delivery_obligations` ledger when the source has one — its
 row count is verified like `sessions`/`messages`. The four runtime-ledger tables
 (`runtime_epoch`, `session_admissions`, `worker_executions`, `worker_receipts`) are
 inventoried and reported as excluded, not copied: a partial ledger could replay
-started effects or adopt another owner's workers. A full `hermes backup` restore keeps
+started effects or adopt another owner's workers. A full `seraph backup` restore keeps
 the complete ledger for startup reconciliation instead.
 
 Key design decisions:
@@ -219,7 +219,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_title_unique
 
 `user_id` is the principal on the other end of the session: messaging adapters
 store the platform sender id, and `desktop` / dashboard sessions opened through
-an authenticated `hermes serve` (OAuth or the basic username/password provider)
+an authenticated `seraph serve` (OAuth or the basic username/password provider)
 store the login as `<provider>:<user id>` (for example `basic:alice`). Sessions
 with nobody behind them — anonymous loopback use, `subagent`, `cron`, `kanban`
 — keep it empty. The value is set when the row is created and never inferred
@@ -343,7 +343,7 @@ Declarative column adds use `ALTER TABLE ADD COLUMN` wrapped in try/except to ha
 ## Write Contention Handling
 
 Several processes still open one `state.db`: the gateway (the canonical session
-writer), read-only browsers (dashboard, `hermes sessions list`), maintenance commands,
+writer), read-only browsers (dashboard, `seraph sessions list`), maintenance commands,
 and writers of non-session tables. The `SessionDB` class handles write contention with:
 
 - **Short SQLite timeout** (1 second) instead of the default 30s

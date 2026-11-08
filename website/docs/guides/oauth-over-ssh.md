@@ -21,7 +21,7 @@ The fix is a one-line SSH local-forward. For MCP servers on an interactive termi
 ssh -N -L 43827:127.0.0.1:43827 user@remote-host
 
 # In your existing SSH session on the remote machine:
-hermes spotify login --no-browser
+seraph spotify login --no-browser
 # → Hermes prints an authorize URL. Open it in a browser on your laptop.
 # → Your browser redirects to 127.0.0.1:43827/callback, the tunnel forwards
 #   the request to the remote listener, login completes.
@@ -39,7 +39,7 @@ Hermes prints the exact port it bound to on the `Waiting for callback on ...` li
 | `anthropic` (Claude Pro/Max) | n/a | No — paste-the-code flow |
 | `openai-codex` (ChatGPT Plus/Pro) | n/a (default device code); `1455` with `--browser` / `auth.codex_login_flow: browser` | Only for the opt-in browser PKCE flow, when Hermes is remote |
 | `minimax`, `nous-portal` | n/a | No — device code flow |
-| `openrouter` (`hermes auth add openrouter --type oauth`) | OS-assigned, local only | No — over SSH Hermes switches to OpenRouter's headless flow and asks you to paste the code shown in the browser |
+| `openrouter` (`seraph auth add openrouter --type oauth`) | OS-assigned, local only | No — over SSH Hermes switches to OpenRouter's headless flow and asks you to paste the code shown in the browser |
 
 If your provider isn't in the table, you don't need a tunnel.
 
@@ -53,7 +53,7 @@ sign-in. If Desktop asks you to update the backend, update it before retrying;
 it does not fall back to a remote HTTP callback. The terminal workflows below
 are unchanged.
 
-Remote MCP servers (Linear, Sentry, Atlassian, Asana, Figma, etc.) use the same loopback redirect flow. Hermes auto-picks a free port per server and prints the authorize URL when the OAuth flow kicks off — either at startup (when a new server appears in `mcp_servers:`) or when you run `hermes mcp login <server>`.
+Remote MCP servers (Linear, Sentry, Atlassian, Asana, Figma, etc.) use the same loopback redirect flow. Hermes auto-picks a free port per server and prints the authorize URL when the OAuth flow kicks off — either at startup (when a new server appears in `mcp_servers:`) or when you run `seraph mcp login <server>`.
 
 You have two ways to complete it from a remote host:
 
@@ -80,7 +80,7 @@ ssh -N -L <port>:127.0.0.1:<port> user@remote-host
 
 Then open the authorize URL in your browser as normal; the redirect tunnels through and the listener picks it up. Use this when you need the flow to complete unattended (e.g. scripted re-auth where you can't paste interactively).
 
-**Pitfall — the 30s config-reload race.** If you edit `~/.hermes/config.yaml` to add an OAuth MCP server from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough time to complete an interactive OAuth flow, and the reload will give up. Use `hermes mcp login <server>` from a fresh terminal instead — it has no such cap and waits the full 5 min for you to paste back.
+**Pitfall — the 30s config-reload race.** If you edit `~/.hermes/config.yaml` to add an OAuth MCP server from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough time to complete an interactive OAuth flow, and the reload will give up. Use `seraph mcp login <server>` from a fresh terminal instead — it has no such cap and waits the full 5 min for you to paste back.
 
 ## Why the listener can't just bind 0.0.0.0
 
@@ -101,7 +101,7 @@ ssh -N -L 43827:127.0.0.1:43827 user@remote-host
 
 ```bash
 ssh user@remote-host
-hermes spotify login --no-browser
+seraph spotify login --no-browser
 ```
 
 Hermes detects the SSH session, skips the browser auto-open, and prints an authorize URL plus a `Waiting for callback on http://127.0.0.1:<port>/callback` line.
@@ -162,7 +162,7 @@ The redirect never made it back to the remote listener. Check the tunnel is stil
 
 ### Tokens land in the wrong `~/.hermes`
 
-The tokens are written under the Linux user that ran `hermes auth add ...`. If your gateway / systemd service runs as a different user (e.g. `root` or a dedicated `hermes` user), authenticate as **that** user so the tokens land in their `~/.hermes/auth.json`. `sudo -u hermes -i` or equivalent.
+The tokens are written under the Linux user that ran `seraph auth add ...`. If your gateway / systemd service runs as a different user (e.g. `root` or a dedicated `hermes` user), authenticate as **that** user so the tokens land in their `~/.hermes/auth.json`. `sudo -u hermes -i` or equivalent.
 
 ## See Also
 

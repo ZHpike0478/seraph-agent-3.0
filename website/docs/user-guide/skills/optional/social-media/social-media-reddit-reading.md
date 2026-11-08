@@ -14,10 +14,10 @@ Read Reddit: subreddits, search, threads, users. No browser.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/social-media/reddit-reading` |
+| Source | Optional — install with `seraph skills install official/social-media/reddit-reading` |
 | Path | `optional-skills/social-media/reddit-reading` |
 | Version | `1.0.0` |
-| Author | Teknium (teknium1), Hermes Agent |
+| Author | Teknium (teknium1), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Reddit`, `Social Media`, `Research`, `Discussions`, `Community` |

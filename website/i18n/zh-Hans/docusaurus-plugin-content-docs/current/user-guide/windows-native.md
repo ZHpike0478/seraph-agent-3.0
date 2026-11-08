@@ -1,6 +1,6 @@
 ---
 title: "Windows（原生）指南"
-description: "在 Windows 10 / 11 上原生运行 Hermes Agent — 安装、功能矩阵、UTF-8 控制台、Git Bash、将 gateway 作为计划任务、编辑器处理、PATH、卸载及常见问题"
+description: "在 Windows 10 / 11 上原生运行 Seraph Agent 3.0 — 安装、功能矩阵、UTF-8 控制台、Git Bash、将 gateway 作为计划任务、编辑器处理、PATH、卸载及常见问题"
 sidebar_label: "Windows（原生）"
 sidebar_position: 3
 ---
@@ -20,7 +20,7 @@ Hermes 可在 Windows 10 和 Windows 11 上原生运行——无需 WSL、Cygwin
 打开 **PowerShell**（或 Windows Terminal）并运行：
 
 ```powershell
-iex (irm https://hermes-agent.nousresearch.com/install.ps1)
+iex (irm https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.ps1)
 ```
 
 无需管理员权限。安装程序会写入 `%LOCALAPPDATA%\hermes\`，并将 `hermes` 添加到你的**用户 PATH**——安装完成后打开新终端即可使用。
@@ -28,7 +28,7 @@ iex (irm https://hermes-agent.nousresearch.com/install.ps1)
 **安装程序选项：**
 
 ```powershell
-& ([scriptblock]::Create((irm https://hermes-agent.nousresearch.com/install.ps1))) -NonInteractive -Branch main
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.ps1))) -NonInteractive -Branch main
 ```
 
 | 参数 | 用途 |
@@ -77,7 +77,7 @@ PM 通过 `pm/lock.json` 管理工具版本，不使用旧的 winget/分层 pip 
 可选依赖由 PM 管理，不再调用 `install.ps1 -Ensure`。
 
 :::tip 在 Windows 上跳过繁琐的提供商配置
-在 Windows 上，逐个配置工具 API key（Firecrawl、FAL、Browser Use、OpenAI TTS）是获得可用 agent 摩擦最大的部分。[Nous Portal](./features/tool-gateway.md) 订阅通过一次 OAuth 登录即可覆盖模型**以及**所有这些工具。安装程序完成后，运行 `hermes setup --portal` 完成配置。
+在 Windows 上，逐个配置工具 API key（Firecrawl、FAL、Browser Use、OpenAI TTS）是获得可用 agent 摩擦最大的部分。[Nous Portal](./features/tool-gateway.md) 订阅通过一次 OAuth 登录即可覆盖模型**以及**所有这些工具。安装程序完成后，运行 `seraph setup --portal` 完成配置。
 :::
 
 ## 功能矩阵
@@ -86,8 +86,8 @@ Windows 支持取决于功能和架构。部分可选 SDK 不支持所有 Window
 
 | 功能                                                         | 原生 Windows        | WSL2               |
 | ------------------------------------------------------------ | ------------------- | ------------------ |
-| CLI（`hermes chat`、`hermes setup`、`hermes gateway` 等）    | ✓                   | ✓                  |
-| 交互式 TUI（`hermes --tui`）                                 | ✓                   | ✓                  |
+| CLI（`seraph chat`、`seraph setup`、`seraph gateway` 等）    | ✓                   | ✓                  |
+| 交互式 TUI（`seraph --tui`）                                 | ✓                   | ✓                  |
 | 消息 gateway（Telegram、Discord、Slack、WhatsApp，15+ 平台） | ✓                   | ✓                  |
 | Cron 调度器                                                  | ✓                   | ✓                  |
 | 浏览器工具（通过 Node 驱动 Chromium）                        | ✓                   | ✓                  |
@@ -158,12 +158,12 @@ Windows Terminal 将 `Ctrl+Enter` 作为独立按键序列传递。Hermes 将其
 
 ## 在 Windows 登录时运行 gateway
 
-Windows 上的 `hermes gateway install` 使用**计划任务**，并以 Startup 文件夹作为回退——无需管理员权限。
+Windows 上的 `seraph gateway install` 使用**计划任务**，并以 Startup 文件夹作为回退——无需管理员权限。
 
 ### 安装
 
 ```powershell
-hermes gateway install
+seraph gateway install
 ```
 
 底层发生的事情：
@@ -177,14 +177,14 @@ hermes gateway install
 ### 管理
 
 ```powershell
-hermes gateway status      # 合并视图：schtasks + Startup 文件夹 + 运行中的 PID
-hermes gateway start       # 立即启动计划任务
-hermes gateway stop        # 等效于优雅的 SIGTERM（通过 psutil 调用 TerminateProcess）
-hermes gateway restart
-hermes gateway uninstall   # 移除 schtasks 条目、Startup 快捷方式、pid 文件
+seraph gateway status      # 合并视图：schtasks + Startup 文件夹 + 运行中的 PID
+seraph gateway start       # 立即启动计划任务
+seraph gateway stop        # 等效于优雅的 SIGTERM（通过 psutil 调用 TerminateProcess）
+seraph gateway restart
+seraph gateway uninstall   # 移除 schtasks 条目、Startup 快捷方式、pid 文件
 ```
 
-`hermes gateway status` 是幂等的——调用一千次也不会意外杀死 gateway。（PR #21561 之前它会静默地这样做，原因是 `os.kill(pid, 0)` 在 C 层与 `CTRL_C_EVENT` 发生碰撞——如果你想了解来龙去脉，请参阅下方"进程管理内部机制"。）
+`seraph gateway status` 是幂等的——调用一千次也不会意外杀死 gateway。（PR #21561 之前它会静默地这样做，原因是 `os.kill(pid, 0)` 在 C 层与 `CTRL_C_EVENT` 发生碰撞——如果你想了解来龙去脉，请参阅下方"进程管理内部机制"。）
 
 ### 为什么不用 Windows 服务？
 
@@ -206,7 +206,7 @@ hermes gateway uninstall   # 移除 schtasks 条目、Startup 快捷方式、pid
 ## 浏览器工具
 
 浏览器工具（`browser_exec`）是 Hermes Python 环境的一部分。
-本地浏览时，Hermes 启动 PM 安装的固定版本 Chromium（缺失时运行 `hermes pm install chromium`）；设置 `browser.executable_path` 可使用其他 Chromium 系程序。云端浏览器在 `hermes tools` 中选择。
+本地浏览时，Hermes 启动 PM 安装的固定版本 Chromium（缺失时运行 `seraph pm install chromium`）；设置 `browser.executable_path` 可使用其他 Chromium 系程序。云端浏览器在 `seraph tools` 中选择。
 ARM64 Windows 上固定的 Chromium 是 x64 构建，通过 Windows 的 x64 模拟运行，这与原生 Python 不同。
 详见 [浏览器自动化](./features/browser.md)。
 
@@ -220,7 +220,7 @@ ARM64 Windows 上固定的 Chromium 是 x64 构建，通过 Windows 的 x64 模�
 
 ```powershell
 Get-Command hermes        # 应输出 C:\Users\<you>\AppData\Local\hermes\bin\hermes.exe
-hermes --version
+seraph --version
 ```
 
 ### 环境变量
@@ -248,19 +248,19 @@ TELEGRAM_BOT_TOKEN=...
 在 PowerShell 中执行：
 
 ```powershell
-hermes uninstall
+seraph uninstall
 ```
 
-源码安装可先用 `hermes uninstall --dry-run` 查看范围。`--full` 同时删除数据，`--data` 只删除数据。MSIX/Store 应通过 Windows 设置的“已安装的应用”移除，CLI 不删除包所有的代码。
+源码安装可先用 `seraph uninstall --dry-run` 查看范围。`--full` 同时删除数据，`--data` 只删除数据。MSIX/Store 应通过 Windows 设置的“已安装的应用”移除，CLI 不删除包所有的代码。
 
 :::caution 删除用户数据
 删除前先停止使用所选 `HERMES_HOME` 的全部进程，并备份数据。
-通过 `hermes uninstall --dry-run` 检查范围，再选择数据删除模式。
+通过 `seraph uninstall --dry-run` 检查范围，再选择数据删除模式。
 不要为了修复一个应用或 profile 而递归删除默认数据根目录。
 自定义 `HERMES_HOME` 可以位于其他位置，移除应用包也不会删除这些数据。
 :::
 
-`hermes uninstall` CLI 子命令还能处理 schtasks 条目以不同任务名注册的情况（旧版安装）——它通过安装路径而非硬编码任务名来搜索。
+`seraph uninstall` CLI 子命令还能处理 schtasks 条目以不同任务名注册的情况（旧版安装）——它通过安装路径而非硬编码任务名来搜索。
 
 ## 进程管理内部机制
 
@@ -284,13 +284,13 @@ hermes uninstall
 你下载的 `install.ps1` 携带了 UTF-8 BOM。`irm | iex` 形式会自动剥离 BOM；`[scriptblock]::Create((irm ...))` 不会。请改用简单的 `irm | iex` 形式，或手动下载脚本并通过 `[IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding $false))` 保存为不带 BOM 的纯 UTF-8。
 
 **重启后 gateway 无法持续运行。**
-运行 `hermes gateway status`——它会合并 schtasks 条目、Startup 文件夹快捷方式（如有）和运行中的 PID。如果 schtasks 已注册但未运行，组策略可能阻止了 `ONLOGON` 触发器。运行 `schtasks /Query /TN HermesGateway /V /FO LIST` 查看任务失败原因，或通过卸载后使用 `HERMES_GATEWAY_FORCE_STARTUP=1` 重新安装来回退到 Startup 文件夹路径。
+运行 `seraph gateway status`——它会合并 schtasks 条目、Startup 文件夹快捷方式（如有）和运行中的 PID。如果 schtasks 已注册但未运行，组策略可能阻止了 `ONLOGON` 触发器。运行 `schtasks /Query /TN HermesGateway /V /FO LIST` 查看任务失败原因，或通过卸载后使用 `HERMES_GATEWAY_FORCE_STARTUP=1` 重新安装来回退到 Startup 文件夹路径。
 
 **设置 `$env:EDITOR` 后 `/edit` 仍然无响应。**
 你只在当前进程中设置了它；请关闭并重新打开 shell，或在系统属性 → 环境变量中以用户作用域设置。在新 PowerShell 窗口中用 `echo $env:EDITOR` 验证。
 
 **浏览器工具启动了，但工具调用超时。**
-运行 `hermes doctor` 和 `hermes pm doctor`，并通过 `hermes tools` 检查所选浏览器提供商。首次启动 Chromium 较慢时，可通过 `browser.command_timeout`（启动超时下限，单位秒）放宽时间。不要向签名包写入另一个 Playwright 版本。
+运行 `seraph doctor` 和 `seraph pm doctor`，并通过 `seraph tools` 检查所选浏览器提供商。首次启动 Chromium 较慢时，可通过 `browser.command_timeout`（启动超时下限，单位秒）放宽时间。不要向签名包写入另一个 Playwright 版本。
 
 **CLI 中中文/日文/阿拉伯文字符显示为 `?`。**
 UTF-8 stdio 垫片未激活。检查 `HERMES_DISABLE_WINDOWS_UTF8` 是否**未**设置（`Get-ChildItem env:HERMES_DISABLE_WINDOWS_UTF8`）。如果该变量为空但仍然看到 `?`，控制台宿主（非常旧的 `cmd.exe`）可能完全不支持 UTF-8——请切换到 Windows Terminal。

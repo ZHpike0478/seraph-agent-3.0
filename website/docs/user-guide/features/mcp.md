@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "MCP (Model Context Protocol)"
-description: "Connect Hermes Agent to external tool servers via MCP — and control exactly which MCP tools Hermes loads"
+description: "Connect Seraph Agent 3.0 to external tool servers via MCP — and control exactly which MCP tools Hermes loads"
 ---
 
 # MCP (Model Context Protocol)
@@ -10,12 +10,12 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-MCP lets Hermes Agent connect to external tool servers so the agent can use tools that live outside Hermes itself — GitHub, databases, file systems, browser stacks, internal APIs, and more.
+MCP lets Seraph Agent 3.0 connect to external tool servers so the agent can use tools that live outside Hermes itself — GitHub, databases, file systems, browser stacks, internal APIs, and more.
 
 If you have ever wanted Hermes to use a tool that already exists somewhere else, MCP is usually the cleanest way to do it.
 
 :::tip Coming from Claude Code?
-The `mcpServers` block in your `~/.claude.json` maps to `mcp_servers` in Hermes' `config.yaml` — and `hermes import-agent claude-code` (from the `agent-importers` plugin) migrates it, along with skills and instructions. See [Import from Other Agents](../import-from-other-agents.md).
+The `mcpServers` block in your `~/.claude.json` maps to `mcp_servers` in Hermes' `config.yaml` — and `seraph import-agent claude-code` (from the `agent-importers` plugin) migrates it, along with skills and instructions. See [Import from Other Agents](../import-from-other-agents.md).
 :::
 
 ## What MCP gives you
@@ -42,7 +42,7 @@ mcp_servers:
 3. Start Hermes:
 
 ```bash
-hermes chat
+seraph chat
 ```
 
 4. Ask Hermes to use the MCP-backed capability.
@@ -64,7 +64,7 @@ want.
 You can also ask in chat: "add the Linear MCP". The agent calls
 `manage_connections` with an `mcp: true` target and a setup card appears. The
 card works the same way in the desktop app (a dialog), the terminal UI
-(`hermes --tui`, a callout above the composer) and the classic CLI (a panel):
+(`seraph --tui`, a callout above the composer) and the classic CLI (a panel):
 
 1. **Fields.** If the entry declares setup values, the card shows all of them
    at once. A plain value is prefilled with its default. A secret is masked.
@@ -90,9 +90,9 @@ card works the same way in the desktop app (a dialog), the terminal UI
 In messaging apps there is no card; the agent relays the commands below.
 
 ```bash
-hermes mcp                   # interactive picker (default)
-hermes mcp catalog           # plain-text list, scriptable
-hermes mcp install deepwiki  # install a catalog entry by name
+seraph mcp                   # interactive picker (default)
+seraph mcp catalog           # plain-text list, scriptable
+seraph mcp install deepwiki  # install a catalog entry by name
 ```
 
 The picker shows each entry with its current status:
@@ -124,7 +124,7 @@ Catalog entries can require:
 - **OAuth** (remote MCP) — written as `auth: oauth` in your config; the MCP
   client opens a browser on first connection.
 - **OAuth** (third-party provider like Google/GitHub) — Hermes points you at
-  `hermes auth <provider>` if you haven't authenticated already.
+  `seraph auth <provider>` if you haven't authenticated already.
 
 ### n8n's official MCP server
 
@@ -136,10 +136,10 @@ API key is required.
 2. Open **Connect** and copy the full **Server URL** ending in
    `/mcp-server/http`, not the editor URL. Older versions show the endpoint
    directly on the MCP settings page.
-3. Run `hermes mcp install n8n-official` and enter that URL when prompted.
-4. Complete browser OAuth. If needed, run `hermes mcp login n8n-official`
+3. Run `seraph mcp install n8n-official` and enter that URL when prompted.
+4. Complete browser OAuth. If needed, run `seraph mcp login n8n-official`
    or use **Authorize** on the configured server in Desktop or the dashboard.
-5. Review tools with `hermes mcp configure n8n-official`, then start a new
+5. Review tools with `seraph mcp configure n8n-official`, then start a new
    session or use `/reload-mcp`.
 
 The Hermes backend must be able to reach the URL. n8n controls permissions
@@ -186,7 +186,7 @@ written (cleanest config shape, identical behavior).
 **If the probe fails** (server unreachable, OAuth not yet completed,
 backing service not running), the install still succeeds: the manifest's
 `tools.default_enabled` is applied directly (if declared), or no filter is
-written (if not). Re-run `hermes mcp configure <name>` once the server is
+written (if not). Re-run `seraph mcp configure <name>` once the server is
 reachable to refine.
 
 ### Trust model
@@ -214,7 +214,7 @@ before clicking Install.
 Manifests pin a `manifest_version`. The catalog is forward-compatible: if a
 PR adds an entry with a newer `manifest_version` than your installed Hermes
 understands, the picker will surface a warning (`⚠ '<name>' requires a newer
-Hermes`) for that entry instead of silently hiding it. Run `hermes update`
+Hermes`) for that entry instead of silently hiding it. Run `seraph update`
 to install the latest Hermes when you see that.
 
 ### Runtime `${ENV_VAR}` substitution
@@ -261,19 +261,19 @@ mcp_servers:
 ```
 
 Read the entry's `post_install` notes for the exact app type and redirect URL
-to register, then run `hermes mcp login <name>` and restart (or
+to register, then run `seraph mcp login <name>` and restart (or
 `/reload-mcp`) the session or gateway that should expose the tools. The
 dashboard / Desktop **Authorize** button works too: because the client is
 pre-registered with a pinned `redirect_port`, Hermes keeps the registered
 loopback callback (`http://localhost:27890/callback`) instead of the
 dashboard's own callback URL — so the browser you approve in must run on the
-same machine as the Hermes process. For a remote host, use `hermes mcp login`
+same machine as the Hermes process. For a remote host, use `seraph mcp login`
 over SSH port-forwarding.
 
 ### Updating tool selection later
 
 ```bash
-hermes mcp configure linear
+seraph mcp configure linear
 ```
 
 Reopens the same checklist with your current selection pre-checked. Use this
@@ -282,7 +282,7 @@ you want to opt into.
 
 ### Updating the catalog manifest
 
-MCPs are never auto-updated. Re-run `hermes mcp install <name>` to refresh
+MCPs are never auto-updated. Re-run `seraph mcp install <name>` to refresh
 after a Hermes update if a manifest version changed.
 
 To add an MCP to the catalog, open a PR against
@@ -354,7 +354,7 @@ Most hosted MCP servers (Cloudflare, Linear, Sentry, Atlassian, Asana, Figma, St
 Hermes identifies itself with a [Client ID Metadata Document](../../reference/mcp-config-reference.md#client-identification-cimd-and-dcr) on servers that support one, and falls back to Dynamic Client Registration on those that don't. Both are automatic; there is nothing to configure.
 
 :::tip Figma remote MCP
-Figma's hosted endpoint (`https://mcp.figma.com/mcp`) allowlists Dynamic Client Registration by **exact `client_name`** — bare `"Hermes Agent"` 403s, while `"Claude Code"` and `"Codex"` succeed. Hermes auto-sets `oauth.client_name: "Claude Code"` for `mcp.figma.com` so install/login works without a special trick:
+Figma's hosted endpoint (`https://mcp.figma.com/mcp`) allowlists Dynamic Client Registration by **exact `client_name`** — bare `"Seraph Agent 3.0"` 403s, while `"Claude Code"` and `"Codex"` succeed. Hermes auto-sets `oauth.client_name: "Claude Code"` for `mcp.figma.com` so install/login works without a special trick:
 
 ```yaml
 mcp_servers:
@@ -363,7 +363,7 @@ mcp_servers:
     auth: oauth
 ```
 
-Or: `hermes mcp install figma`, then `hermes mcp login figma`.
+Or: `seraph mcp install figma`, then `seraph mcp login figma`.
 :::
 
 ```yaml
@@ -377,17 +377,17 @@ On first connect, Hermes prints an authorize URL, opens your browser when possib
 
 Refresh tokens are bound to the authorization server that granted them: Hermes records the discovered issuer alongside the cached tokens and, if a server's advertised authorization server ever changes (server migration, metadata edit, or hijack), the stored refresh token is dropped instead of being sent to the new issuer. The current access token keeps working until it expires, then a normal re-authorization runs against the new issuer.
 
-The redirect back from the authorization server is checked against RFC 9207: when the server's metadata advertises `authorization_response_iss_parameter_supported`, a redirect without a matching `iss` is rejected. Figma's authorization server (`https://api.figma.com`) advertises that support and then omits `iss`; Hermes fills the missing value from the discovered issuer for that one issuer and logs a warning, so `hermes mcp login figma` completes. A present-but-different `iss` is still rejected, and no other server gets the exemption.
+The redirect back from the authorization server is checked against RFC 9207: when the server's metadata advertises `authorization_response_iss_parameter_supported`, a redirect without a matching `iss` is rejected. Figma's authorization server (`https://api.figma.com`) advertises that support and then omits `iss`; Hermes fills the missing value from the discovered issuer for that one issuer and logs a warning, so `seraph mcp login figma` completes. A present-but-different `iss` is still rejected, and no other server gets the exemption.
 
 The authorization server's metadata document must name the server the resource advertised (RFC 8414 §3.3); a document for a different server is rejected before any registration or login. One shape is accepted without an exact match: a server advertised with a path (`https://host/path`) whose document, fetched from `https://host/.well-known/oauth-authorization-server/path`, names the origin `https://host` as its issuer — Strava's MCP connector publishes exactly that pair. Only the origin's operator controls that well-known location, so the document is treated as the advertised server's own; a document naming another origin or another path, or one reached only through a redirect or a fallback location, still fails with `Authorization server metadata issuer mismatch`.
 
-**Google-hosted servers (Gmail, Calendar).** Google only issues a refresh token when the authorization request carries `access_type=offline`, which MCP discovery never advertises. Hermes adds it (plus `prompt=consent`, so a repeat login is re-granted one) whenever the discovered authorization server is `accounts.google.com`, so the connection persists across restarts and works from `hermes gateway`. Other issuers' requests are untouched.
+**Google-hosted servers (Gmail, Calendar).** Google only issues a refresh token when the authorization request carries `access_type=offline`, which MCP discovery never advertises. Hermes adds it (plus `prompt=consent`, so a repeat login is re-granted one) whenever the discovered authorization server is `accounts.google.com`, so the connection persists across restarts and works from `seraph gateway`. Other issuers' requests are untouched.
 
 **Remote / headless hosts.** When Hermes runs on a different machine than your browser, the loopback callback can't reach your laptop. Ways to complete the flow:
 
-- **Hermes Desktop (automatic):** when you run the OAuth sign-in from the Desktop app's MCP setup UI against a remote backend, Desktop hosts the callback listener on *your* machine and relays the authorization back to the gateway automatically — no tunnel, paste, or proxy needed. Requires both the Desktop app and the backend to be up to date.
+- **Seraph Desktop (automatic):** when you run the OAuth sign-in from the Desktop app's MCP setup UI against a remote backend, Desktop hosts the callback listener on *your* machine and relays the authorization back to the gateway automatically — no tunnel, paste, or proxy needed. Requires both the Desktop app and the backend to be up to date.
 - **Paste-back (no setup):** on an interactive terminal Hermes prints "Or paste the redirect URL here…" alongside the authorize URL. Open the URL in your browser, approve, copy the full URL the browser ends up on (the redirect will show a connection error — that's expected), paste it at the prompt. Bare `?code=…&state=…` query strings work too.
-- **Device-code login (no callback at all):** if the server's authorization server advertises a device authorization endpoint, run `hermes mcp login <server> --flow device` on the machine running Hermes. It prints a verification URL and a short code; open the URL on any device, enter the code, and Hermes polls for approval. No browser is launched on the host and no callback listener is needed. Set `oauth.flow: device` on the server to make `login` and `reauth` use it by default. Details: [Device-code login](../../reference/mcp-config-reference.md#device-code-login-rfc-8628).
+- **Device-code login (no callback at all):** if the server's authorization server advertises a device authorization endpoint, run `seraph mcp login <server> --flow device` on the machine running Hermes. It prints a verification URL and a short code; open the URL on any device, enter the code, and Hermes polls for approval. No browser is launched on the host and no callback listener is needed. Set `oauth.flow: device` on the server to make `login` and `reauth` use it by default. Details: [Device-code login](../../reference/mcp-config-reference.md#device-code-login-rfc-8628).
 - **SSH port forward:** `ssh -N -L <port>:127.0.0.1:<port> user@host` in a separate terminal, then let the redirect flow normally.
 - **Proxied callback (`redirect_uri`):** when a public HTTPS endpoint forwards to the host (e.g. a Tailscale Funnel or reverse proxy pointed at the callback port), set `oauth.redirect_uri` and the browser redirect reaches Hermes on its own — no tunnel or paste needed:
 
@@ -405,9 +405,9 @@ For fully headless gateways (messaging bot, no interactive terminal at all), the
 
 **Pitfall — WAF rejects `127.0.0.1` redirect URIs.** A few providers front their authorization server with a WAF that 403s any authorize request whose query string contains a literal `127.0.0.1` (Reclaim.ai's AWS API Gateway is a known example — every attempt returns `{"message":"Forbidden"}` before reaching the OAuth app). Set `oauth.redirect_host: localhost` to use `http://localhost:<port>/callback` instead; the callback listener still binds `127.0.0.1` either way.
 
-See [OAuth over SSH / Remote Hosts](../../guides/oauth-over-ssh.md#mcp-servers) for the full walkthrough, including DCR-less servers (e.g. Slack), pre-registered `client_id`/`client_secret`, scope customization, and re-auth via `hermes mcp login <server>`.
+See [OAuth over SSH / Remote Hosts](../../guides/oauth-over-ssh.md#mcp-servers) for the full walkthrough, including DCR-less servers (e.g. Slack), pre-registered `client_id`/`client_secret`, scope customization, and re-auth via `seraph mcp login <server>`.
 
-**Pitfall — providers that don't support automatic registration (Google Drive, Atlassian).** Some servers reject the dynamic client registration step (RFC 7591) that bare `auth: oauth` relies on — Google's official Drive server (`https://drivemcp.googleapis.com/mcp/v1`) returns a `400 Bad Request`, so no OAuth client is created and no token is acquired. The symptom is subtle: these servers also serve `tools/list` *without* auth, so `hermes mcp login` can list the tools and look like it worked, but every real tool call later times out. `hermes mcp login` now detects this (it checks that a token actually landed on disk) and tells you to supply your own OAuth client. Create one in the provider's console and add it to config:
+**Pitfall — providers that don't support automatic registration (Google Drive, Atlassian).** Some servers reject the dynamic client registration step (RFC 7591) that bare `auth: oauth` relies on — Google's official Drive server (`https://drivemcp.googleapis.com/mcp/v1`) returns a `400 Bad Request`, so no OAuth client is created and no token is acquired. The symptom is subtle: these servers also serve `tools/list` *without* auth, so `seraph mcp login` can list the tools and look like it worked, but every real tool call later times out. `seraph mcp login` now detects this (it checks that a token actually landed on disk) and tells you to supply your own OAuth client. Create one in the provider's console and add it to config:
 
 ```yaml
 mcp_servers:
@@ -419,11 +419,11 @@ mcp_servers:
       client_secret: "<your-oauth-client-secret>"
 ```
 
-Then run `hermes mcp login googledrive` — with the pre-registered client, Hermes skips registration and runs the normal browser authorization flow.
+Then run `seraph mcp login googledrive` — with the pre-registered client, Hermes skips registration and runs the normal browser authorization flow.
 
-**Pitfall — config auto-reload race.** When you edit `~/.hermes/config.yaml` from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough for an interactive OAuth flow. Add the entry, then run `hermes mcp login <server>` from a fresh terminal — it waits the full 5 minutes for you to complete auth.
+**Pitfall — config auto-reload race.** When you edit `~/.hermes/config.yaml` from inside a running Hermes session, the CLI auto-reloads MCP connections with a 30s timeout. That's not enough for an interactive OAuth flow. Add the entry, then run `seraph mcp login <server>` from a fresh terminal — it waits the full 5 minutes for you to complete auth.
 
-**Need longer than 5 minutes to approve?** Set `oauth.timeout` on the server entry (seconds). `hermes mcp login`, the dashboard and Desktop re-auth all wait `oauth.timeout` + 15 s (or the entry's `connect_timeout`, whichever is longer); a login that still runs out of time reports `Connecting to MCP server '<name>' timed out after Ns` naming both knobs instead of a blank failure line.
+**Need longer than 5 minutes to approve?** Set `oauth.timeout` on the server entry (seconds). `seraph mcp login`, the dashboard and Desktop re-auth all wait `oauth.timeout` + 15 s (or the entry's `connect_timeout`, whichever is longer); a login that still runs out of time reports `Connecting to MCP server '<name>' timed out after Ns` naming both knobs instead of a blank failure line.
 
 ## mTLS / client certificates
 
@@ -544,7 +544,7 @@ mcp_servers:
 
 ## Built-in presets
 
-For well-known MCP servers, `hermes mcp add` accepts a `--preset` flag that fills in the transport details so you don't have to look up the command and args. The preset only supplies defaults — anything else (env vars, headers, filtering) you pass on the same command line still wins.
+For well-known MCP servers, `seraph mcp add` accepts a `--preset` flag that fills in the transport details so you don't have to look up the command and args. The preset only supplies defaults — anything else (env vars, headers, filtering) you pass on the same command line still wins.
 
 | Preset | What it wires up |
 |---|---|
@@ -552,7 +552,7 @@ For well-known MCP servers, `hermes mcp add` accepts a `--preset` flag that fill
 
 ```bash
 # Add Codex CLI as an MCP server in one line
-hermes mcp add codex --preset codex
+seraph mcp add codex --preset codex
 ```
 
 That writes the equivalent of:
@@ -564,7 +564,7 @@ mcp_servers:
     args: ["mcp-server"]
 ```
 
-You can pick any local name (`hermes mcp add my-codex --preset codex` is fine); the preset only provides the `command`/`args` defaults.
+You can pick any local name (`seraph mcp add my-codex --preset codex` is fine); the preset only provides the `command`/`args` defaults.
 
 ## How Hermes registers MCP tools
 
@@ -785,9 +785,9 @@ If you change MCP config, use:
 
 This reloads MCP servers from config and refreshes the available tool list. It is also the explicit way to re-probe availability-gated tools (Docker, plugin credentials such as `HASS_TOKEN`, OAuth…): a session's tool set is otherwise frozen, so a credential or daemon that appears mid-session is only picked up on `/reload-mcp`, `/new`, or context compaction. For runtime tool changes pushed by the server itself, see [Dynamic Tool Discovery](#dynamic-tool-discovery) above.
 
-A running messaging gateway (`hermes gateway run`) also watches `config.yaml` on its own: within about a minute of you removing an `mcp_servers` entry or setting `enabled: false`, that server's connection is torn down; a newly added entry is connected. A server whose first connect failed (an unreachable host, or an OAuth server on a headless box that had no token yet) is retried automatically on its connect cooldown schedule (30 s, doubling up to 10 min) once you fix the cause. No restart or `/reload-mcp` needed for the edit to take effect.
+A running messaging gateway (`seraph gateway run`) also watches `config.yaml` on its own: within about a minute of you removing an `mcp_servers` entry or setting `enabled: false`, that server's connection is torn down; a newly added entry is connected. A server whose first connect failed (an unreachable host, or an OAuth server on a headless box that had no token yet) is retried automatically on its connect cooldown schedule (30 s, doubling up to 10 min) once you fix the cause. No restart or `/reload-mcp` needed for the edit to take effect.
 
-**Expired OAuth tokens in the background.** The gateway, `/reload-mcp`, and the periodic self-probe of a parked server never open a browser — nobody is there to complete the flow. When a refresh token dies, the server parks with a warning in `gateway.log` and you re-authorize once with `hermes mcp login <server>` (or the Desktop/dashboard *Authorize* button); the parked server picks the new token up on its next probe. Until the token files change, starting new sessions does not retry the rejected token: only the timed self-probe does, so a dead grant cannot hammer the provider's token endpoint.
+**Expired OAuth tokens in the background.** The gateway, `/reload-mcp`, and the periodic self-probe of a parked server never open a browser — nobody is there to complete the flow. When a refresh token dies, the server parks with a warning in `gateway.log` and you re-authorize once with `seraph mcp login <server>` (or the Desktop/dashboard *Authorize* button); the parked server picks the new token up on its next probe. Until the token files change, starting new sessions does not retry the rejected token: only the timed self-probe does, so a dead grant cannot hammer the provider's token endpoint.
 
 ### Toolsets
 
@@ -898,7 +898,7 @@ failure is listed as `not attempted (in retry cooldown)`.
 
 ### Remote (HTTP) server rejects the connection
 
-`hermes mcp test <name>` reports what the server actually answered. When the MCP SDK can only say
+`seraph mcp test <name>` reports what the server actually answered. When the MCP SDK can only say
 `Server returned an error response` (a 4xx/5xx whose body is not a JSON-RPC error), Hermes appends
 the HTTP status, the URL it requested and the start of the response body:
 
@@ -910,7 +910,7 @@ Streamable HTTP: Server returned an error response (HTTP 400 from POST http://ho
 Read the status and body first: a `400`/`405` on the `initialize` POST usually means the endpoint
 speaks SSE only (set `transport: sse`) or a proxy in front of it rejects the request; a `401`/`403`
 means the token or OAuth grant is wrong; an HTML body means the URL points at a web page, not an MCP
-endpoint. `hermes logs --level debug` additionally shows the exact endpoint each connect attempt used.
+endpoint. `seraph logs --level debug` additionally shows the exact endpoint each connect attempt used.
 
 ### A server's response is too large
 
@@ -1008,7 +1008,7 @@ mcp_servers:
 - The approval prompt names the cost: `Costs about 20 credits.` or `Costs 5-20 credits (per animation).`, plus `This chat has used about 40 credits on 'renders' (limit 100).` once the chat has spent something.
 - Hermes keeps a running total per chat and per server, counting the declared figure (the top of a range) for every costed call it approved and started. Declined or blocked calls add nothing; a call whose server dies before receiving it still counts, which errs toward asking sooner. The total lives in memory: it is a budget for one conversation, not the vendor's bill.
 - The total follows the conversation when context compression or `/branch` continues it under a new session id. Starting a new chat (`/new` in the CLI, a new Desktop chat) starts a new total; on messaging platforms the total belongs to the chat, so it survives `/new` there. Each cron run has its own total. Restarting Hermes resets every total.
-- With `spend_limit`, a costed call that would take the chat past the limit asks first, even on a `trust: full` server that otherwise never prompts, and every further costed call in that chat asks again: that prompt offers only Allow Once and Deny, and an earlier Session or Always answer for the tool does not silence it. Where nobody can answer (cron jobs, `hermes chat -q`, a gateway with no approver), the call is refused without running and the model is told not to retry.
+- With `spend_limit`, a costed call that would take the chat past the limit asks first, even on a `trust: full` server that otherwise never prompts, and every further costed call in that chat asks again: that prompt offers only Allow Once and Deny, and an earlier Session or Always answer for the tool does not silence it. Where nobody can answer (cron jobs, `seraph chat -q`, a gateway with no approver), the call is refused without running and the model is told not to retry.
 - Below the limit, a `trust: full` server still runs costed tools without asking; on a `trust: untrusted` server every write-capable call already asks and the prompt now carries the cost. Tools annotated `readOnlyHint: true` stay unprompted unless the budget requires it.
 - [YOLO](../security.md#yolo-mode) (`/yolo`, `--yolo`) and `approvals.mode: off` skip the `trust: untrusted` prompt (`/yolo` for that chat, `--yolo` for that process, `approvals.mode: off` for that profile), but not the spend limit: below the limit a costed call runs without asking, and a call that would cross it still asks (or is refused where nobody can answer, such as a cron job with `approvals.mode: off`).
 - A malformed `tool_costs`, `spend_limit` or `cost_unit` skips the server with an error naming the key, so a budget you declared is never silently dropped. A `tool_costs` key the server does not offer (a typo, or Hermes' `mcp_<server>_` display prefix copied in) is named in a warning at connect time: use the server's own tool names.
@@ -1066,7 +1066,7 @@ The server then gets three more utility tools:
   runs; the approval shows the instructions and the destination in full.
 - `unsubscribe_event`: cancel a subscription
 
-Each subscription is stored as a dynamic webhook route (`hermes webhook list` shows it) with its own
+Each subscription is stored as a dynamic webhook route (`seraph webhook list` shows it) with its own
 `whsec_` signing secret; the grant and the replay cursor are kept beside it in
 `mcp_event_subscriptions.json`, so the route itself only changes when you resubscribe with different
 instructions or a different destination. Hermes answers the server's signed verification challenge, deduplicates
@@ -1078,7 +1078,7 @@ for good (access revoked, event type removed, arguments no longer valid) removes
 failures are retried with back-off. Turning the route off in the webhook dashboard lets the
 subscription lapse, and turning it back on resubscribes it. If the server ends a subscription,
 Hermes removes the route and tells the `deliver` target. Events only arrive while
-`hermes gateway run` is running. The event payload reaches the run whole, up to 32,000 characters
+`seraph gateway run` is running. The event payload reaches the run whole, up to 32,000 characters
 of JSON, with a note when it is cut. Event payloads are external data: event runs use the same
 constrained webhook toolset as other webhook routes.
 The listener's per-route rate limit (`platforms.webhook.extra.rate_limit`, 30 a minute by default)
@@ -1093,7 +1093,7 @@ profile under `gateway.multiplex_profiles`.
 Hermes can also **be** an MCP server, so Claude Code, Claude Desktop, Cursor, Codex or any MCP client can list and read your messaging conversations, wait for new messages and send messages across every platform Hermes is connected to, and optionally call Hermes' own web, browser, vision, image generation, skills and TTS tools. This ships as the official **mcp-serve** plugin:
 
 ```bash
-hermes plugins install mcp-serve
+seraph plugins install mcp-serve
 ```
 
 ```json
@@ -1107,7 +1107,7 @@ hermes plugins install mcp-serve
 }
 ```
 
-It used to be built in as `hermes mcp serve`. An MCP client configured with `"args": ["mcp", "serve"]` changes them to `["mcp-serve"]`; the tool names and parameters are unchanged, and `hermes mcp serve` now prints the new spelling and the install line. Tools, the `--tools` mode and its safety limits are documented in the [plugin's README](https://github.com/NousResearch/hermes-official-plugins/tree/main/mcp-serve).
+It used to be built in as `seraph mcp serve`. An MCP client configured with `"args": ["mcp", "serve"]` changes them to `["mcp-serve"]`; the tool names and parameters are unchanged, and `seraph mcp serve` now prints the new spelling and the install line. Tools, the `--tools` mode and its safety limits are documented in the [plugin's README](https://github.com/NousResearch/hermes-official-plugins/tree/main/mcp-serve).
 
 ## Related docs
 

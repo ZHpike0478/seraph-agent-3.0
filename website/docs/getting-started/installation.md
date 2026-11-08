@@ -1,17 +1,17 @@
 ---
 sidebar_position: 2
 title: "Installation"
-description: "Install Hermes Agent with desktop bundles, source installers, Docker, Nix, or the Termux APT package"
+description: "Install Seraph Agent 3.0 from source; this fork does not yet publish desktop bundles."
 ---
 
 <head>
-  <title>Install Hermes Agent: Official Guide | Nous Research</title>
-  <meta property="og:title" content="Install Hermes Agent: Official Guide | Nous Research" />
+  <title>Install Seraph Agent 3.0</title>
+  <meta property="og:title" content="Install Seraph Agent 3.0" />
 </head>
 
 # Installation
 
-Get Hermes Agent up and running in under two minutes!
+Get Seraph Agent 3.0 up and running in under two minutes!
 
 :::tip Platform Support
 For the full platform support matrix (which OSes, distribution methods, and
@@ -19,58 +19,33 @@ platform-gated features are supported), see **[Platform Support](./platform-supp
 :::
 
 ## Quick Install
-### Desktop packages on macOS or Windows
+This fork currently provides source installation only. Prebuilt desktop
+installers have not been published by this repository. For upstream Hermes
+releases, visit [Nous Research's upstream repository](https://github.com/NousResearch/hermes-agent/releases).
 
-Download the package for your platform from the
-[Hermes website](https://hermes-agent.nousresearch.com/).
-
-- **Windows:** open the `.appinstaller` download with Windows App Installer.
-  It installs the signed MSIX bundle and records its update source.
-  Microsoft Store packages have separate Store ownership.
-- **macOS:** open the DMG, then copy `Hermes.app` to Applications. The ZIP
-  artifact carries the signed app used by the automatic updater.
-
-Bundled packages contain the agent, Python, supported dependencies, and prebuilt
-interfaces. First launch does not build that base runtime. Provider access and
-optional integrations can still require network access.
-
-A `Hermes-Setup` bootstrap installer is different: it downloads a source
-installation and builds the desktop app. See [Hermes Desktop](../user-guide/desktop.md).
-
-There is no separate remote-only Desktop download. To use Desktop with a Hermes
-backend on another machine, install one of the packages above and connect it
-from **Settings → Gateways**; see
-[Connecting to a remote backend](../user-guide/desktop.md#connecting-to-a-remote-backend).
-
-:::note
-The macOS installer is **Apple Silicon only**. macOS on x86 (Intel) processors is [not a supported platform](./platform-support.md#unsupported).
-:::
-
-### Without Hermes Desktop:
-For a command-line only install without Hermes Desktop, run:
-
-#### Linux / macOS / WSL2
+### Linux / macOS / WSL2
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.sh | bash
 ```
 
-#### Windows (native)
-
-Run in powershell:
+### Windows (native)
+Run in PowerShell:
 ```powershell
-iex (irm https://hermes-agent.nousresearch.com/install.ps1) 
+iex (irm https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.ps1)
 ```
 
-If you want to install & run Hermes Desktop after a command-line only install, simply run
+After installation, `seraph` is the primary command. The existing `hermes`
+command remains available as a compatibility alias.
+
+To run the desktop source included in this repository after installing, use:
 ```bash
-hermes desktop
+seraph desktop
 ```
 
 ### Android / Termux
 
-Use the [Termux APT package](./termux.md) on aarch64 Android devices.
-Configure its signed repository before running `pkg install hermes-agent`.
-The desktop/server scripts are not the Termux installation path.
+This fork does not publish a Termux APT package. The [Termux guide](./termux.md)
+describes the upstream Hermes Agent package only, not a Seraph installation.
 
 ### What the source installer does
 
@@ -78,16 +53,16 @@ The scripts clone the source, bootstrap uv, and delegate dependency preparation
 to PM. PM provides pinned Python, Node.js, npm, pnpm, ripgrep, and FFmpeg. The source
 installation selects the `all` Python extra, not every optional extra.
 PM also installs the browser and computer-use tools by default: a pinned
-Chromium (Chrome for Testing) that Hermes launches for local browsing, and
+Chromium (Chrome for Testing) that Seraph Agent 3.0 launches for local browsing, and
 `cua-driver` (the computer-use driver, on macOS, Windows and glibc Linux). If a
 download fails, the install still completes and prints the command to retry.
 The browser driver behind `browser_exec` (browser-harness, the engine of the
-Browser Use CLI) is a regular Python dependency, so every install, the Desktop
-app included, already has it. Where PM has no Chromium build (Android/Termux,
-musl Linux), Hermes uses a system `chromium` on `PATH` instead.
+Browser Use CLI) is a regular Python dependency, so every install already has
+it. Where PM has no Chromium build (for example, on musl Linux), Seraph uses a
+system `chromium` on `PATH` instead.
 Other optional tools use their feature-specific installation paths.
 
-A new install lands on the latest stable release, the channel `hermes update`
+A new install lands on the latest stable release, the channel `seraph update`
 follows from then on (see [Updating](./updating.md)). To install the tip of
 `main` instead, pass `--channel main` on POSIX or `-Channel main` on Windows
 (or set `HERMES_INSTALL_CHANNEL=main` first, for the one-liners).
@@ -95,8 +70,8 @@ follows from then on (see [Updating](./updating.md)). To install the tip of
 To leave the browser tools out, pass `--skip-browser` on POSIX or `-SkipBrowser`
 on Windows; for the computer-use driver, `--skip-computer-use` /
 `-SkipComputerUse`. Hermes remembers these choices: later installs and
-`hermes update` do not add them back. Run `hermes pm install chromium` or
-`hermes pm install cua-driver` to install them and undo the choice.
+`seraph update` do not add them back. Run `seraph pm install chromium` or
+`seraph pm install cua-driver` to install them and undo the choice.
 
 The scripts create a launcher and prepare the data directory. Interactive runs
 also invoke setup and gateway configuration. `--non-interactive` on POSIX, or
@@ -113,11 +88,11 @@ directory; a failed step prints its last lines and the log path. CI (`CI` or
 
 | Method | Code | CLI entry point | Default user data |
 |---|---|---|---|
-| POSIX source script | `~/.hermes/hermes-agent/` | `~/.local/bin/hermes` wrapper | `~/.hermes/` |
-| Windows source script | `%LOCALAPPDATA%\hermes\hermes-agent\` | `%LOCALAPPDATA%\hermes\bin\` | `%LOCALAPPDATA%\hermes\` |
-| Desktop bundle | Inside the installed app package | Packaged launchers; Windows execution aliases | Platform default Hermes data directory |
-| Docker | `/opt/hermes/` | Image entrypoint and `hermes` shim | Mounted `/opt/data/` |
-| Termux APT | `$PREFIX/lib/hermes-agent/` | Symlinks in `$PREFIX/bin/` | `~/.hermes/` |
+| POSIX source script | `~/.hermes/hermes-agent/` | `seraph` primary command; `hermes` compatibility alias | `~/.hermes/` |
+| Windows source script | `%LOCALAPPDATA%\hermes\hermes-agent\` | `seraph` primary command; `hermes` compatibility alias | `%LOCALAPPDATA%\hermes\` |
+| Upstream Hermes desktop bundle (not published by this fork) | Inside the installed app package | Packaged launchers; Windows execution aliases | Platform default Hermes data directory |
+| Upstream Hermes Docker image (not published by this fork) | `/opt/hermes/` | Image entrypoint and `hermes` shim | Mounted `/opt/data/` |
+| Upstream Hermes Termux APT package (not published by this fork) | `$PREFIX/lib/hermes-agent/` | Symlinks in `$PREFIX/bin/` | `~/.hermes/` |
 
 `HERMES_HOME` selects user data. The POSIX script's `--dir` selects its source
 checkout independently. Windows provides `-HermesHome` and `-InstallDir`.
@@ -134,32 +109,32 @@ Reload your shell and start chatting:
 
 ```bash
 source ~/.bashrc   # or: source ~/.zshrc
-hermes             # Start chatting!
+seraph             # Start chatting!
 ```
 
 To reconfigure individual settings later, use the dedicated commands:
 
 ```bash
-hermes model          # Choose your LLM provider and model
-hermes tools          # Configure which tools are enabled
-hermes gateway setup  # Set up messaging platforms
-hermes config set     # Set individual config values
-hermes config get     # Inspect individual config values
-hermes setup          # Or run the full setup wizard to configure everything at once
+seraph model          # Choose your LLM provider and model
+seraph tools          # Configure which tools are enabled
+seraph gateway setup  # Set up messaging platforms
+seraph config set     # Set individual config values
+seraph config get     # Inspect individual config values
+seraph setup          # Or run the full setup wizard to configure everything at once
 ```
 
 :::tip Fastest path: Nous Portal
 One subscription covers 300+ models plus the [Tool Gateway](../user-guide/features/tool-gateway.md) (web search, image generation, TTS, cloud browser). Skip the per-tool key juggling:
 
 ```bash
-hermes setup --portal
+seraph setup --portal
 ```
 
 That logs you in, sets Nous as your provider, and turns on the Tool Gateway in one command.
 :::
 
 :::tip Already running Hermes on another machine?
-You don't need to rebuild your setup from scratch. Restore a full backup with `hermes import` (see [Exporting Hermes to another machine](../reference/faq.md#exporting-hermes-to-another-machine)), or bring over a single agent with `hermes profile import` (see [Moving a single profile to another machine](../reference/faq.md#moving-a-single-profile-to-another-machine)). Note that a profile export excludes credentials by design, so an export alone is not a full backup — [`hermes backup` vs `hermes profile export`](../reference/faq.md#hermes-backup-vs-hermes-profile-export) explains which to use.
+You don't need to rebuild your setup from scratch. Restore a full backup with `seraph import` (see [Exporting Hermes to another machine](../reference/faq.md#exporting-hermes-to-another-machine)), or bring over a single agent with `seraph profile import` (see [Moving a single profile to another machine](../reference/faq.md#moving-a-single-profile-to-another-machine)). Note that a profile export excludes credentials by design, so an export alone is not a full backup — [`seraph backup` vs `seraph profile export`](../reference/faq.md#hermes-backup-vs-hermes-profile-export) explains which to use.
 :::
 
 ---
@@ -184,7 +159,7 @@ Linux Chromium also requires system libraries supplied by the distribution.
 
 On glibc Linux, the managed Node.js links `libatomic.so.1`, which minimal
 Debian, Ubuntu and RHEL-family images do not ship. When the library is
-missing, the installer and `hermes update` install the distro package
+missing, the installer and `seraph update` install the distro package
 (`libatomic1` on apt and zypper, `libatomic` on dnf/yum and apk, `gcc-libs`
 on pacman). They run the package manager directly as root, or as
 `sudo -n` otherwise. An interactive run asks for your sudo password once,
@@ -217,7 +192,7 @@ configuration, and launcher must belong to that user.
 2. As the service user, run the regular installer:
 
    ```bash
-   curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.sh | bash
    ```
 
 3. Add the actual launcher directory to the service user's shell environment:
@@ -226,7 +201,7 @@ configuration, and launcher must belong to that user.
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
-4. Run `hermes doctor` from that account. Use the installed wrapper, not a
+4. Run `seraph doctor` from that account. Use the installed wrapper, not a
    hardcoded `venv/bin/hermes` path.
 5. For a Linux user service that must survive logout, enable lingering as an administrator:
 
@@ -249,10 +224,10 @@ ask an administrator to run. See
 | Problem | Solution |
 |---------|----------|
 | `hermes: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
-| `API key not set` | Run `hermes model` to configure your provider, or `hermes config set OPENROUTER_API_KEY your_key` |
-| Missing config after update | Run `hermes config check` then `hermes config migrate` |
+| `API key not set` | Run `seraph model` to configure your provider, or `seraph config set OPENROUTER_API_KEY your_key` |
+| Missing config after update | Run `seraph config check` then `seraph config migrate` |
 
-For more diagnostics, run `hermes doctor` — it will tell you exactly what's missing and how to fix it.
+For more diagnostics, run `seraph doctor` — it will tell you exactly what's missing and how to fix it.
 
 ### Symlinked home directories and external storage
 
@@ -269,8 +244,8 @@ link, restore the mount or correct its target, and verify access permissions
 before retrying. For a deliberately new dotfiles target, create it yourself only
 after confirming the intended storage is available.
 
-`hermes doctor` reports these failures as storage problems, not invalid YAML.
-Keep your existing `config.yaml`; running `hermes setup` is not the repair for an
+`seraph doctor` reports these failures as storage problems, not invalid YAML.
+Keep your existing `config.yaml`; running `seraph setup` is not the repair for an
 unavailable directory. This is a directory-availability check, not a mount monitor:
 an existing directory cannot establish that the intended volume is mounted.
 
@@ -279,5 +254,5 @@ an existing directory cannot establish that the intended volume is mounted.
 The update owner depends on the running installation, not only its data home.
 Source checkouts use the managed Git update path. Desktop bundles, Docker,
 Nix, and Termux packages retain their package owner's update mechanism.
-`hermes doctor` reports installation provenance. See
+`seraph doctor` reports installation provenance. See
 [Updating & Uninstalling](./updating.md) before changing package-owned files.

@@ -2,7 +2,7 @@
 sidebar_position: 8
 sidebar_label: "SMS (Twilio)"
 title: "SMS (Twilio)"
-description: "Set up Hermes Agent as an SMS chatbot via Twilio"
+description: "Set up Seraph Agent 3.0 as an SMS chatbot via Twilio"
 ---
 
 # SMS Setup (Twilio)
@@ -41,7 +41,7 @@ The SMS gateway shares credentials with the optional [telephony skill](../../ref
 ### Interactive setup (recommended)
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **SMS (Twilio)** from the platform list. The wizard will prompt for your credentials.
@@ -106,7 +106,7 @@ SMS_WEBHOOK_PORT=3000
 ## Step 4: Start the Gateway
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 You should see:

@@ -14,10 +14,10 @@ Serve an interactive codebase knowledge graph web UI.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/research/gitnexus-explorer` |
+| Source | Optional — install with `seraph skills install official/research/gitnexus-explorer` |
 | Path | `optional-skills/research/gitnexus-explorer` |
 | Version | `1.0.0` |
-| Author | Hermes Agent + Teknium |
+| Author | Seraph Agent 3.0 + Teknium |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `gitnexus`, `code-intelligence`, `knowledge-graph`, `visualization` |

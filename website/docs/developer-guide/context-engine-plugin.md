@@ -324,7 +324,7 @@ for that compression, which then also receives `on_session_end()`.
 
 ## Configuration
 
-Users select your engine via `hermes plugins` → Provider Plugins → Context Engine, or by editing `config.yaml`:
+Users select your engine via `seraph plugins` → Provider Plugins → Context Engine, or by editing `config.yaml`:
 
 ```yaml
 context:

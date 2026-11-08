@@ -19,9 +19,9 @@ A registered backend automatically participates in every core surface:
 | Surface | Driven by |
 |---|---|
 | Command dispatch (`terminal`, `execute_code`, file tools) | `create_environment()` |
-| `hermes setup` backend picker | `display_name`, `description`, `setup_instructions()`, `post_setup()` |
+| `seraph setup` backend picker | `display_name`, `description`, `setup_instructions()`, `post_setup()` |
 | Dashboard terminal-backend picker (probe status) | `probe()` |
-| `hermes status` / `hermes doctor` | `doctor_checks()` |
+| `seraph status` / `seraph doctor` | `doctor_checks()` |
 | System-prompt environment hints | `is_remote`, `env_description` |
 | Dangerous-command approval skipping | `skip_container_guards` |
 | Container path/cwd handling | `is_container` |
@@ -99,8 +99,8 @@ kind: backend
 Enable it, select it, run:
 
 ```bash
-hermes plugins enable acmebox
-hermes config set terminal.backend acmebox
+seraph plugins enable acmebox
+seraph config set terminal.backend acmebox
 ```
 
 ## Rules

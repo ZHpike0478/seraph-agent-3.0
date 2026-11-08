@@ -14,10 +14,10 @@ Author/validate/export Google's DESIGN.md token spec files.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/creative/design-md` |
+| Source | Optional — install with `seraph skills install official/creative/design-md` |
 | Path | `optional-skills/creative/design-md` |
 | Version | `1.1.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `design`, `design-system`, `tokens`, `ui`, `accessibility`, `wcag`, `tailwind`, `dtcg`, `google` |

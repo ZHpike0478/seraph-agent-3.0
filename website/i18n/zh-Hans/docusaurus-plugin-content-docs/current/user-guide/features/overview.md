@@ -6,7 +6,7 @@ sidebar_position: 1
 
 # 功能概览
 
-Hermes Agent 包含一套丰富的能力，远超基础聊天范畴。从持久化记忆、文件感知上下文，到浏览器自动化和语音对话，这些功能协同工作，使 Hermes 成为一个强大的自主助手。
+Seraph Agent 3.0 包含一套丰富的能力，远超基础聊天范畴。从持久化记忆、文件感知上下文，到浏览器自动化和语音对话，这些功能协同工作，使 Hermes 成为一个强大的自主助手。
 
 ## 核心功能
 
@@ -23,14 +23,14 @@ Hermes Agent 包含一套丰富的能力，远超基础聊天范畴。从持久�
 - **[子 Agent 委派](delegation.md)** — `delegate_task` 工具可生成具有独立上下文、受限工具集和独立终端会话的子 Agent 实例。默认并发运行 3 个子 Agent（可配置），支持并行工作流。
 - **[代码执行](code-execution.md)** — `execute_code` 工具允许 Agent 编写以编程方式调用 Hermes 工具的 Python 脚本，通过沙箱 RPC 执行将多步骤工作流压缩为单次 LLM 调用。
 - **[事件 Hook](hooks.md)** — 在关键生命周期节点运行自定义代码。Gateway hook 处理日志、告警和 webhook；plugin hook 处理工具拦截、指标和护栏。
-- **[批处理](batch-processing.md)** — 跨数百或数千个 prompt（提示词）并行运行 Hermes Agent，生成 ShareGPT 格式的结构化轨迹数据，用于训练数据生成或评估。
+- **[批处理](batch-processing.md)** — 跨数百或数千个 prompt（提示词）并行运行 Seraph Agent 3.0，生成 ShareGPT 格式的结构化轨迹数据，用于训练数据生成或评估。
 
 ## 媒体与网络
 
 - **[语音模式](voice-mode.md)** — 跨 CLI 和消息平台的完整语音交互。使用麦克风与 Agent 对话，收听语音回复，并在 Discord 语音频道中进行实时语音对话。
 - **[浏览器自动化](browser.md)** — 支持多种后端的完整浏览器自动化：Browserbase 云端、Browser Use 云端、通过 CDP 连接的本地 Chrome/Brave/Chromium/Edge，或本地 Chromium。可导航网站、填写表单并提取信息。
 - **[视觉与图片粘贴](vision.md)** — 多模态视觉支持。将剪贴板中的图片粘贴到 CLI，并使用任意支持视觉的模型请求 Agent 分析、描述或处理图片。
-- **[图像生成](image-generation.md)** — 使用 FAL.ai 从文本 prompt 生成图像。支持九种模型（FLUX 2 Klein/Pro、GPT-Image 1.5/2、Nano Banana Pro、Ideogram V3、Recraft V4 Pro、Qwen、Z-Image Turbo）；可通过 `hermes tools` 选择。
+- **[图像生成](image-generation.md)** — 使用 FAL.ai 从文本 prompt 生成图像。支持九种模型（FLUX 2 Klein/Pro、GPT-Image 1.5/2、Nano Banana Pro、Ideogram V3、Recraft V4 Pro、Qwen、Z-Image Turbo）；可通过 `seraph tools` 选择。
 - **[语音与 TTS](tts.md)** — 跨所有消息平台的文字转语音输出和语音消息转录，提供十种原生提供商选项：Edge TTS（免费）、ElevenLabs、OpenAI TTS、MiniMax、Mistral Voxtral、Google Gemini、xAI、NeuTTS、KittenTTS 和 Piper——以及支持任意本地 TTS CLI 的自定义命令提供商。
 
 ## 集成
@@ -49,4 +49,4 @@ Hermes Agent 包含一套丰富的能力，远超基础聊天范畴。从持久�
 
 - **[个性与 SOUL.md](personality.md)** — 完全可自定义的 Agent 个性。`SOUL.md` 是主要身份文件——系统提示词中的第一项——你可以在每个会话中切换内置或自定义的 `/personality` 预设。
 - **[皮肤与主题](skins.md)** — 自定义 CLI 的视觉呈现：横幅颜色、加载动画图标和动词、响应框标签、品牌文字，以及工具活动前缀。
-- **[插件](plugins.md)** — 无需修改核心代码即可添加自定义工具、hook 和集成。三种插件类型：通用插件（工具/hook）、记忆提供商（跨会话知识）和上下文引擎（替代上下文管理）。通过统一的 `hermes plugins` 交互式界面管理。
+- **[插件](plugins.md)** — 无需修改核心代码即可添加自定义工具、hook 和集成。三种插件类型：通用插件（工具/hook）、记忆提供商（跨会话知识）和上下文引擎（替代上下文管理）。通过统一的 `seraph plugins` 交互式界面管理。

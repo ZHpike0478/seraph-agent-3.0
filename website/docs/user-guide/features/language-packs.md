@@ -9,7 +9,7 @@ description: "Add or override UI languages for the CLI, gateway, TUI and Desktop
 Hermes ships 17 UI languages (`display.language`). The list is **pluggable**: a language pack is a
 plugin (or a folder in your Hermes home) that adds a new language or overrides the wording of an
 existing one — for the Python side (CLI approval prompts, gateway replies, tool verbs, tips), the
-`hermes --tui` interface and the Desktop app, all from one pack.
+`seraph --tui` interface and the Desktop app, all from one pack.
 
 What a pack translates is the **static UI text**. Agent responses, tool output, logs and slash-command
 *names* stay as they are; to make the agent itself answer in another language, say so in your prompt.
@@ -27,7 +27,7 @@ When Hermes looks up a string it walks these layers, top first, and takes the fi
 
 Every layer may be **partial**: a pack or overlay only needs the keys it changes.
 
-`hermes config set display.language <id>` accepts any id one of these layers supplies. Unknown ids
+`seraph config set display.language <id>` accepts any id one of these layers supplies. Unknown ids
 are refused with the list of available languages:
 
 ```
@@ -39,8 +39,8 @@ $ hermes config set display.language pl
 ## Using a pack
 
 ```bash
-hermes plugins install https://github.com/teknium1/hermes-lang-pl   # or a catalog name
-hermes config set display.language pl
+seraph plugins install https://github.com/teknium1/hermes-lang-pl   # or a catalog name
+seraph config set display.language pl
 ```
 
 Restart running gateways/TUIs so they pick up the pack. The TUI and Desktop language switchers list
@@ -57,7 +57,7 @@ hermes-lang-pl/
   locales/
     pl.yaml            # core: Python-side strings (approval.*, gateway.*, cli.*, display.*, slash.*, tips.*, ...)
     pl.tui.yaml        # optional: hermes --tui strings
-    pl.desktop.yaml    # optional: Hermes Desktop strings
+    pl.desktop.yaml    # optional: Seraph Desktop strings
 ```
 
 `plugin.yaml`:
@@ -98,7 +98,7 @@ When the manifest declares `provides_locales`, the plugin loader registers every
 ### Validate
 
 ```bash
-hermes plugins validate ./hermes-lang-pl
+seraph plugins validate ./hermes-lang-pl
 ```
 
 The validator checks that every declared id has `locales/<id>.yaml`, that each file parses and is
@@ -142,10 +142,10 @@ on the next start or the next `display.language` change.
 ## Troubleshooting
 
 - **`Unknown language ... for display.language`** — the pack is not installed or not enabled
-  (`hermes plugins list`), or the id in `provides_locales` does not match the file name
+  (`seraph plugins list`), or the id in `provides_locales` does not match the file name
   (`pl` needs `locales/pl.yaml`).
 - **A translated string still shows in English** — the key is not in the English catalog (run
-  `hermes plugins validate`; unknown keys are listed), or the placeholder set differs from English.
+  `seraph plugins validate`; unknown keys are listed), or the placeholder set differs from English.
 - **Language listed but the TUI/Desktop is still English** — the pack has no `.tui.yaml` /
   `.desktop.yaml`; those surfaces render English plus whatever the pack provides. For the 16 bundled
   languages the TUI ships its own `locales/<lang>.tui.yaml` in the Hermes tree (the Desktop bundles

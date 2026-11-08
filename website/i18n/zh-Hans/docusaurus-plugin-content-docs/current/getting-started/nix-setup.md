@@ -1,23 +1,23 @@
 ---
 sidebar_position: 3
 title: "Nix & NixOS 安装配置"
-description: "使用 Nix 安装和部署 Hermes Agent——从快速 `nix run` 到完全声明式的 NixOS 模块（含容器模式）"
+description: "使用 Nix 安装和部署 Seraph Agent 3.0——从快速 `nix run` 到完全声明式的 NixOS 模块（含容器模式）"
 ---
 
 # Nix & NixOS 安装配置
 
-Hermes Agent 提供了一个 Nix flake，支持三个层级的集成：
+Seraph Agent 3.0 提供了一个 Nix flake，支持三个层级的集成：
 
 | 层级 | 适用对象 | 提供内容 |
 |-------|-------------|--------------|
-| **`nix run` / `nix profile install`** | 任意 Nix 用户（macOS、Linux） | 包含所有依赖的预构建二进制文件——然后使用标准 CLI 工作流 |
+| **`nix run` / `nix profile install`** | 任意 Nix 用户（macOS、Linux） | 由 flake 构建并包含所有依赖——然后使用标准 CLI 工作流 |
 | **NixOS 模块（原生）** | NixOS 服务器部署 | 声明式配置、加固的 systemd 服务、托管密钥 |
 | **NixOS 模块（容器）** | 需要自我修改能力的 Agent | 以上所有功能，加上一个持久化 Ubuntu 容器，Agent 可在其中执行 `apt`/`pip`/`npm install` |
 
 :::info 与标准安装的区别
 `curl | bash` 安装程序自行管理 Python、Node 及依赖项。Nix flake 替代了所有这些——每个 Python 依赖都是由 [uv2nix](https://github.com/pyproject-nix/uv2nix) 构建的 Nix derivation，运行时工具（Node.js、git、ripgrep、ffmpeg）已封装进二进制文件的 PATH 中。不需要运行时 pip，不需要激活 venv，不需要 `npm install`。
 
-**对于非 NixOS 用户**，这只影响安装步骤。之后的操作（`hermes setup`、`hermes gateway install`、编辑配置）与标准安装完全相同。
+**对于非 NixOS 用户**，这只影响安装步骤。之后的操作（`seraph setup`、`seraph gateway install`、编辑配置）与标准安装完全相同。
 
 **对于 NixOS 模块用户**，整个生命周期有所不同：配置存放在 `configuration.nix` 中，密钥通过 sops-nix/agenix 管理，服务是一个 systemd 单元，CLI 配置命令被屏蔽。管理 hermes 的方式与管理其他 NixOS 服务相同。
 :::
@@ -46,23 +46,23 @@ uv2nix 环境、覆盖包、插件依赖和开发 shell 使用同一个解释器
 
 ```bash
 # 直接运行（首次使用时构建，之后使用缓存）
-nix run github:NousResearch/hermes-agent -- setup
-nix run github:NousResearch/hermes-agent -- chat
+nix run github:ZHpike0478/seraph-agent-3.0 -- setup
+nix run github:ZHpike0478/seraph-agent-3.0 -- chat
 
 # 或持久化安装
-nix profile install github:NousResearch/hermes-agent
-hermes setup
-hermes chat
+nix profile install github:ZHpike0478/seraph-agent-3.0
+seraph setup
+seraph chat
 ```
 
-执行 `nix profile install` 后，`hermes`、`hermes-agent` 和 `hermes-acp` 将出现在你的 PATH 中。之后的工作流与[标准安装](./installation.md)完全相同——`hermes setup` 引导你完成提供商选择，`hermes gateway install` 设置 launchd（macOS）或 systemd 用户服务，配置存放在 `~/.hermes/`。
+安装后，`seraph` 是主要命令；`hermes` 仍作为兼容别名提供。之后的工作流与[标准安装](./installation.md)完全相同——`seraph setup` 引导你完成提供商选择，`seraph gateway install` 设置 launchd（macOS）或 systemd 用户服务，配置存放在 `~/.hermes/`。
 
 <details>
 <summary><strong>从本地克隆构建</strong></summary>
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone https://github.com/ZHpike0478/seraph-agent-3.0.git
+cd seraph-agent-3.0
 nix build
 ./result/bin/hermes setup
 ```
@@ -86,7 +86,7 @@ nix build
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-agent.url = "github:ZHpike0478/seraph-agent-3.0";
   };
 
   outputs = { nixpkgs, hermes-agent, ... }: {
@@ -138,7 +138,7 @@ services.hermes-agent.environmentFiles = [ "/var/lib/hermes/env" ];
 :::info
 当 `container.enable = true` 且 `addToSystemPackages = true` 时，主机上的**所有** `hermes` 命令都会自动路由到托管容器中执行。这意味着你的交互式 CLI 会话在与 gateway 服务相同的环境中运行——可以访问所有容器内安装的包和工具。
 
-- 路由是透明的：`hermes chat`、`hermes sessions list`、`hermes --version` 等命令都会在底层 exec 进容器
+- 路由是透明的：`seraph chat`、`seraph sessions list`、`seraph --version` 等命令都会在底层 exec 进容器
 - 所有 CLI 参数原样转发
 - 如果容器未运行，CLI 会短暂重试（交互式使用时显示 5 秒 spinner，脚本中静默等待 10 秒），然后以明确的错误退出——不会静默回退
 - 对于在 hermes 代码库上工作的开发者，设置 `HERMES_DEV=1` 可绕过容器路由，直接运行本地检出版本
@@ -182,8 +182,8 @@ systemctl status hermes-agent
 journalctl -u hermes-agent -f
 
 # 如果 addToSystemPackages 为 true，测试 CLI
-hermes --version
-hermes config       # 显示生成的配置
+seraph --version
+seraph config       # 显示生成的配置
 ```
 
 ### 选择部署模式
@@ -489,11 +489,11 @@ Token 存储在 `$HERMES_HOME/mcp-tokens/<server-name>.json` 中，在重启和�
 ```bash
 # 容器模式
 docker exec -it hermes-agent \
-  hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+  seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 
 # 原生模式
 sudo -u hermes HERMES_HOME=/var/lib/hermes/.hermes \
-  hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+  seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 ```
 
 容器使用 `--network=host`，因此 `127.0.0.1` 上的 OAuth 回调监听器可从主机浏览器访问。
@@ -501,7 +501,7 @@ sudo -u hermes HERMES_HOME=/var/lib/hermes/.hermes \
 **方案 B：预置 token** — 在工作站上完成流程，然后复制 token：
 
 ```bash
-hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 scp ~/.hermes/mcp-tokens/my-oauth-server{,.client}.json \
     server:/var/lib/hermes/.hermes/mcp-tokens/
 # 确保：chown hermes:hermes，chmod 0600
@@ -537,11 +537,11 @@ scp ~/.hermes/mcp-tokens/my-oauth-server{,.client}.json \
 
 | 被屏蔽的命令 | 原因 |
 |---|---|
-| `hermes setup` | 配置是声明式的——请在 Nix 配置中编辑 `settings` |
-| `hermes config edit` | 配置由 `settings` 生成 |
-| `hermes config set <key> <value>` | 配置由 `settings` 生成 |
-| `hermes gateway install` | systemd 服务由 NixOS 管理 |
-| `hermes gateway uninstall` | systemd 服务由 NixOS 管理 |
+| `seraph setup` | 配置是声明式的——请在 Nix 配置中编辑 `settings` |
+| `seraph config edit` | 配置由 `settings` 生成 |
+| `seraph config set <key> <value>` | 配置由 `settings` 生成 |
+| `seraph gateway install` | systemd 服务由 NixOS 管理 |
+| `seraph gateway uninstall` | systemd 服务由 NixOS 管理 |
 
 这可以防止 Nix 声明的内容与磁盘上实际内容之间产生漂移。检测使用两个信号：
 
@@ -614,7 +614,7 @@ Nix 构建的二进制文件能在 Ubuntu 容器内运行，是因为 `/nix/stor
 
 ## 插件
 
-NixOS 模块支持声明式插件安装——无需命令式的 `hermes plugins install`。
+NixOS 模块支持声明式插件安装——无需命令式的 `seraph plugins install`。
 
 ### 目录插件（`extraPlugins`）
 
@@ -696,7 +696,7 @@ services.hermes-agent = {
 
 ```nix
 {
-  inputs.hermes-agent.url = "github:NousResearch/hermes-agent";
+  inputs.hermes-agent.url = "github:ZHpike0478/seraph-agent-3.0";
   outputs = { hermes-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ hermes-agent.overlays.default ];
     # 然后：
@@ -737,8 +737,8 @@ shell 还提供 Node.js 和运行时工具。pnpm hook 根据输入变更刷新 
 cd hermes-agent
 nix develop
 "$HERMES_PYTHON" -c "import sys; print(sys.executable); print(sys.version)"
-hermes setup
-hermes chat
+seraph setup
+seraph chat
 ```
 
 ### direnv（推荐）
@@ -755,7 +755,7 @@ direnv allow    # 仅需一次
 
 flake 从一个 fixed-output pnpm store 构建所有 JavaScript 界面，其哈希保存在
 `nix/pnpm-deps-hash`。`pnpm-lock.yaml` 中新增、删除或重新解析某个包会改变这个哈希，
-在更新之前所有前端构建都会因哈希不匹配而失败。`hermes pm update --pnpm`、普通的
+在更新之前所有前端构建都会因哈希不匹配而失败。`seraph pm update --pnpm`、普通的
 `pnpm install` 和 `nix develop` 的 shell hook 只重写锁文件，不更新哈希。在仓库目录中运行：
 
 ```bash
@@ -788,9 +788,9 @@ nix build .#checks.x86_64-linux.config-roundtrip    # 合并脚本保留用户�
 
 | 检查 | 测试内容 |
 |---|---|
-| `package-contents` | `hermes` 和 `hermes-agent` 二进制文件存在且 `hermes --version` 可运行 |
+| `package-contents` | `hermes` 和 `hermes-agent` 二进制文件存在且 `seraph --version` 可运行 |
 | `entry-points-sync` | `pyproject.toml` 中 `[project.scripts]` 的每个条目在 Nix 包中都有对应的封装二进制文件 |
-| `cli-commands` | `hermes --help` 暴露 `gateway` 和 `config` 子命令 |
+| `cli-commands` | `seraph --help` 暴露 `gateway` 和 `config` 子命令 |
 | `managed-guard` | `HERMES_MANAGED=true hermes config set ...` 打印 NixOS 错误 |
 | `bundled-skills` | skills 目录存在，包含 SKILL.md 文件，wrapper 中设置了 `HERMES_BUNDLED_SKILLS` |
 | `config-roundtrip` | 7 种合并场景：全新安装、Nix 覆盖、用户键保留、混合合并、MCP 累加合并、嵌套深度合并、幂等性 |
@@ -857,7 +857,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # 合并脚本保留用户�
 
 | 选项 | 类型 | 默认值 | 描述 |
 |---|---|---|---|
-| `extraArgs` | `listOf str` | `[]` | `hermes gateway` 的额外参数 |
+| `extraArgs` | `listOf str` | `[]` | `seraph gateway` 的额外参数 |
 | `extraPackages` | `listOf package` | `[]` | Agent 可用的额外包。添加到 hermes 用户的每用户 profile，终端命令、skills 和 cron 任务均可见 |
 | `extraPlugins` | `listOf package` | `[]` | 以符号链接方式安装到 `$HERMES_HOME/plugins/` 的目录插件包。每个包必须包含 `plugin.yaml` |
 | `extraPythonPackages` | `listOf package` | `[]` | 添加到 PYTHONPATH 用于入口点插件发现的 Python 包。使用所选包的 `python.pkgs` 构建 |
@@ -992,7 +992,7 @@ nix-store --query --roots $(docker exec hermes-agent readlink /data/current-pack
 |---|---|---|
 | `Cannot save configuration: managed by NixOS` | CLI 守卫已激活 | 编辑 `configuration.nix` 并执行 `nixos-rebuild switch` |
 | 容器意外重建 | `extraVolumes`、`extraOptions` 或 `image` 发生变更 | 预期行为——可写层重置。重新安装包或使用自定义镜像 |
-| `hermes --version` 显示旧版本 | 容器未重启 | `systemctl restart hermes-agent` |
+| `seraph --version` 显示旧版本 | 容器未重启 | `systemctl restart hermes-agent` |
 | `/var/lib/hermes` 权限拒绝 | 状态目录为 `0750 hermes:hermes` | 使用 `docker exec` 或 `sudo -u hermes` |
 | `nix-collect-garbage` 删除了 hermes | GC root 缺失 | 重启服务（preStart 会重新创建 GC root） |
 | `no container with name or ID "hermes-agent"`（Podman） | Podman rootful 容器对普通用户不可见 | 为 podman 添加免密 sudo（参见[容器模式](#容器架构)章节） |

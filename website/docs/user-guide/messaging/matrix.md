@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Matrix"
-description: "Set up Hermes Agent as a Matrix bot"
+description: "Set up Seraph Agent 3.0 as a Matrix bot"
 ---
 
 # Matrix Setup
@@ -10,7 +10,7 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-Hermes Agent integrates with Matrix, the open, federated messaging protocol. Matrix lets you run your own homeserver or use a public one like matrix.org — either way, you keep control of your communications. The bot connects via the `mautrix` Python SDK, processes messages through the Hermes Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, audio, video, and optional end-to-end encryption (E2EE).
+Seraph Agent 3.0 integrates with Matrix, the open, federated messaging protocol. Matrix lets you run your own homeserver or use a public one like matrix.org — either way, you keep control of your communications. The bot connects via the `mautrix` Python SDK, processes messages through the Seraph Agent 3.0 pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, audio, video, and optional end-to-end encryption (E2EE).
 
 Hermes works with any Matrix homeserver — Synapse, Conduit, Dendrite, or matrix.org.
 
@@ -234,7 +234,7 @@ MATRIX_PASSWORD=your-password
 
 ## Step 3: Find Your Matrix User ID
 
-Hermes Agent uses your Matrix User ID to control who can interact with the bot. Matrix User IDs follow the format `@username:server`.
+Seraph Agent 3.0 uses your Matrix User ID to control who can interact with the bot. Matrix User IDs follow the format `@username:server`.
 
 To find yours:
 
@@ -246,14 +246,14 @@ To find yours:
 Matrix User IDs always start with `@` and contain a `:` followed by the server name. For example: `@alice:matrix.org`, `@bob:your-server.com`.
 :::
 
-## Step 4: Configure Hermes Agent
+## Step 4: Configure Seraph Agent 3.0
 
 ### Option A: Interactive Setup (Recommended)
 
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **Matrix** when prompted, then provide your homeserver URL, access token (or user ID + password), and allowed user IDs when asked.
@@ -346,13 +346,13 @@ group_sessions_per_user: true
 Once configured, start the Matrix gateway:
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 The bot should connect to your homeserver and start syncing within a few seconds. Send it a message — either a DM or in a room it has joined — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `seraph gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## End-to-End Encryption (E2EE)
@@ -662,7 +662,7 @@ changed identity keys for the same device as suspicious.
        "type": "m.login.password",
        "identifier": {"type": "m.id.user", "user": "@hermes:your-server.org"},
        "password": "***",
-       "initial_device_display_name": "Hermes Agent"
+       "initial_device_display_name": "Seraph Agent 3.0"
      }'
    ```
 
@@ -690,7 +690,7 @@ changed identity keys for the same device as suspicious.
 5. **Restart the gateway**:
 
    ```bash
-   hermes gateway run
+   seraph gateway run
    ```
 
    If `MATRIX_RECOVERY_KEY` is set, you should see `Matrix: cross-signing verified via recovery key` in the logs.
@@ -759,7 +759,7 @@ API_SERVER_HOST=0.0.0.0
 Start the gateway:
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 You should see the API server start alongside any other platforms you have configured. Verify it's reachable from the VM:
@@ -803,7 +803,7 @@ needs Matrix credentials and proxy access, not inference-provider API keys.
 
 1. Start the host gateway first:
    ```bash
-   hermes gateway
+   seraph gateway
    ```
 
 2. Start the Docker container:
@@ -869,7 +869,7 @@ the first sync and check logs for `sync event dispatch error`.
 
 **Cause**: The Hermes gateway isn't running, or it failed to connect.
 
-**Fix**: Check that `hermes gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
+**Fix**: Check that `seraph gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
 
 ### "User not allowed" / Bot ignores you
 
@@ -895,7 +895,7 @@ the first sync and check logs for `sync event dispatch error`.
 Always set `MATRIX_ALLOWED_USERS` and, for shared/private deployments, `MATRIX_ALLOWED_ROOMS`. Without them, anyone who can message the bot in a joined room may trigger the agent. Only authorize people and rooms you trust — authorized users have full access to the agent's capabilities, including tool use and system access.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your Seraph Agent 3.0 deployment, see the [Security Guide](../security.md).
 
 ## Notes
 

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "Nix & NixOS Setup"
-description: "Install and deploy Hermes Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
+description: "Install and deploy Seraph Agent 3.0 with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
 ---
 
 # Nix & NixOS Setup
@@ -12,11 +12,11 @@ Nix and NixOS are [Tier 2 platforms](./platform-support.md#tier-2). The flake an
 For a supported setup, use one of the standard [installation](./installation.md) paths - either Docker or an FHS environment.
 :::
 
-Hermes Agent ships a Nix flake, a NixOS module, and a Home Manager module.
+Seraph Agent 3.0 ships a Nix flake, a NixOS module, and a Home Manager module.
 
 | Level | Who it's for | What you get |
 |-------|-------------|--------------|
-| **`nix run` / `nix profile install`** | Any Nix user (macOS, Linux) | Pre-built binary with all deps — then use the standard CLI workflow |
+| **`nix run` / `nix profile install`** | Any Nix user (macOS, Linux) | Nix package with all dependencies — then use the standard CLI workflow |
 | **Home Manager module** | An agent for one person, on any distribution or on macOS | Declarative configuration and a user service, without root |
 | **NixOS module (native)** | NixOS server deployments | Declarative config, hardened systemd service, managed secrets |
 | **NixOS module (container)** | Agents that need self-modification | Everything above, plus a persistent Ubuntu container where the agent can `apt`/`pip`/`npm install` |
@@ -24,7 +24,7 @@ Hermes Agent ships a Nix flake, a NixOS module, and a Home Manager module.
 :::info What's different from the standard install
 The `curl | bash` installer manages Python, Node, and dependencies itself. The Nix flake replaces all of that — every Python dependency is a Nix derivation built by [uv2nix](https://github.com/pyproject-nix/uv2nix), and runtime tools (Node.js, git, ripgrep, ffmpeg) are wrapped into the binary's PATH. There is no runtime pip, no venv activation, no `npm install`.
 
-**For non-NixOS users**, this only changes the install step. Everything after (`hermes setup`, `hermes gateway install`, config editing) works identically to the standard install.
+**For non-NixOS users**, this only changes the install step. Everything after (`seraph setup`, `seraph gateway install`, config editing) works identically to the standard install.
 
 **For NixOS module users**, the entire lifecycle is different: configuration lives in `configuration.nix`, secrets go through sops-nix/agenix, the service is a systemd unit, and CLI config commands are blocked. You manage hermes the same way you manage any other NixOS service.
 :::
@@ -62,23 +62,27 @@ repair a Nix store path with pip.
 No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
-# Run the desktop app
-nix run github:NousResearch/hermes-agent#desktop
+# Run the Seraph desktop app
+nix run github:ZHpike0478/seraph-agent-3.0#desktop
 
 # Or install persistently
-nix profile install github:NousResearch/hermes-agent#desktop
+nix profile install github:ZHpike0478/seraph-agent-3.0#desktop
 
 # run the tui
-nix run github:NousResearch/hermes-agent -- setup
-nix run github:NousResearch/hermes-agent -- --tui
+nix run github:ZHpike0478/seraph-agent-3.0 -- setup
+nix run github:ZHpike0478/seraph-agent-3.0 -- --tui
 
 # or install it in your profile
-nix profile install github:NousResearch/hermes-agent
-hermes setup
-hermes --tui
+nix profile install github:ZHpike0478/seraph-agent-3.0
+seraph setup
+seraph --tui
 ```
 
-After `nix profile install`, `hermes`, `hermes-agent`, and `hermes-acp` are on your PATH. From here, the workflow is identical to the [standard installation](./installation.md) — `hermes setup` walks you through provider selection, `hermes gateway install` sets up a launchd (macOS) or systemd user service, and config lives in `~/.hermes/`.
+After installation, `seraph` is the primary command; `hermes` remains available
+as a compatibility alias. From here, the workflow is identical to the
+[standard installation](./installation.md) — `seraph setup` walks you through
+provider selection, `seraph gateway install` sets up a launchd (macOS) or
+systemd user service, and config lives in `~/.hermes/`.
 
 :::warning Messaging platforms (Discord, Telegram, Slack)
 The default package includes ALL libraries hermes-agent might need. if you want a smaller variant, check the other flake outputs. 
@@ -91,10 +95,10 @@ The `default` package adds ~700 MB to the closure. If you only need messaging pl
 <summary><strong>Running from a local clone</strong></summary>
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone https://github.com/ZHpike0478/seraph-agent-3.0.git
+cd seraph-agent-3.0
 nix develop
-hermes setup
+seraph setup
 ```
 
 </details>
@@ -116,7 +120,7 @@ This module needs NixOS. Hermes is an agent for one person. If you want an agent
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-agent.url = "github:ZHpike0478/seraph-agent-3.0";
   };
 
   outputs = { nixpkgs, hermes-agent, ... }: {
@@ -168,7 +172,7 @@ Setting `addToSystemPackages = true` does two things: puts the `hermes` CLI on y
 :::info
 When `container.enable = true` and `addToSystemPackages = true`, **every** `hermes` command on the host automatically routes into the managed container. This means your interactive CLI session runs inside the same environment as the gateway service — with access to all container-installed packages and tools.
 
-- The routing is transparent: `hermes chat`, `hermes sessions list`, `hermes --version`, etc. all exec into the container under the hood
+- The routing is transparent: `seraph chat`, `seraph sessions list`, `seraph --version`, etc. all exec into the container under the hood
 - All CLI flags are forwarded as-is
 - If the container isn't running, the CLI retries briefly (5s with a spinner for interactive use, 10s silently for scripts) then fails with a clear error — no silent fallback
 - For developers working on the hermes codebase, set `HERMES_DEV=1` to bypass container routing and run the local checkout directly
@@ -212,8 +216,8 @@ systemctl status hermes-agent
 journalctl -u hermes-agent -f
 
 # If addToSystemPackages is true, test the CLI
-hermes --version
-hermes config       # shows the generated config
+seraph --version
+seraph config       # shows the generated config
 ```
 
 ### Choosing a Deployment Mode
@@ -551,11 +555,11 @@ The first OAuth authorization requires a browser-based consent flow. In a headle
 ```bash
 # Container mode
 docker exec -it hermes-agent \
-  hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+  seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 
 # Native mode
 sudo -u hermes HERMES_HOME=/var/lib/hermes/.hermes \
-  hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+  seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 ```
 
 The container uses `--network=host`, so the OAuth callback listener on `127.0.0.1` is reachable from the host browser.
@@ -563,7 +567,7 @@ The container uses `--network=host`, so the OAuth callback listener on `127.0.0.
 **Option B: Pre-seed tokens** — complete the flow on a workstation, then copy tokens:
 
 ```bash
-hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
+seraph mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 scp ~/.hermes/mcp-tokens/my-oauth-server{,.client}.json \
     server:/var/lib/hermes/.hermes/mcp-tokens/
 # Ensure: chown hermes:hermes, chmod 0600
@@ -599,11 +603,11 @@ When hermes runs via the NixOS module, the following CLI commands are **blocked*
 
 | Blocked command | Why |
 |---|---|
-| `hermes setup` | Config is declarative — edit `settings` in your Nix config |
-| `hermes config edit` | Config is generated from `settings` |
-| `hermes config set <key> <value>` | Config is generated from `settings` |
-| `hermes gateway install` | The systemd service is managed by NixOS |
-| `hermes gateway uninstall` | The systemd service is managed by NixOS |
+| `seraph setup` | Config is declarative — edit `settings` in your Nix config |
+| `seraph config edit` | Config is generated from `settings` |
+| `seraph config set <key> <value>` | Config is generated from `settings` |
+| `seraph gateway install` | The systemd service is managed by NixOS |
+| `seraph gateway uninstall` | The systemd service is managed by NixOS |
 
 This prevents drift between what Nix declares and what's on disk. Detection uses two signals:
 
@@ -637,7 +641,7 @@ The option set is the same set that the NixOS module uses. It is `services.herme
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
+    hermes-agent.url = "github:ZHpike0478/seraph-agent-3.0";
   };
 }
 ```
@@ -677,7 +681,7 @@ macOS has no equivalent option. A `launchd` agent with `RunAtLoad` starts at log
 
 ### Running the Desktop / Dashboard Backend
 
-`gateway.enable` runs the messaging gateway for Telegram, Discord, Slack and the other platforms. A Hermes Desktop **remote** connection and the web dashboard connect to a *different* process, which is `hermes serve` or `hermes dashboard`. (A Desktop running on the same host attaches to the gateway itself via `hermes gateway ensure`.) `backend.mode` runs that process with the gateway:
+`gateway.enable` runs the messaging gateway for Telegram, Discord, Slack and the other platforms. A Seraph Desktop **remote** connection and the web dashboard connect to a *different* process, which is `seraph serve` or `seraph dashboard`. (A Desktop running on the same host attaches to the gateway itself via `seraph gateway ensure`.) `backend.mode` runs that process with the gateway:
 
 ```nix
 {
@@ -690,7 +694,7 @@ macOS has no equivalent option. A `launchd` agent with `RunAtLoad` starts at log
 }
 ```
 
-`serve` runs without a user interface. It gives the `/api/ws` and `/api/pty` sockets that Hermes Desktop connects to, and it does not build the web application. `dashboard` gives all of that, and also serves the browser admin panel. Both processes use one `HERMES_HOME` with the gateway. Thus the sessions, the skills, the memory and the cron jobs are the same for all of them. `backend.mode` works in the same way on the NixOS module, but not in container mode.
+`serve` runs without a user interface. It gives the `/api/ws` and `/api/pty` sockets that Seraph Desktop connects to, and it does not build the web application. `dashboard` gives all of that, and also serves the browser admin panel. Both processes use one `HERMES_HOME` with the gateway. Thus the sessions, the skills, the memory and the cron jobs are the same for all of them. `backend.mode` works in the same way on the NixOS module, but not in container mode.
 
 :::warning Binding to an address other than loopback
 The default address is `127.0.0.1`. Each other address starts the authentication gate of the dashboard. The server also refuses each request with a `Host` header that is different from the address that the server bound to. This is a defence against DNS rebinding. Bind to the name or the address that your client uses.
@@ -698,7 +702,7 @@ The default address is `127.0.0.1`. Each other address starts the authentication
 
 ### Running the Webapp
 
-The package ships the [Webapp](../user-guide/desktop.md#use-the-desktop-workspace-from-a-browser) (Hermes Desktop in a browser) prebuilt, so nothing is built at run time; the store is read-only. The gateway serves it when its settings turn it on (see [Configuration → Webapp](../user-guide/configuration.md#webapp)):
+The package ships the [Webapp](../user-guide/desktop.md#use-the-desktop-workspace-from-a-browser) (Seraph Desktop in a browser) prebuilt, so nothing is built at run time; the store is read-only. The gateway serves it when its settings turn it on (see [Configuration → Webapp](../user-guide/configuration.md#webapp)):
 
 ```nix
 {
@@ -714,7 +718,7 @@ The package ships the [Webapp](../user-guide/desktop.md#use-the-desktop-workspac
 }
 ```
 
-Open it with `hermes webapp`. A non-loopback `host` or a `public_url` needs one of the [dashboard's sign-in providers](../user-guide/features/web-dashboard.md#authentication-gated-mode), as for the dashboard. `nix build .#webapp` builds the bundle on its own. The wrapper points `HERMES_WEBAPP_DIST` at it, so `hermes webapp --force-build` has nothing to rebuild and says so.
+Open it with `seraph webapp`. A non-loopback `host` or a `public_url` needs one of the [dashboard's sign-in providers](../user-guide/features/web-dashboard.md#authentication-gated-mode), as for the dashboard. `nix build .#webapp` builds the bundle on its own. The wrapper points `HERMES_WEBAPP_DIST` at it, so `seraph webapp --force-build` has nothing to rebuild and says so.
 
 ### Verify It Works
 
@@ -727,8 +731,8 @@ journalctl --user -u hermes-agent -f
 launchctl list | grep hermes
 tail -f ~/Library/Logs/hermes-agent.log
 
-hermes --version
-hermes config     # shows the configuration that Nix wrote
+seraph --version
+seraph config     # shows the configuration that Nix wrote
 ```
 
 ---
@@ -795,7 +799,7 @@ The `preStart` script creates a GC root at `${stateDir}/.gc-root` pointing to th
 
 ## Plugins
 
-The NixOS module supports declarative plugin installation — no imperative `hermes plugins install` needed.
+The NixOS module supports declarative plugin installation — no imperative `seraph plugins install` needed.
 
 ### Directory Plugins (`extraPlugins`)
 
@@ -870,7 +874,7 @@ requirements can still fail that resolution. The table lists common groups;
 | `firecrawl` | Firecrawl web search |
 | `fal` | FAL image generation |
 
-Memory providers that live in the [plugin catalog](../user-guide/features/plugins.md) rather than in the Hermes tree (e.g. Hindsight) are not extras. Install them like any catalog plugin with `hermes plugins install hindsight`, or declaratively via [`extraPlugins`](#directory-plugins-extraplugins) pointing at the plugin's source tree.
+Memory providers that live in the [plugin catalog](../user-guide/features/plugins.md) rather than in the Hermes tree (e.g. Hindsight) are not extras. Install them like any catalog plugin with `seraph plugins install hindsight`, or declaratively via [`extraPlugins`](#directory-plugins-extraplugins) pointing at the plugin's source tree.
 
 Or use the pre-built `#messaging` or `#full` flake packages instead of per-extra configuration (see [Quick Start](#quick-start-any-nix-user)).
 
@@ -901,7 +905,7 @@ External flakes can override the package directly:
 
 ```nix
 {
-  inputs.hermes-agent.url = "github:NousResearch/hermes-agent";
+  inputs.hermes-agent.url = "github:ZHpike0478/seraph-agent-3.0";
   outputs = { hermes-agent, nixpkgs, ... }: {
     nixpkgs.overlays = [ hermes-agent.overlays.default ];
     # Then:
@@ -944,8 +948,8 @@ Node.js and runtime tools. Its pnpm hook refreshes JS workspaces when their inpu
 cd hermes-agent
 nix develop
 "$HERMES_PYTHON" -c "import sys; print(sys.executable); print(sys.version)"
-hermes setup
-hermes chat
+seraph setup
+seraph chat
 ```
 
 ### direnv (Recommended)
@@ -963,7 +967,7 @@ direnv allow    # one-time
 The flake builds every JavaScript surface from one fixed-output pnpm store whose
 hash is in `nix/pnpm-deps-hash`. A `pnpm-lock.yaml` change that adds, removes or
 re-resolves a package changes that hash, and every frontend build fails with a
-hash mismatch until it is updated. `hermes pm update --pnpm`, a plain
+hash mismatch until it is updated. `seraph pm update --pnpm`, a plain
 `pnpm install` and the `nix develop` shell hook rewrite the lockfile but not the
 hash. From the checkout, run:
 
@@ -998,9 +1002,9 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Check | What it tests |
 |---|---|
-| `package-contents` | `hermes` and `hermes-agent` binaries exist and `hermes --version` runs |
+| `package-contents` | `hermes` and `hermes-agent` binaries exist and `seraph --version` runs |
 | `entry-points-sync` | Every `[project.scripts]` entry in `pyproject.toml` has a wrapped binary in the Nix package |
-| `cli-commands` | `hermes --help` exposes `gateway` and `config` subcommands |
+| `cli-commands` | `seraph --help` exposes `gateway` and `config` subcommands |
 | `managed-guard` | `HERMES_MANAGED=true hermes config set ...` prints the NixOS error |
 | `bundled-skills` | Skills directory exists, contains SKILL.md files, `HERMES_BUNDLED_SKILLS` is set in wrapper |
 | `config-roundtrip` | 7 merge scenarios: fresh install, Nix override, user key preservation, mixed merge, MCP additive merge, nested deep merge, idempotency |
@@ -1068,7 +1072,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `extraArgs` | `listOf str` | `[]` | Extra args for `hermes gateway` |
+| `extraArgs` | `listOf str` | `[]` | Extra args for `seraph gateway` |
 | `extraPackages` | `listOf package` | `[]` | Extra packages available to the agent. Added to the hermes user's per-user profile so terminal commands, skills, and cron jobs all see them |
 | `extraPlugins` | `listOf package` | `[]` | Directory plugin packages to symlink into `$HERMES_HOME/plugins/`. Each must contain `plugin.yaml` |
 | `extraPythonPackages` | `listOf package` | `[]` | Python packages added to PYTHONPATH for entry-point plugin discovery. Use the selected package’s `python.pkgs` |
@@ -1076,9 +1080,9 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 | `restart` | `str` | `"always"` | The systemd `Restart=` policy. macOS does not use it. |
 | `restartSec` | `int` | `5` | The systemd `RestartSec=` value. macOS does not use it. |
 
-### Backend (`hermes serve` / `hermes dashboard`)
+### Backend (`seraph serve` / `seraph dashboard`)
 
-This option runs the process that a remote Hermes Desktop connection and the web dashboard connect to, with the gateway. You cannot use it with `container.enable`.
+This option runs the process that a remote Seraph Desktop connection and the web dashboard connect to, with the gateway. You cannot use it with `container.enable`.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
@@ -1105,7 +1109,7 @@ daemons. `programs.hermes-agent` installs what you use, and reads
 |---|---|---|---|
 | `enable` | `bool` | `false` | Add the `hermes` CLI to `home.packages`, and export `HERMES_HOME` for your shells |
 | `package` | `package` | `services.hermes-agent.package` | The package to install. The default applies `extraPythonPackages` and `extraDependencyGroups` from the services, so both are one build. |
-| `desktop.enable` | `bool` | `false` | Add the Hermes Desktop application, with a launcher entry on Linux |
+| `desktop.enable` | `bool` | `false` | Add the Seraph Desktop application, with a launcher entry on Linux |
 | `desktop.package` | `package` | `package.hermesDesktop` | The desktop package. The default follows `package`, so the application and the services run one Hermes runtime. |
 
 ```nix
@@ -1282,7 +1286,7 @@ nix-store --query --roots $(docker exec hermes-agent readlink /data/current-pack
 | `Cannot save configuration: managed by NixOS` | CLI guards active | Edit `configuration.nix` and `nixos-rebuild switch` |
 | `No adapter available for discord` (or telegram/slack) | Messaging deps missing from the sealed Nix venv | Install `#messaging` variant: `nix profile install ...#messaging`. For NixOS module: `extraDependencyGroups = [ "messaging" ]`. Read `journalctl -u hermes-agent` for `InstallError` or `requirements not met` and the underlying cause. |
 | Container recreated unexpectedly | `extraVolumes`, `extraOptions`, or `image` changed | Expected — writable layer resets. Reinstall packages or use a custom image |
-| `hermes --version` shows old version | Container not restarted | `systemctl restart hermes-agent` |
+| `seraph --version` shows old version | Container not restarted | `systemctl restart hermes-agent` |
 | Permission denied on `/var/lib/hermes` | State dir is `0750 hermes:hermes` | Use `docker exec` or `sudo -u hermes` |
 | `nix-collect-garbage` removed hermes | GC root missing | Restart the service (preStart recreates the GC root) |
 | `no container with name or ID "hermes-agent"` (Podman) | Podman rootful container not visible to regular user | Add passwordless sudo for podman (see [Container Mode](#container-mode) section) |

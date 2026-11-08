@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "Use MCP with Hermes"
-description: "A practical guide to connecting MCP servers to Hermes Agent, filtering their tools, and using them safely in real workflows"
+description: "A practical guide to connecting MCP servers to Seraph Agent 3.0, filtering their tools, and using them safely in real workflows"
 ---
 
 # Use MCP with Hermes
@@ -10,7 +10,7 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-This guide shows how to actually use MCP with Hermes Agent in day-to-day workflows.
+This guide shows how to actually use MCP with Seraph Agent 3.0 in day-to-day workflows.
 
 If the feature page explains what MCP is, this guide is about how to get value from it quickly and safely.
 
@@ -70,7 +70,7 @@ mcp_servers:
 Then start Hermes:
 
 ```bash
-hermes chat
+seraph chat
 ```
 
 Now ask something concrete:
@@ -87,7 +87,7 @@ You can verify MCP in a few ways:
 - ask Hermes what tools it has available
 - use `/reload-mcp` after config changes
 - check logs if the server failed to connect
-- run `hermes mcp test <server>` from a shell — it connects, lists the
+- run `seraph mcp test <server>` from a shell — it connects, lists the
   discovered tools, and exits `0` on a completed connect, `1` when the
   connection fails, and `3` when the server is not in your config (`2` is
   argparse's usage error), so health probes and cron watchdogs can branch on
@@ -152,13 +152,13 @@ Use `chrome-devtools-mcp`.
 If your Windows Chrome already has live remote debugging enabled from `chrome://inspect/#remote-debugging`, add it like this from WSL:
 
 ```bash
-hermes mcp add chrome-devtools-win --command cmd.exe --args /c npx -y chrome-devtools-mcp@latest --autoConnect --no-usage-statistics
+seraph mcp add chrome-devtools-win --command cmd.exe --args /c npx -y chrome-devtools-mcp@latest --autoConnect --no-usage-statistics
 ```
 
 After saving the server:
 
 ```bash
-hermes mcp test chrome-devtools-win
+seraph mcp test chrome-devtools-win
 ```
 
 Then start a fresh Hermes session or run:
@@ -280,11 +280,11 @@ Use [Open Scaffold](https://github.com/graphanov/open-scaffold) when you want He
 Add the server for one scaffolded repository:
 
 ```bash
-hermes mcp add open_scaffold --command npx --args -y open-scaffold@latest mcp serve --repo /absolute/path/to/repo
-hermes mcp test open_scaffold
+seraph mcp add open_scaffold --command npx --args -y open-scaffold@latest mcp serve --repo /absolute/path/to/repo
+seraph mcp test open_scaffold
 ```
 
-Then keep the exposed surface read-oriented. Choose `select` in the `hermes mcp add` prompt, or edit `config.yaml` afterward:
+Then keep the exposed surface read-oriented. Choose `select` in the `seraph mcp add` prompt, or edit `config.yaml` afterward:
 
 ```yaml
 mcp_servers:

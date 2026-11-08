@@ -30,7 +30,7 @@ The failing live operation never runs `FTS5('rebuild')`. Existing recovery
 ownership remains unchanged: a later `SessionDB` open may rebuild under the
 cross-process admission lock and foreign-holder guard. If that guarded rebuild
 cannot run, FTS remains detached, canonical writes stay available, and
-`hermes doctor` reports the explicit repair command.
+`seraph doctor` reports the explicit repair command.
 
 ## Live behavior when the file itself is corrupt
 
@@ -61,11 +61,11 @@ file: pending transcripts go to `sessions/<id>.jsonl` and the gateway
 `pending_messages/` spool instead of the retry queue, and the FTS one-shot
 rebuild never runs on the damaged file. The quarantine is per process — the
 shared handle stays poisoned for every holder until the process restarts on a
-repaired or restored file. Do not run `hermes doctor --fix` while the gateway
+repaired or restored file. Do not run `seraph doctor --fix` while the gateway
 is still up. Next steps:
 
 ```bash
-hermes gateway stop
+seraph gateway stop
 HERMES_HOME="$HOME/.hermes" hermes sessions recover --source "$HOME/.hermes/state.db" --inspect-only
 # if recoverable:
 HERMES_HOME="$HOME/.hermes" hermes sessions recover --source "$HOME/.hermes/state.db" --output "$HOME/recovered-state.db"
@@ -79,7 +79,7 @@ Stop every process that can open the profile database before repairing it.
 Keep them stopped for the complete repair and verification window.
 
 ```bash
-hermes gateway stop
+seraph gateway stop
 HERMES_HOME="$HOME/.hermes" hermes sessions repair --check-only
 HERMES_HOME="$HOME/.hermes" hermes sessions repair
 ```

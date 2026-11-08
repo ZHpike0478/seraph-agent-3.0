@@ -60,7 +60,7 @@ haskell-language-server 等服务器在启动时就会求值项目的构建文�
 因此，除以下情况外，Hermes 将所有工作区视为不受信任：
 
 - 你让 Hermes 指向的目录所在的 git 工作树：启动 Hermes 的目录（`cd my-app && hermes`）、
-  `hermes -w` 创建的工作树、桌面端或 TUI 会话打开的项目，或网关的 `terminal.cwd`，或
+  `seraph -w` 创建的工作树、桌面端或 TUI 会话打开的项目，或网关的 `terminal.cwd`，或
 - `lsp.trusted_workspaces` 中列出的目录（及其下任意子目录）。
 
 agent 在终端里执行 `cd` 不会改变会话的工作区。定时任务和 Kanban worker 不会自动获得
@@ -77,7 +77,7 @@ clojure-lsp、haskell-language-server、lua-language-server、terraform-ls、
 prisma、astro、vue-language-server（它会加载项目 `tsconfig.json` 中
 `vueCompilerOptions.plugins` 指定的插件），以及你在 `lsp.servers` 下声明的任何服务器。诊断日志会记录
 `skipped: untrusted workspace …; add it to lsp.trusted_workspaces`，
-`hermes lsp status` 会把这些服务器标记为 `[trusted workspaces only]`。
+`seraph lsp status` 会把这些服务器标记为 `[trusted workspaces only]`。
 
 | 服务器 | 不受信任的工作区 |
 |---|---|
@@ -136,21 +136,21 @@ Hermes 会自动检测 PATH 上或 `<HERMES_HOME>/lsp/bin/` 中的二进制文�
 
 部分服务器需要与 npm 不会自动拉取的对等依赖一同安装。当前的典型情况是
 `typescript-language-server`，它要求 `typescript` SDK 可从同一 `node_modules`
-目录树中导入——当你运行 `hermes lsp install typescript` 或首次使用时触发自动安装时，
+目录树中导入——当你运行 `seraph lsp install typescript` 或首次使用时触发自动安装时，
 Hermes 会同时安装这两个包。
 
 ## CLI
 
 ```
-hermes lsp status          # 服务状态 + 各服务器安装状态
-hermes lsp list            # 注册表，可选 --installed-only
-hermes lsp install <id>    # 主动安装单个服务器
-hermes lsp install-all     # 尝试安装所有已知安装方式的服务器
-hermes lsp restart         # 关闭正在运行的客户端
-hermes lsp which <id>      # 打印解析后的二进制路径
+seraph lsp status          # 服务状态 + 各服务器安装状态
+seraph lsp list            # 注册表，可选 --installed-only
+seraph lsp install <id>    # 主动安装单个服务器
+seraph lsp install-all     # 尝试安装所有已知安装方式的服务器
+seraph lsp restart         # 关闭正在运行的客户端
+seraph lsp which <id>      # 打印解析后的二进制路径
 ```
 
-`hermes lsp status` 是最佳起点——它显示哪些语言当前可获得语义诊断，
+`seraph lsp status` 是最佳起点——它显示哪些语言当前可获得语义诊断，
 哪些语言还需要安装二进制文件。
 
 ## 配置
@@ -241,16 +241,16 @@ lsp:
 
 ## 故障排查
 
-**`hermes lsp status` 显示某服务器为"missing"**
+**`seraph lsp status` 显示某服务器为"missing"**
 
 该二进制文件不在 PATH 上，也不在 `<HERMES_HOME>/lsp/bin/` 中。运行
-`hermes lsp install <server_id>` 尝试自动安装，或通过该语言的常规工具链手动安装。
+`seraph lsp install <server_id>` 尝试自动安装，或通过该语言的常规工具链手动安装。
 
-**`hermes lsp status` 中出现 `Backend warnings` 部分**
+**`seraph lsp status` 中出现 `Backend warnings` 部分**
 
 部分服务器以薄包装层的形式调用外部 CLI 进行实际诊断——它们能正常启动并接受请求，
 但在辅助二进制文件缺失时不会报错。最常见的情况是 `bash-language-server`，
-它将诊断委托给 `shellcheck`。当 `hermes lsp status` 显示 `Backend warnings` 部分时，
+它将诊断委托给 `shellcheck`。当 `seraph lsp status` 显示 `Backend warnings` 部分时，
 请通过系统包管理器安装对应工具：
 
 ```
@@ -271,7 +271,7 @@ stderr 输出和协议错误均记录于此。部分服务器（尤其是 rust-a
 **服务器崩溃**
 
 崩溃的服务器会被加入损坏集合，在本次会话剩余时间内不再重试。运行
-`hermes lsp restart` 清除该集合；下次编辑时会重新启动。
+`seraph lsp restart` 清除该集合；下次编辑时会重新启动。
 
 **编辑位于任何 git 仓库之外的文件**
 

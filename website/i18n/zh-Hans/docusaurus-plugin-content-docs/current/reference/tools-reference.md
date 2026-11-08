@@ -81,14 +81,14 @@ description: "Hermes 内置工具权威参考，按工具集分组"
 
 | 工具 | 描述 | 所需环境 |
 |------|------|----------|
-| `computer_use` | 通过 cua-driver 在后台控制 macOS 桌面——截图（SOM / vision / AX）、点击 / 拖拽 / 滚动 / 输入 / 按键 / 等待、`list_apps`、`focus_app`。**不会**抢占用户的光标或键盘焦点。适用于任何支持工具的模型。仅限 macOS。 | `cua-driver` 在 `$PATH` 中（通过 `hermes tools` 安装）。 |
+| `computer_use` | 通过 cua-driver 在后台控制 macOS 桌面——截图（SOM / vision / AX）、点击 / 拖拽 / 滚动 / 输入 / 按键 / 等待、`list_apps`、`focus_app`。**不会**抢占用户的光标或键盘焦点。适用于任何支持工具的模型。仅限 macOS。 | `cua-driver` 在 `$PATH` 中（通过 `seraph tools` 安装）。 |
 
 :::note
-**Honcho 工具**（`honcho_profile`、`honcho_search`、`honcho_context`、`honcho_reasoning`、`honcho_conclude`）不再是内置工具。它们由插件目录中的 Honcho 记忆提供者插件提供（`hermes plugins install honcho`）。安装和使用方法见 [Memory Providers](../user-guide/features/memory-providers.md)。
+**Honcho 工具**（`honcho_profile`、`honcho_search`、`honcho_context`、`honcho_reasoning`、`honcho_conclude`）不再是内置工具。它们由插件目录中的 Honcho 记忆提供者插件提供（`seraph plugins install honcho`）。安装和使用方法见 [Memory Providers](../user-guide/features/memory-providers.md)。
 
-**Home Assistant 工具**（`ha_list_entities`、`ha_get_state`、`ha_list_services`、`ha_call_service`，工具集 `homeassistant`）不再是内置工具。它们由插件目录中的 `homeassistant` 插件提供（`hermes plugins install homeassistant`）。详见 [Home Assistant](../user-guide/messaging/homeassistant.md)。
+**Home Assistant 工具**（`ha_list_entities`、`ha_get_state`、`ha_list_services`、`ha_call_service`，工具集 `homeassistant`）不再是内置工具。它们由插件目录中的 `homeassistant` 插件提供（`seraph plugins install homeassistant`）。详见 [Home Assistant](../user-guide/messaging/homeassistant.md)。
 
-**Spotify 工具**（`spotify_playback`、`spotify_devices`、`spotify_queue`、`spotify_search`、`spotify_playlists`、`spotify_albums`、`spotify_library`，工具集 `spotify`）不再是内置工具。它们由插件目录中的 `spotify` 插件提供（`hermes plugins install spotify`，然后运行 `hermes spotify login`）。详见 [Spotify](../user-guide/features/spotify.md)。
+**Spotify 工具**（`spotify_playback`、`spotify_devices`、`spotify_queue`、`spotify_search`、`spotify_playlists`、`spotify_albums`、`spotify_library`，工具集 `spotify`）不再是内置工具。它们由插件目录中的 `spotify` 插件提供（`seraph plugins install spotify`，然后运行 `seraph spotify login`）。详见 [Spotify](../user-guide/features/spotify.md)。
 :::
 
 ## `image_gen` 工具集
@@ -168,7 +168,7 @@ description: "Hermes 内置工具权威参考，按工具集分组"
 
 ## `video_gen` 工具集
 
-可选工具集（默认 `hermes-cli` 集中不加载）。通过 `--toolsets video_gen` 添加，或在 `hermes tools` → Video Generation 中启用（同时引导你选择后端）。
+可选工具集（默认 `hermes-cli` 集中不加载）。通过 `--toolsets video_gen` 添加，或在 `seraph tools` → Video Generation 中启用（同时引导你选择后端）。
 
 后端以插件形式存放于 `plugins/video_gen/<name>/`：
 
@@ -192,7 +192,7 @@ description: "Hermes 内置工具权威参考，按工具集分组"
 
 | 工具 | 描述 | 所需环境 |
 |------|------|----------|
-| `x_search` | 使用 xAI 内置的 `x_search` Responses 工具搜索 X（Twitter）帖子、主页和话题串。用于获取 X 上的当前讨论、反应或观点，而非通用网页。默认关闭——通过 `hermes tools` → 🐦 X (Twitter) Search 选择启用。仅在配置了 xAI 凭据时注册 schema（check_fn 门控）。 | XAI_API_KEY **或** xAI Grok OAuth（SuperGrok / Premium+）登录 |
+| `x_search` | 使用 xAI 内置的 `x_search` Responses 工具搜索 X（Twitter）帖子、主页和话题串。用于获取 X 上的当前讨论、反应或观点，而非通用网页。默认关闭——通过 `seraph tools` → 🐦 X (Twitter) Search 选择启用。仅在配置了 xAI 凭据时注册 schema（check_fn 门控）。 | XAI_API_KEY **或** xAI Grok OAuth（SuperGrok / Premium+）登录 |
 
 ## `tts` 工具集
 
@@ -216,4 +216,4 @@ description: "Hermes 内置工具权威参考，按工具集分组"
 |------|------|----------|
 | `discord_admin` | 通过 REST API 管理 Discord 服务器：列出 guild/频道/角色，创建/编辑/删除频道，管理角色授予、禁言、踢出和封禁。 | `DISCORD_BOT_TOKEN` + bot 权限 |
 
-**元宝工具**（`yb_*`，工具集 `yuanbao`）已不再内置，改由 `yuanbao` Hermes Labs 插件提供（`hermes plugins install yuanbao`）。参见 [Yuanbao](../user-guide/messaging/yuanbao.md)。
+**元宝工具**（`yb_*`，工具集 `yuanbao`）已不再内置，改由 `yuanbao` Hermes Labs 插件提供（`seraph plugins install yuanbao`）。参见 [Yuanbao](../user-guide/messaging/yuanbao.md)。

@@ -6,7 +6,7 @@ description: "安全模型、危险命令审批、用户授权、容器隔离及
 
 # 安全
 
-Hermes Agent 采用纵深防御安全模型。本页涵盖所有安全边界——从命令审批到容器隔离，再到消息平台上的用户授权。
+Seraph Agent 3.0 采用纵深防御安全模型。本页涵盖所有安全边界——从命令审批到容器隔离，再到消息平台上的用户授权。
 
 ## 概述
 
@@ -48,7 +48,7 @@ approvals:
 
 YOLO 模式会绕过当前会话中**所有**危险命令审批提示。可通过以下三种方式激活：
 
-1. **CLI 标志**：使用 `hermes --yolo` 或 `hermes chat --yolo` 启动会话
+1. **CLI 标志**：使用 `seraph --yolo` 或 `seraph chat --yolo` 启动会话
 2. **斜杠命令**：在会话中输入 `/yolo` 以切换开/关
 3. **环境变量**：设置 `HERMES_YOLO_MODE=1`
 
@@ -190,7 +190,7 @@ command_allowlist:
 这些模式在启动时加载，并在所有后续会话中静默批准。
 
 :::tip
-使用 `hermes config edit` 查看或删除永久允许列表中的模式。
+使用 `seraph config edit` 查看或删除永久允许列表中的模式。
 :::
 
 ## 用户授权（Gateway）
@@ -247,7 +247,7 @@ or configure platform allowlists (e.g., TELEGRAM_ALLOWED_USERS=your_id).
 
 1. 未知用户向机器人发送 DM
 2. 机器人回复一个 8 位配对码
-3. 机器人所有者在 CLI 上运行 `hermes pairing approve <platform> <code>`
+3. 机器人所有者在 CLI 上运行 `seraph pairing approve <platform> <code>`
 4. 该用户在该平台上获得永久批准
 
 在 `~/.hermes/config.yaml` 中控制未授权私信的处理方式：
@@ -280,16 +280,16 @@ whatsapp:
 
 ```bash
 # 列出待处理和已批准的用户
-hermes pairing list
+seraph pairing list
 
 # 批准配对码
-hermes pairing approve telegram ABC12DEF
+seraph pairing approve telegram ABC12DEF
 
 # 撤销用户访问权限
-hermes pairing revoke telegram 123456789
+seraph pairing revoke telegram 123456789
 
 # 清除所有待处理验证码
-hermes pairing clear-pending
+seraph pairing clear-pending
 ```
 
 **存储：** 配对数据存储于 `~/.hermes/pairing/`，按平台分为独立的 JSON 文件：
@@ -581,7 +581,7 @@ security:
 7. **设置 `MESSAGING_CWD`** — 不要让 Agent 在敏感目录中操作
 8. **以非 root 用户运行** — 切勿以 root 身份运行 gateway
 9. **监控日志** — 检查 `~/.hermes/logs/` 中的未授权访问尝试
-10. **保持更新** — 定期运行 `hermes update` 以获取安全补丁
+10. **保持更新** — 定期运行 `seraph update` 以获取安全补丁
 
 ### 保护 API 密钥
 
@@ -618,14 +618,14 @@ Hermes 内置了一个公告扫描器，用于标记活跃 venv 中与已知受�
 
 运行方式：
 
-- **CLI 启动横幅。** 若有任何公告匹配，会打印一行警告，并指向 `hermes doctor` 获取完整修复方案。
-- **`hermes doctor`。** 显示所有活跃公告的版本详情和 2-4 步修复说明。
+- **CLI 启动横幅。** 若有任何公告匹配，会打印一行警告，并指向 `seraph doctor` 获取完整修复方案。
+- **`seraph doctor`。** 显示所有活跃公告的版本详情和 2-4 步修复说明。
 - **Gateway 启动。** 记录到 `gateway.log`；第一条交互消息会附带简短的操作者横幅。
 
 每条公告都有一个稳定 ID。阅读并处理后，可以永久忽略它：
 
 ```bash
-hermes doctor --ack <advisory-id>
+seraph doctor --ack <advisory-id>
 ```
 
 确认信息持久化到 `config.security.acked_advisories`，重启后仍有效。旧公告**不会**从目录中删除——保留它们可以确保新安装的用户收到关于历史受损版本的警告，这些版本可能仍缓存在私有镜像中。
@@ -654,7 +654,7 @@ PM 通过 `pyproject.toml` 中的 extras 管理可选 Python 功能。
 关闭按需安装：
 
 ```bash
-hermes config set security.allow_lazy_installs false
+seraph config set security.allow_lazy_installs false
 ```
 
 已安装的依赖仍可使用。显式安装命令与按需安装不同。
@@ -662,5 +662,5 @@ hermes config set security.allow_lazy_installs false
 该设置不是禁止显式插件准入或手动包管理命令的沙箱。
 官方 Docker 镜像还通过内部策略关闭按需安装，仅更改配置不能覆盖它。
 
-用 `hermes tools` 和 `hermes doctor` 检查缺失需求。
+用 `seraph tools` 和 `seraph doctor` 检查缺失需求。
 不要向签名载荷或系统 Python 执行 pip 安装。详见[包管理](../reference/package-management.md)。

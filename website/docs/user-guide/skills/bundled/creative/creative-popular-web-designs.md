@@ -17,7 +17,7 @@ description: "54 real design systems (Stripe, Linear, Vercel) as HTML/CSS"
 | Source | Bundled (installed by default) |
 | Path | `skills/creative/popular-web-designs` |
 | Version | `1.0.0` |
-| Author | Hermes Agent + Teknium (design systems sourced from VoltAgent/awesome-design-md) |
+| Author | Seraph Agent 3.0 + Teknium (design systems sourced from VoltAgent/awesome-design-md) |
 | License | MIT |
 | Platforms | linux, macos, windows |
 
@@ -40,7 +40,7 @@ system, shadows, responsive behavior, and practical agent prompts with exact CSS
   Pair it with this skill when the user wants a thoughtfully-designed page styled
   after a known brand: `claude-design` drives the workflow, this skill supplies
   the visual vocabulary.
-- **`design-md`** (optional: `hermes skills install official/creative/design-md`) —
+- **`design-md`** (optional: `seraph skills install official/creative/design-md`) —
   use when the deliverable is a formal DESIGN.md token spec file, not a rendered artifact.
 
 ## How to Use

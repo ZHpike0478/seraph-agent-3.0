@@ -1,15 +1,19 @@
 ---
 sidebar_position: 7
-title: "Docker"
-description: "在 Docker 中运行 Hermes Agent 以及将 Docker 用作终端后端"
+title: "上游 Hermes Docker 指南"
+description: "运行上游 Hermes Agent Docker 镜像，以及在 Seraph Agent 3.0 中将 Docker 用作终端后端"
 ---
 
-# Hermes Agent — Docker
+# 上游 Hermes Docker 指南
 
-Docker 与 Hermes Agent 的交集有两种截然不同的方式：
+本页介绍两种不同的 Docker 工作流。容器示例使用上游 Hermes Agent 镜像；Docker 终端后端则是 Seraph Agent 3.0 的功能。
 
-1. **在 Docker 中运行 Hermes** — agent 本身在容器内运行（本页的主要内容）
-2. **Docker 作为终端后端** — agent 在宿主机上运行，但将每条命令在单个持久化 Docker 沙箱容器中执行，该容器在工具调用、`/new` 和子 agent 之间保持存活，直至 Hermes 进程结束（参见 [配置 → Docker 后端](./configuration.md#docker-后端)）
+:::warning 上游镜像，不是 Seraph 发行版
+`nousresearch/hermes-agent` 由 Nous Research 发布。此 fork 不发布 Seraph Docker 镜像。下方容器命令运行上游 Hermes Agent，并使用其 `hermes` 命令，不会安装或运行 Seraph Agent 3.0。
+:::
+
+1. **在 Docker 中运行上游 Hermes Agent** — agent 本身在容器内运行。
+2. **将 Docker 用作 Seraph 终端后端** — Seraph 在宿主机上运行，但将命令交由持久化 Docker 沙箱执行（参见 [配置 → Docker 后端](./configuration.md#docker-后端)）。
 
 本页介绍选项 1。容器将所有用户数据（配置、API 密钥、会话、技能、记忆）存储在从宿主机挂载于 `/opt/data` 的单个目录中。镜像本身是无状态的，可通过拉取新版本进行升级而不会丢失任何配置。
 
@@ -27,7 +31,7 @@ Docker 与 Hermes Agent 的交集有两种截然不同的方式：
 
 ## 快速开始
 
-如果这是你第一次运行 Hermes Agent，请在宿主机上创建一个数据目录，并以交互方式启动容器以运行设置向导：
+首次设置上游 Hermes Agent 时，请在宿主机上创建数据目录并以交互方式启动容器：
 
 ```sh
 mkdir -p ~/.hermes
@@ -36,7 +40,7 @@ docker run -it --rm \
   nousresearch/hermes-agent setup
 ```
 
-这将进入设置向导，向导会提示你输入 API 密钥并将其写入 `~/.hermes/.env`。你只需执行一次。强烈建议此时为 gateway 配置一个聊天系统。
+这将运行上游设置向导，提示你输入 API 密钥并将其写入 `~/.hermes/.env`。你只需执行一次。
 
 ## 以 gateway 模式运行
 
@@ -433,7 +437,7 @@ networks:
 
 ### 广泛有用的工具——提交 issue 或 pull request
 
-如果某个工具可能对大多数 Hermes Agent 用户有用，考虑将其贡献到上游，而不是在私有派生镜像中维护。在 [hermes-agent 仓库](https://github.com/NousResearch/hermes-agent)提交 issue 或 pull request，描述该工具及其使用场景。被纳入官方镜像的工具惠及所有用户，并避免了维护下游 fork 的开销。
+如果某个工具可能对大多数 Hermes Agent 用户有用，考虑将其贡献到上游，而不是在私有派生镜像中维护。在 [hermes-agent 仓库](https://github.com/NousResearch/hermes-agent)提交 issue 或 pull request，描述该工具及其使用场景。被纳入上游镜像的工具惠及所有用户，并避免维护下游 fork 的开销。
 
 ## 连接本地推理服务器（vLLM、Ollama 等）
 

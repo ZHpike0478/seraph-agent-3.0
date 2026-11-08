@@ -18,7 +18,7 @@ Inspired by Prime-Agent's `/heartbeat`. The Hermes adaptation keeps the strict m
 
 They look similar but serve different jobs:
 
-| | `/heartbeat` | [`hermes cron`](./cron) |
+| | `/heartbeat` | [`seraph cron`](./cron) |
 |---|---|---|
 | Runs in | **This conversation** — full context, memory of the discussion | A fresh isolated session per tick |
 | Survives process restart | State survives (SessionDB); gateway watches resume automatically after restart | Yes — fully durable scheduler |

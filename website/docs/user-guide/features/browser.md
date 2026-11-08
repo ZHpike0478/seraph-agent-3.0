@@ -120,7 +120,7 @@ and it works on headless servers with no desktop browser at all.
 
 1. `browser.executable_path`, when set.
 2. The Chromium (Chrome for Testing) installed by Hermes's package manager — the
-   installers and `hermes update` install it by default.
+   installers and `seraph update` install it by default.
 3. `/etc/hermes/chromium-executable-path` in the official Docker image.
 4. A system `chromium` / `chromium-browser` on `PATH` (Android/Termux, and
    platforms the package manager has no Chromium build for).
@@ -130,7 +130,7 @@ silently. If you installed with `--skip-browser` / `-SkipBrowser`, or the
 download failed, install it with:
 
 ```bash
-hermes pm install chromium
+seraph pm install chromium
 ```
 
 This also undoes an earlier `--skip-browser` choice, so updates keep the
@@ -179,10 +179,10 @@ unaffected.
 ## Cloud browsers
 
 :::tip Nous Subscribers
-If you have a paid [Nous Portal](https://portal.nousresearch.com) subscription, you can use a cloud browser through the **[Tool Gateway](tool-gateway.md)** without any separate API keys. New installs can run `hermes setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Nous Subscription** as the browser provider via `hermes model` or `hermes tools`.
+If you have a paid [Nous Portal](https://portal.nousresearch.com) subscription, you can use a cloud browser through the **[Tool Gateway](tool-gateway.md)** without any separate API keys. New installs can run `seraph setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Nous Subscription** as the browser provider via `seraph model` or `seraph tools`.
 :::
 
-Pick a provider in `hermes tools` → Browser Automation. `browser_exec` then
+Pick a provider in `seraph tools` → Browser Automation. `browser_exec` then
 drives that provider's browser exactly as it drives local Chromium.
 
 ### Browser Use cloud
@@ -242,10 +242,10 @@ FIRECRAWL_API_URL=http://localhost:3002
 FIRECRAWL_BROWSER_TTL=600
 ```
 
-Get your API key at [firecrawl.dev](https://firecrawl.dev), then select **Firecrawl** in `hermes tools` → Browser Automation.
+Get your API key at [firecrawl.dev](https://firecrawl.dev), then select **Firecrawl** in `seraph tools` → Browser Automation.
 
 :::note Selecting the provider
-The `.env` keys above supply **credentials only**. The active browser is chosen by the `browser.cloud_provider` selection written by `hermes tools` → Browser Automation (`local`, `browserbase`, `browser-use`, `firecrawl`, or `nous` for the Nous Subscription; provider plugins add their own names). Once a selection exists, adding or removing a key does not switch providers — and a selected provider with a missing key errors with guidance to run `hermes tools` instead of silently rerouting. Never-configured setups still autodetect from available credentials.
+The `.env` keys above supply **credentials only**. The active browser is chosen by the `browser.cloud_provider` selection written by `seraph tools` → Browser Automation (`local`, `browserbase`, `browser-use`, `firecrawl`, or `nous` for the Nous Subscription; provider plugins add their own names). Once a selection exists, adding or removing a key does not switch providers — and a selected provider with a missing key errors with guidance to run `seraph tools` instead of silently rerouting. Never-configured setups still autodetect from available credentials.
 :::
 
 Cloud sessions consume provider credits. Hermes releases them when the
@@ -378,7 +378,7 @@ copy, which could lose recent logins).
 Set `browser.real_profile_autoclose: true` to let Hermes **offer to close the
 browser for you** when it's holding the profile lock (the Windows case). Even with
 this on, Hermes never closes it automatically: the agent asks you first, and only on
-your approval runs `hermes browser close-profile` (terminates the browser process
+your approval runs `seraph browser close-profile` (terminates the browser process
 tree bound to that profile, losing unsaved tabs). A new browser session then picks
 up your profile.
 :::
@@ -416,7 +416,7 @@ Three things to set up before scheduling one:
   list wins over the cron-platform config
   ([details](./cron.md#toolsets-available-to-cron-jobs)).
 - **Assume nothing can be prompted for.** A cron, webhook, API or
-  `hermes chat -q` session has nobody to answer a prompt, so a site that is not
+  `seraph chat -q` session has nobody to answer a prompt, so a site that is not
   usable on the synced cookies alone — a login form, a fresh 2FA challenge —
   needs its credentials saved ahead of time, authenticator key included. That is
   the [credential vault's](./credential-vault.md#headless-sessions) job, and it
@@ -436,7 +436,7 @@ half, not logins.
 
 [Lightpanda](https://lightpanda.io) is an open-source headless browser written from scratch. It starts instantly, runs 9x faster and uses 16x less memory than Chrome, which matters for agents that live on small VMs for long stretches.
 
-Lightpanda is a **local engine** (a browser source, like local Chromium), not a cloud provider. Install the binary and put it on your `PATH` (see the [Lightpanda installation guide](https://lightpanda.io/docs/run-locally/installation/one-liner)), then pick **Lightpanda** in `hermes tools` → Browser Automation, or set:
+Lightpanda is a **local engine** (a browser source, like local Chromium), not a cloud provider. Install the binary and put it on your `PATH` (see the [Lightpanda installation guide](https://lightpanda.io/docs/run-locally/installation/one-liner)), then pick **Lightpanda** in `seraph tools` → Browser Automation, or set:
 
 ```yaml
 # Add to ~/.hermes/config.yaml
@@ -449,14 +449,14 @@ Hermes launches `lightpanda serve --host 127.0.0.1 --port <free>` itself — one
 
 Lightpanda has no graphical renderer, so `capture_screenshot()` is unavailable and the tool description tells the model to work text-first; it also holds one page per session, so the model is told to call `new_tab()` once and `goto_url()` afterwards (tracked upstream in [lightpanda-io/browser#1962](https://github.com/lightpanda-io/browser/issues/1962)).
 
-**When the engine is ignored.** `browser.engine` is the lowest-precedence browser setting: a cloud provider (including the Nous subscription browser — and on never-configured setups, any `BROWSERBASE_API_KEY` / `BROWSER_USE_API_KEY` in `~/.hermes/.env` auto-selects one), a `browser.cdp_url` / `/browser connect` override, or `browser.use_real_profile` all take precedence. Picking Lightpanda in `hermes tools` writes `cloud_provider: local` for you; `/browser status` and `hermes doctor` report when the engine is configured but shadowed, and by what.
+**When the engine is ignored.** `browser.engine` is the lowest-precedence browser setting: a cloud provider (including the Nous subscription browser — and on never-configured setups, any `BROWSERBASE_API_KEY` / `BROWSER_USE_API_KEY` in `~/.hermes/.env` auto-selects one), a `browser.cdp_url` / `/browser connect` override, or `browser.use_real_profile` all take precedence. Picking Lightpanda in `seraph tools` writes `cloud_provider: local` for you; `/browser status` and `seraph doctor` report when the engine is configured but shadowed, and by what.
 
 ## Your own browser via CDP (`/browser connect`)
 
 Instead of the Chromium Hermes launches or a cloud provider, you can attach the browser tools to your own running Chrome, Brave, Chromium, or Edge instance via the Chrome DevTools Protocol (CDP). This is useful when you want to see what the agent is doing in real-time, interact with pages that require your own cookies/sessions, or avoid cloud browser costs.
 
 :::note
-`/browser connect` is an **interactive-CLI slash command** — it is not dispatched by the gateway. If you try to run it inside a WebUI, Telegram, Discord, or other gateway chat, the message will be sent to the agent as plain text and the command will not execute. Start Hermes from the terminal (`hermes` or `hermes chat`) and issue `/browser connect` there.
+`/browser connect` is an **interactive-CLI slash command** — it is not dispatched by the gateway. If you try to run it inside a WebUI, Telegram, Discord, or other gateway chat, the message will be sent to the agent as plain text and the command will not execute. Start Hermes from the terminal (`hermes` or `seraph chat`) and issue `/browser connect` there.
 :::
 
 In the CLI, use:
@@ -503,7 +503,7 @@ google-chrome \
   --no-default-browser-check &
 ```
 
-Then launch the Hermes CLI and run `/browser connect`.
+Then launch the Seraph CLI and run `/browser connect`.
 
 **Why `--user-data-dir`?** Without it, launching a Chromium-family browser while a regular instance is already running typically opens a new window on the existing process — and that existing process was not started with `--remote-debugging-port`, so port 9222 never opens. A dedicated user-data-dir forces a fresh browser process where the debug port actually listens. `--no-first-run --no-default-browser-check` skips the first-launch wizard for the fresh profile.
 
@@ -608,19 +608,19 @@ backends, and headless use.
 ## Turning browsing off
 
 There is no config switch for the browser — disable the `browser` toolset
-instead. Run `hermes tools` and untick **Browser Automation** for the platforms
+instead. Run `seraph tools` and untick **Browser Automation** for the platforms
 that shouldn't browse, or from a script:
 
 ```bash
-hermes tools disable browser                      # CLI
-hermes tools disable browser --platform telegram  # one gateway platform
+seraph tools disable browser                      # CLI
+seraph tools disable browser --platform telegram  # one gateway platform
 ```
 
 `browser_exec` also disappears from any session without the `terminal` toolset.
 
 ## Camofox
 
-Camofox moved to a plugin: `hermes plugins install camofox`. Existing Camofox
+Camofox moved to a plugin: `seraph plugins install camofox`. Existing Camofox
 setups (`CAMOFOX_URL` set, or `browser.cloud_provider: camofox`) are migrated automatically on
 update: the plugin is installed and the core `browser` toolset is turned off in that profile. A
 profile that had disabled `browser` everywhere (`agent.disabled_toolsets`) gets `camofox` disabled

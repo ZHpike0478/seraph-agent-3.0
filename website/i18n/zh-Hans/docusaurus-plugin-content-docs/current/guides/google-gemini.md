@@ -1,12 +1,12 @@
 ---
 sidebar_position: 16
 title: "Google Gemini"
-description: "将 Hermes Agent 与 Google Gemini 配合使用——原生 AI Studio API、API 密钥配置、工具调用、流式传输及配额说明"
+description: "将 Seraph Agent 3.0 与 Google Gemini 配合使用——原生 AI Studio API、API 密钥配置、工具调用、流式传输及配额说明"
 ---
 
 # Google Gemini
 
-Hermes Agent 通过 **Google AI Studio / Gemini API** 原生支持 Google Gemini——而非 OpenAI 兼容端点。这使 Hermes 能够将其内部 OpenAI 格式的消息和工具循环转换为 Gemini 原生的 `generateContent` API，同时保留工具调用、流式传输、多模态输入以及 Gemini 特有的响应元数据。
+Seraph Agent 3.0 通过 **Google AI Studio / Gemini API** 原生支持 Google Gemini——而非 OpenAI 兼容端点。这使 Hermes 能够将其内部 OpenAI 格式的消息和工具循环转换为 Gemini 原生的 `generateContent` API，同时保留工具调用、流式传输、多模态输入以及 Gemini 特有的响应元数据。
 
 ## 前提条件
 
@@ -25,13 +25,13 @@ Hermes Agent 通过 **Google AI Studio / Gemini API** 原生支持 Google Gemini
 echo "GOOGLE_API_KEY=..." >> ~/.hermes/.env
 
 # 选择 Gemini 作为 provider
-hermes model
+seraph model
 # → 选择 "More providers..." → "Google AI Studio"
 # → Hermes 检查密钥层级并显示 Gemini 模型列表
 # → 选择一个模型
 
 # 开始对话
-hermes chat
+seraph chat
 ```
 
 如果你偏好直接编辑配置文件，请使用原生 Gemini API 基础 URL：
@@ -45,7 +45,7 @@ model:
 
 ## 配置
 
-运行 `hermes model` 后，`~/.hermes/config.yaml` 将包含：
+运行 `seraph model` 后，`~/.hermes/config.yaml` 将包含：
 
 ```yaml
 model:
@@ -90,7 +90,7 @@ Google 还提供了 OpenAI 兼容端点：
 https://generativelanguage.googleapis.com/v1beta/openai/
 ```
 
-对于 Hermes Agent 会话，请优先使用上述原生 Gemini 端点。Hermes 内置原生 Gemini 适配器，可将多轮工具调用、工具调用结果、流式传输、多模态输入以及 Gemini 响应元数据直接映射到 Gemini 的 `generateContent` API。OpenAI 兼容端点在你明确需要 OpenAI API 兼容性时仍然有用。
+对于 Seraph Agent 3.0 会话，请优先使用上述原生 Gemini 端点。Hermes 内置原生 Gemini 适配器，可将多轮工具调用、工具调用结果、流式传输、多模态输入以及 Gemini 响应元数据直接映射到 Gemini 的 `generateContent` API。OpenAI 兼容端点在你明确需要 OpenAI API 兼容性时仍然有用。
 
 如果你之前将 `GEMINI_BASE_URL` 设置为 `/openai` URL，请将其删除或修改：
 
@@ -100,7 +100,7 @@ GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 
 ## 可用模型
 
-`hermes model` 选择器显示 Hermes provider 注册表中维护的 Gemini 模型。常见选项包括：
+`seraph model` 选择器显示 Hermes provider 注册表中维护的 Gemini 模型。常见选项包括：
 
 | 模型 | ID | 说明 |
 |------|----|------|
@@ -109,7 +109,7 @@ GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 | Gemini 3 Flash Preview | `gemini-3-flash-preview` | 推荐的默认选项，速度与能力均衡 |
 | Gemini 3.1 Flash Lite Preview | `gemini-3.1-flash-lite-preview` | 可用时速度最快、成本最低的选项 |
 
-模型可用性会随时间变化。如果某个模型消失或未对你的密钥启用，请重新运行 `hermes model` 并从当前列表中选择。
+模型可用性会随时间变化。如果某个模型消失或未对你的密钥启用，请重新运行 `seraph model` 并从当前列表中选择。
 
 :::info 模型 ID
 当 `provider: gemini` 时，请使用 Gemini 原生模型 ID，如 `gemini-3-flash-preview`，而非 OpenRouter 风格的 ID（如 `google/gemini-3-flash-preview`）。
@@ -144,7 +144,7 @@ Google 也通过 Gemini API 提供 Gemma 模型。Hermes 将这些模型识别�
 | Gemma 4 31B IT | `gemma-4-31b-it` | 较大的 Gemma 模型；适用于兼容性和质量评估 |
 | Gemma 4 26B A4B IT | `gemma-4-26b-a4b-it` | 可用时的较小活跃参数变体 |
 
-这些模型最适合作为 Gemini API 密钥的评估选项。Google 的 Gemma API 定价仅限免费层级，与生产级 Gemini 模型相比使用上限较低，因此持续的 Hermes Agent 使用通常应切换到付费 Gemini 模型、自托管部署或具有适当配额的其他 provider。
+这些模型最适合作为 Gemini API 密钥的评估选项。Google 的 Gemma API 定价仅限免费层级，与生产级 Gemini 模型相比使用上限较低，因此持续的 Seraph Agent 3.0 使用通常应切换到付费 Gemini 模型、自托管部署或具有适当配额的其他 provider。
 
 如需使用选择器中隐藏的 Gemma 模型，请直接在配置中指定：
 
@@ -168,12 +168,12 @@ model:
 /model gemini-3.1-flash-lite-preview
 ```
 
-如果尚未配置 Gemini，请退出会话并先运行 `hermes model`。`/model` 用于在已配置的 provider 和模型之间切换，不会收集新的 API 密钥。
+如果尚未配置 Gemini，请退出会话并先运行 `seraph model`。`/model` 用于在已配置的 provider 和模型之间切换，不会收集新的 API 密钥。
 
 ## 诊断
 
 ```bash
-hermes doctor
+seraph doctor
 ```
 
 doctor 命令检查：
@@ -186,8 +186,8 @@ doctor 命令检查：
 Gemini 可与所有 Hermes gateway 平台配合使用（Telegram、Discord、Slack、WhatsApp、LINE、飞书等）。将 Gemini 配置为你的 provider，然后正常启动 gateway：
 
 ```bash
-hermes gateway setup
-hermes gateway start
+seraph gateway setup
+seraph gateway start
 ```
 
 gateway 读取 `config.yaml` 并使用相同的 Gemini provider 配置。
@@ -204,7 +204,7 @@ GOOGLE_API_KEY=...
 GEMINI_API_KEY=...
 ```
 
-然后重新运行 `hermes model`。
+然后重新运行 `seraph model`。
 
 ### "This Google API key is on the free tier"
 
@@ -213,14 +213,14 @@ Hermes 在设置期间会探测 Gemini API 密钥。由于工具调用、重试�
 请为与密钥关联的 Google Cloud 项目启用计费，必要时重新生成密钥，然后运行：
 
 ```bash
-hermes model
+seraph model
 ```
 
 ### "404 model not found"
 
-所选模型对你的账号、地区或密钥不可用。重新运行 `hermes model` 并从当前列表中选择其他 Gemini 模型。
+所选模型对你的账号、地区或密钥不可用。重新运行 `seraph model` 并从当前列表中选择其他 Gemini 模型。
 
-### Gemma 模型未显示在 `hermes model` 中
+### Gemma 模型未显示在 `seraph model` 中
 
 Hermes 默认可能会在选择器中隐藏低吞吐量的 Gemma 模型。如果你有意评估某个模型，请直接在 `~/.hermes/config.yaml` 中设置模型 ID。
 
@@ -244,7 +244,7 @@ GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 
 ### 工具调用因 schema 错误而失败
 
-升级 Hermes 并重新运行 `hermes model`。原生 Gemini 适配器会针对 Gemini 更严格的函数声明格式对工具 schema 进行清理；旧版本或自定义端点可能不支持此功能。
+升级 Hermes 并重新运行 `seraph model`。原生 Gemini 适配器会针对 Gemini 更严格的函数声明格式对工具 schema 进行清理；旧版本或自定义端点可能不支持此功能。
 
 ## 相关链接
 

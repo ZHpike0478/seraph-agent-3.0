@@ -1,25 +1,25 @@
-# Hermes Desktop ☤
+# Seraph Agent 3.0 Desktop ☤
 
 <p align="center">
-  <a href="https://github.com/NousResearch/hermes-agent/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://github.com/ZHpike0478/seraph-agent-3.0/releases"><img src="https://img.shields.io/badge/Download-not%20published%20yet-FFD700?style=for-the-badge" alt="Desktop releases not published yet"></a>
+  <a href="../../website/docs/"><img src="https://img.shields.io/badge/Docs-source-FFD700?style=for-the-badge" alt="Documentation source"></a>
   <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="../../LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
-**The native desktop app for [Hermes Agent](../../README.md) — the self-improving AI agent from [Nous Research](https://nousresearch.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
+**The native desktop app for [Seraph Agent 3.0](../../README.md), a community fork of [Nous Research's Hermes Agent](https://github.com/NousResearch/hermes-agent).** The desktop application is included in source, but this fork does not yet publish desktop installers. Existing Hermes Desktop identities remain unchanged for compatibility.
 
-> **Intel Macs:** the `Hermes-Setup.dmg` bootstrap installer is built for
+> **Intel Macs:** the upstream `Hermes-Setup.dmg` bootstrap installer is built for
 > Apple Silicon (arm64) only, so on an Intel Mac it reports "not supported on
 > this Mac". No release builds a native `darwin-x64` bundle; install the
 > [CLI](../../README.md) and run `hermes desktop`. See
 > [Platform Support](../../website/docs/getting-started/platform-support.md#build-targets-and-support-priority).
 
 <table>
-<tr><td><b>Chat with the full agent</b></td><td>Streaming responses, live tool activity, structured tool summaries, and the same conversation history as every other Hermes surface.</td></tr>
+<tr><td><b>Chat with the full agent</b></td><td>Streaming responses, live tool activity, structured tool summaries, and the same conversation history as every other Seraph surface.</td></tr>
 <tr><td><b>Side-by-side previews</b></td><td>Render web pages, files, and tool outputs in a right-hand pane while you keep chatting.</td></tr>
 <tr><td><b>File browser</b></td><td>Explore and preview the working directory without leaving the app.</td></tr>
-<tr><td><b>Voice</b></td><td>Talk to Hermes and hear it back.</td></tr>
+<tr><td><b>Voice</b></td><td>Talk to Seraph and hear it back.</td></tr>
 <tr><td><b>Settings & onboarding</b></td><td>Manage providers, models, tools, and credentials from a real UI. First-run setup gets you to your first message in seconds.</td></tr>
 <tr><td><b>Stays current</b></td><td>Built-in updates pull the latest agent and rebuild the app in place.</td></tr>
 </table>
@@ -28,19 +28,19 @@
 
 ## Install
 
-### Install with Hermes (recommended)
+### Install with Seraph (recommended)
 
-Already have the Hermes CLI? Just run:
+Already have the Seraph CLI? Run:
 
 ```bash
-hermes desktop
+seraph desktop
 ```
 
 It builds and launches the GUI against your existing install — same config, keys, sessions, and skills. If Desktop cannot find a usable runtime or saved remote connection, first launch lets you connect to an existing Hermes gateway or install Hermes locally. Local onboarding then walks you through choosing a provider and model.
 
 ### Prebuilt installers
 
-Prebuilt installers are built and distributed via [the Hermes Desktop website.](https://hermes-agent.nousresearch.com/).
+This fork does not currently publish prebuilt desktop installers. Follow the [source installation guide](../../website/docs/getting-started/installation.md) to install Seraph Agent 3.0, then run `seraph desktop`.
 
 ---
 
@@ -50,7 +50,7 @@ Update through the owner of the installed artifact: Windows App Installer for
 sideload MSIX, Microsoft Store for Store packages, and `electron-updater` for
 macOS bundles. Source-built apps use the checkout update handoff.
 
-`hermes update` updates managed source checkouts; it does not rewrite a bundled
+`seraph update` updates managed source checkouts; it does not rewrite a bundled
 payload. See [BUILDING.md](BUILDING.md) for package and release contracts.
 
 ---
@@ -129,7 +129,8 @@ The app has three boundaries:
   filesystem/git/window capabilities, and exposes a narrow preload bridge.
 - **React** owns the Desktop routes, panes, interaction state, and
   `@assistant-ui/react` transcript.
-- **Hermes Agent** runs as a headless `hermes serve` process and exposes the
+- **Seraph Agent 3.0 runtime** runs as a headless `seraph serve` process (with
+  `hermes serve` retained as a compatibility alias) and exposes the
   `tui_gateway` JSON-RPC/WebSocket API. The renderer connects through
   [`apps/shared`](../shared/), which is also used by the browser dashboard.
 
@@ -259,9 +260,9 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\hermes\hermes-agent\venv"
 
 ## Community
 
-- 💬 [Discord](https://discord.gg/NousResearch)
-- 📖 [Documentation](https://hermes-agent.nousresearch.com/docs/)
-- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
+- 💬 [Upstream Discord community](https://discord.gg/NousResearch)
+- 📖 [Seraph documentation source](../../website/docs/)
+- 🐛 [Seraph issues](https://github.com/ZHpike0478/seraph-agent-3.0/issues)
 
 ---
 

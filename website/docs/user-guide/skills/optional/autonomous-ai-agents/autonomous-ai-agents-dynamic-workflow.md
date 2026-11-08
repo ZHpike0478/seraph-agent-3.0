@@ -14,10 +14,10 @@ Plan-in-code fan-outs, adversarial verification, waves.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/autonomous-ai-agents/dynamic-workflow` |
+| Source | Optional — install with `seraph skills install official/autonomous-ai-agents/dynamic-workflow` |
 | Path | `optional-skills/autonomous-ai-agents/dynamic-workflow` |
 | Version | `2.0.0` |
-| Author | Teknium + Hermes Agent |
+| Author | Teknium + Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `orchestration`, `fan-out`, `subagents`, `delegation`, `verification`, `migration`, `audit`, `research`, `campaign` |

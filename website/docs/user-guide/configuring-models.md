@@ -12,13 +12,13 @@ Hermes uses two kinds of model slots:
 This page covers configuring both from the dashboard. If you prefer config files or the CLI, jump to [Alternative methods](#alternative-methods) at the bottom. To run models on your own machine instead of a cloud provider, see [Local Models](./local-models.md).
 
 :::tip Fastest path: Nous Portal
-[Nous Portal](./features/tool-gateway.md) provides 300+ models under one subscription. On a fresh install, run `hermes setup --portal` to log in and set Nous as your provider in one command. Inspect what's wired up with `hermes portal info`.
+[Nous Portal](./features/tool-gateway.md) provides 300+ models under one subscription. On a fresh install, run `seraph setup --portal` to log in and set Nous as your provider in one command. Inspect what's wired up with `seraph portal info`.
 
 - Portal subscribers also get **10% off token-billed providers**.
 :::
 
 :::note `model:` schema — empty string vs. mapping
-On a brand-new install the bundled default config has `model: ""` (an empty string sentinel meaning "not configured yet"). The first time you run `hermes setup` or `hermes model`, that key is upgraded in-place to a mapping with `provider`, `default`, `base_url`, and `api_mode` sub-keys — the shape shown throughout this page and in [`profiles.md`](./profiles.md) / [`configuration.md`](./configuration.md). If you ever see an empty string in `config.yaml`, run `hermes model` (or click **Change** in the dashboard) and Hermes will write the dict form for you.
+On a brand-new install the bundled default config has `model: ""` (an empty string sentinel meaning "not configured yet"). The first time you run `seraph setup` or `seraph model`, that key is upgraded in-place to a mapping with `provider`, `default`, `base_url`, and `api_mode` sub-keys — the shape shown throughout this page and in [`profiles.md`](./profiles.md) / [`configuration.md`](./configuration.md). If you ever see an empty string in `config.yaml`, run `seraph model` (or click **Change** in the dashboard) and Hermes will write the dict form for you.
 :::
 
 ## The Models page
@@ -81,10 +81,10 @@ Models with a `-contributor` suffix (e.g. `muse-spark-1.2-contributor`, `muse-sp
 If training on the unattended workload's data is acceptable, record a persistent acknowledgement:
 
 ```bash
-hermes config set security.allow_data_training_tiers_noninteractive true
+seraph config set security.allow_data_training_tiers_noninteractive true
 ```
 
-Hermes still prints the full data-policy warning and the acknowledgement key on every unattended startup, so worker logs retain an audit trail. This setting does not approve expensive-model or provider-routing warnings, and it does not replace the interactive confirmation prompt. Revoke it with `hermes config unset security.allow_data_training_tiers_noninteractive`.
+Hermes still prints the full data-policy warning and the acknowledgement key on every unattended startup, so worker logs retain an audit trail. This setting does not approve expensive-model or provider-routing warnings, and it does not replace the interactive confirmation prompt. Revoke it with `seraph config unset security.allow_data_training_tiers_noninteractive`.
 
 ## Setting auxiliary models
 
@@ -105,9 +105,9 @@ Every auxiliary task defaults to `auto` — meaning Hermes tries your main model
 | **Review** | The `/review` reviewer subagent. `auto` uses the main model; pin a different (often stronger) model for reviews. See [Review model](./features/delegation.md#review-model). |
 | **MCP** | MCP tool routing. Usually fine at `auto`. |
 | **Voice Chat** | Spoken voice-chat replies. Point it at a faster model than your main one; reasoning is off on voice turns by default, and GPT-Live voice chat ignores this slot. See [Voice chat model](./features/voice-mode.md#voice-chat-model). |
-| **Triage Specifier** | Routes the Kanban triage specifier (`hermes kanban specify`) that expands a rough one-liner into a concrete spec. A cheap, capable model works well. |
+| **Triage Specifier** | Routes the Kanban triage specifier (`seraph kanban specify`) that expands a rough one-liner into a concrete spec. A cheap, capable model works well. |
 | **Kanban Decomposer** | Routes Kanban task decomposition — splits a triage task into a graph of child tasks for specialist profiles. |
-| **Profile Describer** | Routes profile-description generation (`hermes profile describe --auto` / the dashboard auto-generate button). Short, cheap call. |
+| **Profile Describer** | Routes profile-description generation (`seraph profile describe --auto` / the dashboard auto-generate button). Short, cheap call. |
 | **Curator** | Routes the curator skill-usage review pass. Can run for minutes on reasoning models, so a cheaper aux model is often worthwhile. |
 
 For more auxiliary-model options in `config.yaml`, including tasks the dashboard doesn't list, see [Auxiliary Models](./configuration.md#auxiliary-models).
@@ -226,7 +226,7 @@ providers:
       - my-finetune-v1
 ```
 
-With discovery off, the model picker (`hermes model`, `/model`) shows the configured list instead of a live probe.
+With discovery off, the model picker (`seraph model`, `/model`) shows the configured list instead of a live probe.
 
 **`openai_native_compaction`** — set this capability to `true` only for an OpenAI-compatible endpoint that you trust with conversation content. Native compaction sends its payload to that provider's configured `base_url`:
 
@@ -284,7 +284,7 @@ provider. A fallback or any other provider does not inherit it, and OpenRouter
 routes are never trusted, even with the flag set.
 
 :::note Legacy format
-Older configs used a top-level `custom_providers:` list (with `base_url` instead of `api`). It still works and is auto-migrated to the `providers:` dict on `hermes update` (config v12).
+Older configs used a top-level `custom_providers:` list (with `base_url` instead of `api`). It still works and is auto-migrated to the `providers:` dict on `seraph update` (config v12).
 :::
 
 ### Nous Portal: which wire carries Claude
@@ -302,8 +302,8 @@ nous:
 
 ## When does it take effect?
 
-- **CLI** (`hermes chat`): next `hermes chat` invocation.
-- **Gateway** (Telegram, Discord, Slack, etc.): next *new* session. Existing sessions keep their model. Restart the gateway (`hermes gateway restart`) if you want to force all sessions to pick up the change.
+- **CLI** (`seraph chat`): next `seraph chat` invocation.
+- **Gateway** (Telegram, Discord, Slack, etc.): next *new* session. Existing sessions keep their model. Restart the gateway (`seraph gateway restart`) if you want to force all sessions to pick up the change.
 - **Dashboard chat tab** (`/chat`): next new PTY. The currently-open chat keeps its model — use `/model` inside it to hot-swap.
 
 Changes never invalidate prompt caches on running sessions. That's deliberate: swapping the main model inside a session requires a cache reset (the system prompt contains model-specific content), and we reserve that for the explicit `/model` slash command inside chat.
@@ -312,7 +312,7 @@ Changes never invalidate prompt caches on running sessions. That's deliberate: s
 
 ### "No authenticated providers" in the picker
 
-Hermes lists a provider only if it has a working credential. Check **Keys** in the sidebar — you should see one of: an API key, a successful OAuth, or a custom endpoint URL. If the provider you want isn't there, run `hermes setup` to wire it up, or go to **Keys** and add the env var.
+Hermes lists a provider only if it has a working credential. Check **Keys** in the sidebar — you should see one of: an API key, a successful OAuth, or a custom endpoint URL. If the provider you want isn't there, run `seraph setup` to wire it up, or go to **Keys** and add the env var.
 
 ### Main model didn't change in my running chat
 
@@ -334,7 +334,7 @@ On OpenRouter (or any aggregator), bare model names resolve *within* the aggrega
 
 ### CLI slash command
 
-Inside any `hermes chat` session:
+Inside any `seraph chat` session:
 
 ```
 /model gpt-5.4 --provider openrouter             # session-only
@@ -352,7 +352,7 @@ A one-turn switch breaks the provider's prompt-cache prefix twice (switching out
 
 ### Custom aliases
 
-Define your own short names for models you reach for often, then use `/model <alias>` in a running session or `hermes chat --model <alias>` at startup. There are two equivalent formats — pick whichever fits your workflow.
+Define your own short names for models you reach for often, then use `/model <alias>` in a running session or `seraph chat --model <alias>` at startup. There are two equivalent formats — pick whichever fits your workflow.
 
 **Canonical (top-level `model_aliases:`)** — full control over provider + base_url:
 
@@ -387,14 +387,14 @@ When an alias sets neither, the key is resolved from the alias **host** —
 happened to be active before the switch, so switching to an alias cannot send
 one provider's secret to another provider's host.
 
-**Short string form (`model.aliases.<name>: provider/model`)** — convenient from the shell because `hermes config set` writes scalars and now also parses inline list/mapping literals, though this short alias form still can't carry a custom `base_url`:
+**Short string form (`model.aliases.<name>: provider/model`)** — convenient from the shell because `seraph config set` writes scalars and now also parses inline list/mapping literals, though this short alias form still can't carry a custom `base_url`:
 
 ```bash
-hermes config set model.aliases.fav anthropic/claude-opus-4.6
-hermes config set model.aliases.grok x-ai/grok-4
+seraph config set model.aliases.fav anthropic/claude-opus-4.6
+seraph config set model.aliases.grok x-ai/grok-4
 ```
 
-> `hermes config set` also accepts inline **list/mapping literals** (JSON/YAML flow style). Quote them so your shell passes them through intact:
+> `seraph config set` also accepts inline **list/mapping literals** (JSON/YAML flow style). Quote them so your shell passes them through intact:
 >
 > ```bash
 > hermes config set platform_toolsets.line '["clarify", "file", "web"]'
@@ -405,17 +405,17 @@ Both paths feed the same loader (`hermes_cli/model_switch.py`). Entries declared
 
 Then `/model fav` or `/model grok` in chat. User aliases shadow built-in short names (`sonnet`, `kimi`, `opus`, etc.). See [Custom model aliases](../reference/slash-commands.md#custom-model-aliases) for the full reference.
 
-### `hermes model` subcommand
+### `seraph model` subcommand
 
 ```bash
-hermes model            # Interactive provider + model picker (the canonical way to switch defaults)
+seraph model            # Interactive provider + model picker (the canonical way to switch defaults)
 ```
 
-`hermes model` walks you through picking a provider, authenticating (OAuth flows open a browser; API-key providers prompt for the key), and then choosing a specific model from that provider's curated catalog. The choice is written to `model.provider` and `model.default` in `~/.hermes/config.yaml`. After a new model is saved, a reasoning-effort step follows (`minimal` … `ultra`, **Disable reasoning**, or **Skip** to keep the current value) and writes `agent.reasoning_effort`; the step is skipped for models the catalog marks as having no reasoning control. The provider list also has a **Reasoning effort for the current model...** row to change only the effort.
+`seraph model` walks you through picking a provider, authenticating (OAuth flows open a browser; API-key providers prompt for the key), and then choosing a specific model from that provider's curated catalog. The choice is written to `model.provider` and `model.default` in `~/.hermes/config.yaml`. After a new model is saved, a reasoning-effort step follows (`minimal` … `ultra`, **Disable reasoning**, or **Skip** to keep the current value) and writes `agent.reasoning_effort`; the step is skipped for models the catalog marks as having no reasoning control. The provider list also has a **Reasoning effort for the current model...** row to change only the effort.
 
 **Configure auxiliary models...** opens the per-task side-model picker (vision, compression, approval, delegation, …). Each task's provider → model pick ends with the same effort step, stored as `auxiliary.<task>.reasoning_effort` (or `delegation.reasoning_effort`), with an extra **Provider default** row that leaves the level up to the provider. Tasks whose block has no `reasoning_effort` key by design (MoA slots, memory query rewrite) skip the step.
 
-To list providers/models without launching the picker, use the dashboard or the REST endpoints below. To inspect what the CLI will actually use right now: `hermes config get model --json` and `hermes status`.
+To list providers/models without launching the picker, use the dashboard or the REST endpoints below. To inspect what the CLI will actually use right now: `seraph config get model --json` and `seraph status`.
 
 ### Direct config edit
 

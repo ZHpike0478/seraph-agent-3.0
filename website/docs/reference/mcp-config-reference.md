@@ -1,7 +1,7 @@
 ---
 sidebar_position: 8
 title: "MCP Config Reference"
-description: "Reference for Hermes Agent MCP configuration keys, filtering semantics, and utility-tool policy"
+description: "Reference for Seraph Agent 3.0 MCP configuration keys, filtering semantics, and utility-tool policy"
 ---
 
 # MCP Config Reference
@@ -357,7 +357,7 @@ For an authorization server advertising `device_authorization_endpoint`, explici
 device authorization from a terminal on the machine running Hermes:
 
 ```bash
-hermes mcp login protected_api --flow device
+seraph mcp login protected_api --flow device
 ```
 
 Open the printed verification URL on any device and enter the displayed user code.
@@ -371,7 +371,7 @@ the only accepted difference is the path-scoped shape described under "OAuth-aut
 in the MCP feature guide (a server advertised as `https://host/path` whose document at
 `/.well-known/oauth-authorization-server/path` names `https://host`).
 
-Set `oauth.flow: device` on the server to make `hermes mcp login` and `hermes mcp reauth`
+Set `oauth.flow: device` on the server to make `seraph mcp login` and `seraph mcp reauth`
 (including `reauth --all`) use device authorization. `login --flow browser` overrides that
 setting for one login; browser PKCE remains the default. Unsupported metadata produces
 an actionable error rather than silently falling back to a different flow.
@@ -412,7 +412,7 @@ Each pinned port is bound as soon as it is chosen and held until the browser red
 
 If a server fetches the document and refuses it at the *token* endpoint (`invalid_client`), Hermes logs the rejection, records it under `~/.hermes/mcp-tokens/<server>.cimd-off`, and uses DCR for that server from then on.
 
-A server that cannot fetch or validate the document at all aborts at the *authorization* endpoint instead, before any redirect happens. There is no signal Hermes can observe there, so the browser shows an invalid-client error and the login times out after five minutes. The timeout message names the document and points at `cimd: false`. Running `hermes mcp login <server>` clears the recorded rejection, so a corrected document gets another chance.
+A server that cannot fetch or validate the document at all aborts at the *authorization* endpoint instead, before any redirect happens. There is no signal Hermes can observe there, so the browser shows an invalid-client error and the login times out after five minutes. The timeout message names the document and points at `cimd: false`. Running `seraph mcp login <server>` clears the recorded rejection, so a corrected document gets another chance.
 
 #### Optional per-server keys
 
@@ -429,7 +429,7 @@ mcp_servers:
 
 `client_metadata_url` must be an HTTPS URL with a path (no bare origin, no fragment, no userinfo, no `.`/`..` segments) that returns `200` and `Content-Type: application/json` with **no redirect** — authorization servers are forbidden from following redirects when fetching it. Hermes still pins its callback to the same `27890`–`27894` range, so a self-hosted document must declare all ten loopback URIs (`http://127.0.0.1:<port>/callback` and `http://localhost:<port>/callback` for each port), and its `client_id` must be its own URL.
 
-`user_agent` replaces the default `User-Agent` on **token-endpoint requests only** (authorization-code exchange, refresh and the device-flow token poll). Without it Hermes sends `Hermes-Agent/<version>` — never a header-less request, which WAF-fronted authorization servers answer with `403`. It never applies to MCP traffic, and no other token-request headers are configurable. Empty or null values are ignored. A failed exchange reports the status plus a short, redacted excerpt of the error body (a WAF's "Request blocked" page vs the issuer's `invalid_grant`), so the cause is visible without packet captures. `hermes mcp login` clears the stale grant and client registration before re-authorizing but keeps the cached authorization-server metadata, so the announced authorize URL stays the discovered one even when the metadata document cannot be re-fetched.
+`user_agent` replaces the default `User-Agent` on **token-endpoint requests only** (authorization-code exchange, refresh and the device-flow token poll). Without it Hermes sends `Hermes-Agent/<version>` — never a header-less request, which WAF-fronted authorization servers answer with `403`. It never applies to MCP traffic, and no other token-request headers are configurable. Empty or null values are ignored. A failed exchange reports the status plus a short, redacted excerpt of the error body (a WAF's "Request blocked" page vs the issuer's `invalid_grant`), so the cause is visible without packet captures. `seraph mcp login` clears the stale grant and client registration before re-authorizing but keeps the cached authorization-server metadata, so the announced authorize URL stays the discovered one even when the metadata document cannot be re-fetched.
 
 OAuth discovery and dynamic-client-registration requests (the `/.well-known/...` metadata documents and the `registration_endpoint` POST) always carry `User-Agent: Hermes-Agent/<version>`. The MCP SDK builds those requests without any client default headers, and WAF-fronted authorization servers answer a header-less request with `403` — the metadata document then looks unreadable, registration falls back to a guessed `/register` on the MCP host, and the login fails with `Registration failed: 404`. When every metadata fetch does fail, the error now leads with those statuses (`Could not read authorization-server metadata (403 from https://…/.well-known/oauth-authorization-server; …)`) before the registration fallback's own error.
 

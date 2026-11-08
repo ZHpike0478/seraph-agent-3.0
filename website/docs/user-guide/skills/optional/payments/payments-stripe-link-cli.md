@@ -14,10 +14,10 @@ Agent payments via Stripe Link — cards, SPT, approvals.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/payments/stripe-link-cli` |
+| Source | Optional — install with `seraph skills install official/payments/stripe-link-cli` |
 | Path | `optional-skills/payments/stripe-link-cli` |
 | Version | `0.1.0` |
-| Author | Teknium (teknium1), Hermes Agent |
+| Author | Teknium (teknium1), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos |
 | Tags | `Payments`, `Stripe`, `Link`, `Checkout`, `MPP` |
@@ -44,7 +44,7 @@ Trigger phrases:
 - "log in to Link", "connect my Link wallet"
 - HTTP 402 response from a merchant API with `www-authenticate: ... method="stripe"`
 
-If the user wants a paid API call (HTTP 402, no checkout form), the `card` path is wrong — use SPT via this same skill, or install the `pay` plugin (`hermes plugins install pay`) for x402/MPP payments.
+If the user wants a paid API call (HTTP 402, no checkout form), the `card` path is wrong — use SPT via this same skill, or install the `pay` plugin (`seraph plugins install pay`) for x402/MPP payments.
 
 ## Prerequisites
 
@@ -179,10 +179,10 @@ rm -f ~/.hermes/cache/scratch/link-card.json
 `@stripe/link-cli --mcp` exposes the same commands as MCP tools over stdio. To register it with Hermes' native MCP:
 
 ```
-hermes mcp add stripe-link --command "npx" --args "@stripe/link-cli --mcp"
+seraph mcp add stripe-link --command "npx" --args "@stripe/link-cli --mcp"
 ```
 
-Then `hermes mcp list` should show `stripe-link`. The same approval rules apply — MCP doesn't bypass the Link app approval step.
+Then `seraph mcp list` should show `stripe-link`. The same approval rules apply — MCP doesn't bypass the Link app approval step.
 
 ## Pitfalls
 

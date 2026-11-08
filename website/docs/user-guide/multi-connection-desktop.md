@@ -68,7 +68,7 @@ Rules worth knowing:
   (the *"Reachable"* toast) means chat will actually work — not just that the
   host pinged. In the Webapp, **Test** on an SSH row opens the same managed
   tunnel the gateway uses to reach that host, which starts (or reuses)
-  `hermes serve` on the remote machine without cleaning it up afterwards. It
+  `seraph serve` on the remote machine without cleaning it up afterwards. It
   stops when you remove the connection or stop the gateway, or on its own after
   the remote idle timeout (`dashboard.ssh_isolated_idle_grace_s`, 15 minutes by
   default) while no client is connected and no work is running.
@@ -126,7 +126,7 @@ authentication; manage sign-in from the registered connection controls.
    - **Name** — required, unique; the "device name" shown everywhere this
      instance appears (placeholder: `Homelab`). Max 64 characters.
    - *Remote gateway only:*
-     - **Gateway URL** — the base URL of a running `hermes serve` backend,
+     - **Gateway URL** — the base URL of a running `seraph serve` backend,
        e.g. `http://homelab.lan:9119`. Reverse-proxy path prefixes work.
      - **Authentication** — choose **Session token** or **OAuth**:
        - **Session token** — paste the dashboard session token from the
@@ -154,7 +154,7 @@ Edit any non-local entry later with the pencil button, or remove it with the
 trash button — removal asks for confirmation and reminds you that *"The
 instance itself is not touched — you can add it again any time."*
 
-:::info The remote backend is a running `hermes serve` process
+:::info The remote backend is a running `seraph serve` process
 Nothing here works unless the backend is actually up and reachable on the
 other machine. The desktop app attaches to it; it does not start it for you
 (except for SSH connections, where the app opens the tunnel and starts the
@@ -201,11 +201,11 @@ Each `(connection, profile)` pair gets its own socket, and Desktop caches the
 gateway descriptor it dialed so the next open joins the same connection —
 background agents keep streaming while you look at another gateway. Desktop
 never spawns or reaps a *remote* gateway; each one owns its own lifetime. For a
-**local** profile, the first open runs `hermes gateway ensure`, which attaches
+**local** profile, the first open runs `seraph gateway ensure`, which attaches
 to that profile's running gateway or, when there is none, installs and starts a
 persistent per-profile gateway (a systemd/launchd service where one exists,
 otherwise a detached daemon). That gateway keeps running after you close the
-app — it has no idle shutdown — until you stop it with `hermes gateway stop`.
+app — it has no idle shutdown — until you stop it with `seraph gateway stop`.
 
 Approval buttons route back to the session's owning backend, not whichever
 profile is currently selected. For a local secondary profile, Desktop can use
@@ -311,7 +311,7 @@ side effect of sharing one Desktop window.
 ## Updating every instance at once
 
 **Settings → Gateways → Update all instances** (shown once more than one
-connection is registered) dispatches `hermes update` to every eligible
+connection is registered) dispatches `seraph update` to every eligible
 connection in parallel:
 
 - **Local** updates through the app's own update pipeline (the same flow as
@@ -377,7 +377,7 @@ multi-gateway roster is the reference consumer.
 ## Troubleshooting
 
 - **"Connection test failed"** — the backend isn't reachable at that URL from
-  this machine. Check that `hermes serve` is running on the remote host, the
+  this machine. Check that `seraph serve` is running on the remote host, the
   port is open, and (for token auth) the token is current. Re-run **Test**
   after fixing.
 - **An agent shows but won't open** — run **Test** on its connection. The
@@ -386,7 +386,7 @@ multi-gateway roster is the reference consumer.
 - **A remote gateway is missing from the roster** — its backend is down or
   unreachable; the roster lists it under gateways with the error, and Desktop
   keeps redialing it in the background.
-- **"Update Hermes Desktop to chat with agents on other connections"** — the
+- **"Update Seraph Desktop to chat with agents on other connections"** — the
   app predates the multi-connection stack; update the desktop app itself.
 - **Duplicate device names** — not possible; names are enforced unique at
   save time. If a migrated name collided, it was suffixed (`Homelab 2`).

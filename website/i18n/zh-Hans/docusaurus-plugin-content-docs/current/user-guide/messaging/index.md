@@ -123,7 +123,7 @@ flowchart TB
 配置消息平台最简单的方式是使用交互式向导：
 
 ```bash
-hermes gateway setup        # 交互式配置所有消息平台
+seraph gateway setup        # 交互式配置所有消息平台
 ```
 
 该向导引导你通过方向键选择配置各平台，显示哪些平台已配置，并在完成后提示启动/重启网关。
@@ -131,14 +131,14 @@ hermes gateway setup        # 交互式配置所有消息平台
 ## 网关命令
 
 ```bash
-hermes gateway              # 在前台运行
-hermes gateway setup        # 交互式配置消息平台
-hermes gateway install      # 安装为用户服务（Linux）/ launchd 服务（macOS）
+seraph gateway              # 在前台运行
+seraph gateway setup        # 交互式配置消息平台
+seraph gateway install      # 安装为用户服务（Linux）/ launchd 服务（macOS）
 sudo hermes gateway install --system   # 仅 Linux：安装开机启动的系统服务
-hermes gateway start        # 启动默认服务
-hermes gateway stop         # 停止默认服务
-hermes gateway status       # 检查默认服务状态
-hermes gateway status --system         # 仅 Linux：显式检查系统服务
+seraph gateway start        # 启动默认服务
+seraph gateway stop         # 停止默认服务
+seraph gateway status       # 检查默认服务状态
+seraph gateway status --system         # 仅 Linux：显式检查系统服务
 ```
 
 ## 聊天命令（在消息平台内使用）
@@ -167,7 +167,7 @@ hermes gateway status --system         # 仅 Linux：显式检查系统服务
 | `/bg <prompt>` | 在独立后台会话中运行 prompt（提示词） |
 | `/btw <question>` | 在不打断当前对话的情况下，就当前对话提出顺带问题 |
 | `/reload-mcp` | 从配置重新加载 MCP 服务器 |
-| `/update` | 将 Hermes Agent 更新至最新版本 |
+| `/update` | 将 Seraph Agent 3.0 更新至最新版本 |
 | `/help` | 显示可用命令 |
 | `/<skill-name>` | 调用任意已安装的技能 |
 
@@ -218,11 +218,11 @@ GATEWAY_ALLOW_ALL_USERS=true
 ```bash
 # 用户看到："Pairing code: XKGH5N7P"
 # 你通过以下命令批准：
-hermes pairing approve telegram XKGH5N7P
+seraph pairing approve telegram XKGH5N7P
 
 # 其他配对命令：
-hermes pairing list          # 查看待审核和已批准的用户
-hermes pairing revoke telegram 123456789  # 撤销访问权限
+seraph pairing list          # 查看待审核和已批准的用户
+seraph pairing revoke telegram 123456789  # 撤销访问权限
 ```
 
 配对码 1 小时后过期，有频率限制，并使用密码学随机数生成。
@@ -371,10 +371,10 @@ HERMES_BACKGROUND_NOTIFICATIONS=result
 ### Linux（systemd）
 
 ```bash
-hermes gateway install               # 安装为用户服务
-hermes gateway start                 # 启动服务
-hermes gateway stop                  # 停止服务
-hermes gateway status                # 检查状态
+seraph gateway install               # 安装为用户服务
+seraph gateway start                 # 启动服务
+seraph gateway stop                  # 停止服务
+seraph gateway status                # 检查状态
 journalctl --user -u hermes-gateway -f  # 查看日志
 
 # 启用 lingering（注销后保持运行）
@@ -392,16 +392,16 @@ journalctl -u hermes-gateway -f
 除非你确实有此需要，否则避免同时安装用户和系统网关单元。Hermes 检测到两者同时存在时会发出警告，因为 start/stop/status 行为会变得不明确。
 
 :::info 多个安装
-如果你在同一台机器上运行多个 Hermes 安装（使用不同的 `HERMES_HOME` 目录），每个安装都有自己的 systemd 服务名称。默认的 `~/.hermes` 使用 `hermes-gateway`；其他安装使用 `hermes-gateway-<hash>`。`hermes gateway` 命令会自动针对当前 `HERMES_HOME` 对应的正确服务。
+如果你在同一台机器上运行多个 Hermes 安装（使用不同的 `HERMES_HOME` 目录），每个安装都有自己的 systemd 服务名称。默认的 `~/.hermes` 使用 `hermes-gateway`；其他安装使用 `hermes-gateway-<hash>`。`seraph gateway` 命令会自动针对当前 `HERMES_HOME` 对应的正确服务。
 :::
 
 ### macOS（launchd）
 
 ```bash
-hermes gateway install               # 安装为 launchd agent
-hermes gateway start                 # 启动服务
-hermes gateway stop                  # 停止服务
-hermes gateway status                # 检查状态
+seraph gateway install               # 安装为 launchd agent
+seraph gateway start                 # 启动服务
+seraph gateway stop                  # 停止服务
+seraph gateway status                # 检查状态
 tail -f ~/.hermes/logs/gateway.log   # 查看日志
 ```
 
@@ -412,7 +412,7 @@ tail -f ~/.hermes/logs/gateway.log   # 查看日志
 - **HERMES_HOME** — 将网关限定到你的 Hermes 安装。
 
 :::tip 安装后 PATH 变更
-launchd plist 是静态的——如果你在配置网关后安装了新工具（例如通过 nvm 安装新版 Node.js，或通过 Homebrew 安装 ffmpeg），请重新运行 `hermes gateway install` 以捕获更新后的 PATH。网关会检测到过时的 plist 并自动重新加载。
+launchd plist 是静态的——如果你在配置网关后安装了新工具（例如通过 nvm 安装新版 Node.js，或通过 Homebrew 安装 ffmpeg），请重新运行 `seraph gateway install` 以捕获更新后的 PATH。网关会检测到过时的 plist 并自动重新加载。
 :::
 
 :::info 多个安装

@@ -382,7 +382,7 @@ def test_running_source_launcher_can_republish_itself(tmp_path, monkeypatch, lau
     result = subprocess.run([str(command)], cwd=tmp_path, capture_output=True,
                             text=True, encoding="utf-8", timeout=30, check=False)
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "published 2 2" in result.stdout
+    assert "published 3 3" in result.stdout
     assert _launchers.ensure_install_launchers(repo, out)
     selected_python = _launchers.resolve_store_python(repo)
     assert selected_python is not None and selected_python.samefile(interpreter)
@@ -397,7 +397,8 @@ def test_repin_without_distlib_retires_stale_native_launcher(tmp_path, monkeypat
         "import sys\ndef main():\n    print('ready', flush=True)\n    sys.stdin.read()\n    return 0\n",
         encoding="utf-8")
     local = repo / ".hermes/bin"
-    original = Path(_launchers.ensure_install_launchers(repo, local)[0])
+    original = next(Path(path) for path in _launchers.ensure_install_launchers(repo, local)
+                    if Path(path).stem == "hermes")
     assert original.suffix == ".exe"
     new_python = home / "tools" / "repinned" / "python.exe"
     new_python.parent.mkdir()

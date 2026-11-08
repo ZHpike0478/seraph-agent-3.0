@@ -14,10 +14,10 @@ Box manages cloud files, sharing, search, and metadata.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/productivity/box` |
+| Source | Optional — install with `seraph skills install official/productivity/box` |
 | Path | `optional-skills/productivity/box` |
 | Version | `1.0.0` |
-| Author | Chris Kim (iskysun96), Hermes Agent |
+| Author | Chris Kim (iskysun96), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Box`, `Productivity`, `Cloud Storage`, `Collaboration`, `Metadata`, `Content Extraction`, `CLI`, `SDK` |

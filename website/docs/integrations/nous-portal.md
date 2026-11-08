@@ -1,20 +1,20 @@
 ---
 sidebar_position: 1
 title: "Nous Portal"
-description: "One subscription, 300+ frontier models, and the Tool Gateway — the recommended way to run Hermes Agent"
+description: "One subscription, 300+ frontier models, and the Tool Gateway — the recommended way to run Seraph Agent 3.0"
 ---
 
 # Nous Portal
 
-[Nous Portal](https://portal.nousresearch.com) is Nous Research's unified subscription gateway and **the recommended way to run Hermes Agent**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
+[Nous Portal](https://portal.nousresearch.com) is Nous Research's unified subscription gateway and **the recommended way to run Seraph Agent 3.0**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
 
 If you only have time to set up one thing, set up this. The fastest path:
 
 ```bash
-hermes setup --portal
+seraph setup --portal
 ```
 
-That single command runs the Portal OAuth, lets you pick a Nous model, sets Nous as your inference provider in `config.yaml`, and turns on the Tool Gateway. You're ready to `hermes chat` immediately after.
+That single command runs the Portal OAuth, lets you pick a Nous model, sets Nous as your inference provider in `config.yaml`, and turns on the Tool Gateway. You're ready to `seraph chat` immediately after.
 
 Don't have a subscription yet? [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) — sign up, then come back and run the command above.
 
@@ -50,7 +50,7 @@ Because routing is per-model and not always through OpenRouter, OpenRouter-speci
 
 ### The Nous Tool Gateway
 
-The same subscription unlocks the [Tool Gateway](../user-guide/features/tool-gateway.md), which routes Hermes Agent's tool calls through Nous-managed infrastructure. Five backends, one login:
+The same subscription unlocks the [Tool Gateway](../user-guide/features/tool-gateway.md), which routes Seraph Agent 3.0's tool calls through Nous-managed infrastructure. Five backends, one login:
 
 | Tool | Partner | What it does |
 |------|---------|--------------|
@@ -76,7 +76,7 @@ Because everything routes through one OAuth-authenticated Portal session, you do
 
 Nous Research's own **Hermes 4** family (Hermes-4-70B, Hermes-4-405B) is available through the Portal at heavily discounted rates. These are **frontier hybrid-reasoning chat models** — strong at math, science, instruction following, schema adherence, roleplay, and long-form writing.
 
-They are **not recommended for use inside Hermes Agent**, however. Hermes 4 is tuned for chat and reasoning, not the rapid-fire tool-calling loop the agent relies on. Use them for research workflows or via the [subscription proxy](../user-guide/features/subscription-proxy.md) from other tooling — but for agent work, pick a frontier agentic model from the catalog instead:
+They are **not recommended for use inside Seraph Agent 3.0**, however. Hermes 4 is tuned for chat and reasoning, not the rapid-fire tool-calling loop the agent relies on. Use them for research workflows or via the [subscription proxy](../user-guide/features/subscription-proxy.md) from other tooling — but for agent work, pick a frontier agentic model from the catalog instead:
 
 ```bash
 /model anthropic/claude-sonnet-4.6     # best general-purpose agentic model
@@ -92,7 +92,7 @@ The Portal's own [model info page](https://portal.nousresearch.com/info) carries
 ### Fresh install — one command
 
 ```bash
-hermes setup --portal
+seraph setup --portal
 ```
 
 This runs the full setup in one shot:
@@ -102,7 +102,7 @@ This runs the full setup in one shot:
 3. Lets you pick a Nous model from the curated list (or skip to keep your current one)
 4. Sets Nous as your inference provider in `~/.hermes/config.yaml` (when you pick a model)
 5. Turns on the Tool Gateway (web, image, TTS, browser routing)
-6. Returns you to your terminal ready to `hermes chat`
+6. Returns you to your terminal ready to `seraph chat`
 
 If you don't have a subscription yet, sign up at [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) first.
 
@@ -111,12 +111,12 @@ If you don't have a subscription yet, sign up at [portal.nousresearch.com/manage
 If you already have Hermes configured with OpenRouter, Anthropic, or any other provider and you want to add the Portal alongside them:
 
 ```bash
-hermes model
+seraph model
 # pick "Nous Portal" from the provider list
 # browser opens, sign in, done
 ```
 
-Your existing providers stay configured. You can switch between them with `/model` mid-session or `hermes model` between sessions — the Portal becomes one of your available providers, not your only one.
+Your existing providers stay configured. You can switch between them with `/model` mid-session or `seraph model` between sessions — the Portal becomes one of your available providers, not your only one.
 
 ### Headless / SSH / remote setup
 
@@ -131,16 +131,16 @@ If you use [Hermes profiles](../user-guide/profiles.md), the Portal refresh toke
 ### Inspecting what's wired up
 
 ```bash
-hermes portal            # log in to Nous Portal + set it up (one-shot onboarding)
-hermes portal info       # login status, subscription info, model + gateway routing
-hermes portal status     # alias for `portal info`
-hermes portal tools      # detailed Tool Gateway catalog with per-tool routing
-hermes portal open       # open the subscription management page in your browser
+seraph portal            # log in to Nous Portal + set it up (one-shot onboarding)
+seraph portal info       # login status, subscription info, model + gateway routing
+seraph portal status     # alias for `portal info`
+seraph portal tools      # detailed Tool Gateway catalog with per-tool routing
+seraph portal open       # open the subscription management page in your browser
 ```
 
-`hermes portal` (with no subcommand) is the human-readable alias for `hermes auth add nous --type oauth` — it logs you in, lets you pick a Nous model, sets Nous as your inference provider, and offers the Tool Gateway opt-in (identical to `hermes setup --portal`, and the same Nous flow as the first-time quick setup).
+`seraph portal` (with no subcommand) is the human-readable alias for `seraph auth add nous --type oauth` — it logs you in, lets you pick a Nous model, sets Nous as your inference provider, and offers the Tool Gateway opt-in (identical to `seraph setup --portal`, and the same Nous flow as the first-time quick setup).
 
-`hermes portal info` gives you the high-level overview:
+`seraph portal info` gives you the high-level overview:
 
 ```
   Nous Portal
@@ -178,33 +178,33 @@ Or open the picker:
 Outside a session (the full setup wizard, useful when adding a new provider):
 
 ```bash
-hermes model
+seraph model
 ```
 
 ### Mixing the gateway with your own backends
 
-If you already have, say, a Browserbase account and want to keep using it while routing web search and image generation through Nous, that's supported. Use `hermes tools` to pick backends per tool:
+If you already have, say, a Browserbase account and want to keep using it while routing web search and image generation through Nous, that's supported. Use `seraph tools` to pick backends per tool:
 
 ```bash
-hermes tools
+seraph tools
 # → Web search       → "Nous Subscription"
 # → Image generation → "Nous Subscription"
 # → Browser          → "Browserbase"  (your existing key)
 # → TTS              → "Nous Subscription"
 ```
 
-The Tool Gateway is opt-in per tool, not all-or-nothing. The managed backends show up in `hermes tools` whether or not you're logged into Nous Portal — if you pick "Nous Subscription" before authenticating, Hermes runs the Portal login inline (it won't change your inference provider or touch your other tools). See the [Tool Gateway docs](../user-guide/features/tool-gateway.md) for the full per-tool configuration matrix.
+The Tool Gateway is opt-in per tool, not all-or-nothing. The managed backends show up in `seraph tools` whether or not you're logged into Nous Portal — if you pick "Nous Subscription" before authenticating, Hermes runs the Portal login inline (it won't change your inference provider or touch your other tools). See the [Tool Gateway docs](../user-guide/features/tool-gateway.md) for the full per-tool configuration matrix.
 
 ### Subscription management
 
 Manage your plan, view usage, or upgrade/cancel at any time:
 
 - **Web:** [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription)
-- **CLI shortcut:** `hermes portal open` (opens the same page in your default browser)
+- **CLI shortcut:** `seraph portal open` (opens the same page in your default browser)
 
 ## Configuration reference
 
-After `hermes setup --portal`, `~/.hermes/config.yaml` will look like:
+After `seraph setup --portal`, `~/.hermes/config.yaml` will look like:
 
 ```yaml
 model:
@@ -213,7 +213,7 @@ model:
   base_url: https://inference-api.nousresearch.com/v1
 ```
 
-The Tool Gateway settings live under their respective tool sections — each category has a single selection key, and picking **Nous Subscription** in `hermes tools` (or `hermes setup --portal`) writes the value `nous`:
+The Tool Gateway settings live under their respective tool sections — each category has a single selection key, and picking **Nous Subscription** in `seraph tools` (or `seraph setup --portal`) writes the value `nous`:
 
 ```yaml
 web:
@@ -244,23 +244,23 @@ nous:
   keepalive_interval_seconds: 900   # upper bound on the tick; 0 disables the keepalive
 ```
 
-If the Portal invalidates the refresh token (password change, manual revoke, session expiry), the invalid refresh token is **quarantined locally** so Hermes stops replaying it and you don't see a stream of identical 401s. The next call surfaces a clear "re-authentication required" message. Run `hermes auth add nous` to log in again; the quarantine clears on the next successful login.
+If the Portal invalidates the refresh token (password change, manual revoke, session expiry), the invalid refresh token is **quarantined locally** so Hermes stops replaying it and you don't see a stream of identical 401s. The next call surfaces a clear "re-authentication required" message. Run `seraph auth add nous` to log in again; the quarantine clears on the next successful login.
 
 ## Troubleshooting
 
-### `hermes portal info` shows "not logged in"
+### `seraph portal info` shows "not logged in"
 
 You haven't completed the OAuth flow, or your refresh token was wiped. Run:
 
 ```bash
-hermes portal
+seraph portal
 ```
 
-or use `hermes model` and re-select Nous Portal.
+or use `seraph model` and re-select Nous Portal.
 
 ### Got a "re-authentication required" message mid-session
 
-Your Portal refresh token was invalidated (password change, manual revoke, or session expiry). Run `hermes auth add nous` and your next request will use the new credentials. Any quarantine on the old token clears automatically on successful re-login.
+Your Portal refresh token was invalidated (password change, manual revoke, or session expiry). Run `seraph auth add nous` and your next request will use the new credentials. Any quarantine on the old token clears automatically on successful re-login.
 
 ### Want to use a specific provider model that the Portal doesn't expose
 
@@ -274,7 +274,7 @@ If a model is genuinely missing, [open an issue](https://github.com/NousResearch
 
 ### Bills not appearing on my Portal account
 
-Check `hermes portal info` first — if it shows you're using a different provider (`Model: currently openrouter` instead of `using Nous as inference provider`), your local config has drifted. Run `hermes model`, pick Nous Portal, and the next request will route through your subscription.
+Check `seraph portal info` first — if it shows you're using a different provider (`Model: currently openrouter` instead of `using Nous as inference provider`), your local config has drifted. Run `seraph model`, pick Nous Portal, and the next request will route through your subscription.
 
 ## See also
 

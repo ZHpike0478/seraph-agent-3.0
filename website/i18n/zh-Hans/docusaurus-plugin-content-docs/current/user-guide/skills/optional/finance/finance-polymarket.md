@@ -14,10 +14,10 @@ description: "查询 Polymarket：市场、价格、订单簿、历史记录"
 
 | | |
 |---|---|
-| 来源 | 可选 — 通过 `hermes skills install official/finance/polymarket` 安装 |
+| 来源 | 可选 — 通过 `seraph skills install official/finance/polymarket` 安装 |
 | 路径 | `optional-skills/finance/polymarket` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent + Teknium |
+| 作者 | Seraph Agent 3.0 + Teknium |
 | 平台 | linux, macos, windows |
 
 ## 参考：完整 SKILL.md

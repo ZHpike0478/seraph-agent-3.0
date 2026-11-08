@@ -14,10 +14,10 @@ Delegate coding to OpenCode CLI (features, PR review).
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/autonomous-ai-agents/opencode` |
+| Source | Optional — install with `seraph skills install official/autonomous-ai-agents/opencode` |
 | Path | `optional-skills/autonomous-ai-agents/opencode` |
 | Version | `1.2.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Coding-Agent`, `OpenCode`, `Autonomous`, `Refactoring`, `Code-Review` |

@@ -14,10 +14,10 @@ Workout planning, macros, and body metrics via wger/USDA.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/health/fitness-nutrition` |
+| Source | Optional — install with `seraph skills install official/health/fitness-nutrition` |
 | Path | `optional-skills/health/fitness-nutrition` |
 | Version | `1.0.0` |
-| Author | Hailey Marshall (haileymarshall), Hermes Agent |
+| Author | Hailey Marshall (haileymarshall), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `health`, `fitness`, `nutrition`, `gym`, `workout`, `diet`, `exercise` |

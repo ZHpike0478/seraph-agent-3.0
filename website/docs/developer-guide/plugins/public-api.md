@@ -9,7 +9,7 @@ description: "The Hermes modules and names a plugin may import; hermes plugins v
 
 # Public plugin API
 
-These are the Hermes modules and names a plugin may import. `hermes plugins validate` reads the same
+These are the Hermes modules and names a plugin may import. `seraph plugins validate` reads the same
 list (`hermes_cli/data/plugin_api.json`) and warns, without failing, on any other import of a Hermes
 module (catalog rule 9: public surfaces only). Imports of the standard library, third-party packages,
 the plugin's own modules, and imports under `if TYPE_CHECKING:` are never flagged.

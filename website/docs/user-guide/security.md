@@ -6,7 +6,7 @@ description: "Security model, dangerous command approval, user authorization, co
 
 # Security
 
-Hermes Agent is designed with a defense-in-depth security model. This page covers every security boundary — from command approval to container isolation to user authorization on messaging platforms.
+Seraph Agent 3.0 is designed with a defense-in-depth security model. This page covers every security boundary — from command approval to container isolation to user authorization on messaging platforms.
 
 ## Overview
 
@@ -48,7 +48,7 @@ The full set of keys:
 | `timeout` | `300` | Seconds Hermes waits for an approval reply before timing out. |
 | `discord_prompt_timeout` | `300` | Seconds Discord's interactive buttons (approvals, clarify, update and slash-command prompts) stay clickable; minimum 30. See [Discord](./messaging/discord.md). |
 | `cron_mode` | `deny` | How [cron jobs](./features/cron.md) behave headlessly when they trigger a dangerous-command prompt. `deny` blocks the command (the agent must find another path); `approve` auto-approves everything in cron context. |
-| `single_query_mode` | `deny` | How one-shot [`hermes chat -q`](./cli.md) sessions behave when they trigger a dangerous-command prompt. A `-q` session runs a single turn and exits with no user waiting to answer prompts; `deny` blocks the command (the agent must find another path), `approve` auto-approves everything in single-query context. Mirrors `cron_mode`. |
+| `single_query_mode` | `deny` | How one-shot [`seraph chat -q`](./cli.md) sessions behave when they trigger a dangerous-command prompt. A `-q` session runs a single turn and exits with no user waiting to answer prompts; `deny` blocks the command (the agent must find another path), `approve` auto-approves everything in single-query context. Mirrors `cron_mode`. |
 | `unattended_mode` | `deny` | How sessions on unattended programmatic platforms (webhook, msgraph_webhook, api_server) behave when they trigger a dangerous-command prompt. These surfaces have no human who can answer `/approve`, so instead of blocking for the full approval timeout, `deny` blocks the command instantly (the agent must find another path) and `approve` auto-approves everything in unattended context. Exception: an api_server session whose client can answer the card (`/v1/runs` and streaming chat completions, via `POST /v1/runs/{id}/approval`) still gets the approval request. Mirrors `cron_mode`. |
 | `mcp_reload_confirm` | `true` | When true, `/reload-mcp` asks before rebuilding the MCP tool set. Rebuilding invalidates the provider prompt cache (tool schemas live in the system prompt), so the next message re-sends full input tokens. Users who click **Always Approve** flip this key to `false`. |
 | `destructive_slash_confirm` | `true` | When true, destructive session slash commands (`/clear`, `/new`, `/reset`, `/undo`) prompt before discarding conversation state. Three-option dialog (Approve Once / Always Approve / Cancel) routed through native yes/no buttons on Telegram, Discord, and Slack; text fallback elsewhere. Users who click **Always Approve** flip this key to `false`. The TUI also honors this setting for its `/clear`, `/new`, and `/reset` modal; `HERMES_TUI_NO_CONFIRM=1` force-skips that modal regardless of the configured value. |
@@ -67,7 +67,7 @@ Setting `approvals.mode: off` disables all safety prompts. Use only in trusted e
 
 YOLO mode bypasses **all** dangerous command approval prompts for the current session. It can be activated three ways:
 
-1. **CLI flag**: Start a session with `hermes --yolo` or `hermes chat --yolo`
+1. **CLI flag**: Start a session with `seraph --yolo` or `seraph chat --yolo`
 2. **Slash command**: Type `/yolo` during a session to toggle it on/off
 3. **Environment variable**: Set `HERMES_YOLO_MODE=1`
 
@@ -94,7 +94,7 @@ YOLO mode disables **all** dangerous command safety checks for the session — *
 
 YOLO and `approvals.mode: off` also skip the [`trust: untrusted`](../reference/mcp-config-reference.md) MCP prompt: a write-capable tool on an untrusted server runs without asking, with each source's usual reach. `/yolo` covers only the chat it was typed in (another chat is still asked); `--yolo` and `HERMES_YOLO_MODE` cover the sessions of the Hermes process they were given to; `approvals.mode: off` covers every chat and cron job of that profile. They do **not** skip:
 
-- **An MCP server's spend limit.** A call that would take the chat past a declared [`spend_limit`](./features/mcp.md#tool-costs-and-spend-limits) still asks, and where nobody can answer (a cron job, `hermes chat -q`) it is refused. The limit is a budget you set, not a safety prompt.
+- **An MCP server's spend limit.** A call that would take the chat past a declared [`spend_limit`](./features/mcp.md#tool-costs-and-spend-limits) still asks, and where nobody can answer (a cron job, `seraph chat -q`) it is refused. The limit is a budget you set, not a safety prompt.
 - **Questions from an MCP server** ([elicitation](./features/mcp.md#mcp-elicitation-support)), which ask you for input rather than for permission.
 - **Payment-card fill prompts** from the [credential vault](./features/credential-vault.md#paying-and-filling-addresses), which hand a card to a page, and MCP event subscriptions, which install a standing trigger.
 
@@ -301,18 +301,18 @@ These patterns are loaded at startup and silently approved in all future session
 Entries can be exact command text, a shell-style glob (`podman *`), or a
 dangerous-pattern rule key such as `script execution via heredoc` (the key shown
 in the approval prompt). Rule keys are honored on every surface, including
-unattended ones: a cron job, `hermes chat -q` run or webhook session under
+unattended ones: a cron job, `seraph chat -q` run or webhook session under
 `cron_mode`/`single_query_mode`/`unattended_mode: deny` still runs a command whose
 detected rule key is in `command_allowlist`.
 
 The setting must be a list of strings. Legacy installs that stored a list as a
 quoted YAML/JSON string recover that list at load time and log a warning to
-re-save it with `hermes config edit`. Other malformed values are ignored with
+re-save it with `seraph config edit`. Other malformed values are ignored with
 a warning; they never become per-character approvals. Loading does not rewrite
 your configuration file.
 
 :::tip
-Use `hermes config edit` to review or remove patterns from your permanent allowlist.
+Use `seraph config edit` to review or remove patterns from your permanent allowlist.
 :::
 
 :::caution
@@ -322,15 +322,15 @@ already running stays approved in that session until it next writes the file
 removed it for safety reasons, restart.
 :::
 
-### Mining Approval History (`hermes approvals suggest`)
+### Mining Approval History (`seraph approvals suggest`)
 
 Instead of answering the same prompt session after session, you can mine your
 past approval decisions into allowlist proposals:
 
 ```bash
-hermes approvals suggest            # dry run — prints a numbered proposal
-hermes approvals suggest --apply 1,3  # merge picks into command_allowlist
-hermes approvals suggest --json     # machine-readable output
+seraph approvals suggest            # dry run — prints a numbered proposal
+seraph approvals suggest --apply 1,3  # merge picks into command_allowlist
+seraph approvals suggest --json     # machine-readable output
 ```
 
 The command scans the session database (`~/.hermes/state.db`) for
@@ -416,7 +416,7 @@ Unset the variable to restore unrestricted writes (subject to the protected-path
 
 ### Cron and other Hermes state
 
-Do not ask the agent to `patch` `~/.hermes/cron/jobs.json` directly. Use the `cronjob_manage` tool, [`hermes cron`](./features/cron.md), or `/cron` — they update the job store through the supported API. The same applies to other Hermes control files when write safety blocks direct edits.
+Do not ask the agent to `patch` `~/.hermes/cron/jobs.json` directly. Use the `cronjob_manage` tool, [`seraph cron`](./features/cron.md), or `/cron` — they update the job store through the supported API. The same applies to other Hermes control files when write safety blocks direct edits.
 
 :::note Defense-in-depth, not a hard boundary
 Write guards apply to `write_file` and `patch` only, with one exception: the Windows NT/device-namespace row is also enforced on reads — `read_file`, `search_files`, `@file:`/`@folder:` context references and the ACP file bridge all refuse those paths on the raw string, before anything resolves them. The `terminal` tool runs as the same OS user and can still `cat` or overwrite denied paths via shell commands. The denylist reduces accidental damage and gives models a clear stop signal; it does not sandbox a hostile or compromised agent.
@@ -478,7 +478,7 @@ For more flexible authorization, Hermes includes a code-based pairing system. In
 
 1. An unknown user sends a DM to the bot
 2. The bot replies with an 8-character pairing code
-3. The bot owner runs `hermes pairing approve <platform> <code>` on the CLI
+3. The bot owner runs `seraph pairing approve <platform> <code>` on the CLI
 4. The user is permanently approved for that platform
 
 Control how unauthorized direct messages are handled in `~/.hermes/config.yaml`:
@@ -513,16 +513,16 @@ whatsapp:
 
 ```bash
 # List pending and approved users
-hermes pairing list
+seraph pairing list
 
 # Approve a pairing code
-hermes pairing approve telegram ABC12DEF
+seraph pairing approve telegram ABC12DEF
 
 # Revoke a user's access
-hermes pairing revoke telegram 123456789
+seraph pairing revoke telegram 123456789
 
 # Clear all pending codes
-hermes pairing clear-pending
+seraph pairing clear-pending
 ```
 
 :::tip Docker users: run pairing commands as the `hermes` user
@@ -692,7 +692,7 @@ auth:
   adopt_external_logins: false   # default: true
 ```
 
-With the switch off Hermes never reads or refreshes those files: the `claude_code` credential-pool row disappears, `hermes auth list` prints one line saying so, and the log carries one INFO line per process. Only automatic adoption is affected — `hermes auth add openai-codex` still asks before importing an existing Codex CLI login. Automatic recovery also only repairs the credential Hermes already holds: a Codex CLI/Desktop login into a different ChatGPT workspace is refused with a warning (re-authenticate with `hermes auth add openai-codex`), and a login you complete while recovery is running is never overwritten. Add your own logins with `hermes auth add anthropic` / `hermes auth add openai-codex`.
+With the switch off Hermes never reads or refreshes those files: the `claude_code` credential-pool row disappears, `seraph auth list` prints one line saying so, and the log carries one INFO line per process. Only automatic adoption is affected — `seraph auth add openai-codex` still asks before importing an existing Codex CLI login. Automatic recovery also only repairs the credential Hermes already holds: a Codex CLI/Desktop login into a different ChatGPT workspace is refused with a warning (re-authenticate with `seraph auth add openai-codex`), and a login you complete while recovery is running is never overwritten. Add your own logins with `seraph auth add anthropic` / `seraph auth add openai-codex`.
 
 ### What Each Sandbox Filters
 
@@ -894,8 +894,8 @@ file**. Hermes logs a warning naming the matched pattern, loads the file as usua
 `⚠ SOUL.md … loaded — matched prompt-injection pattern(s); review the file`. This lets an identity file that
 *documents* an attack phrase (security guidance such as "content telling you to ignore previous instructions")
 keep working; if you did not write the flagged text, treat the warning as a sign that something else edited
-the file. The exception does not extend to a `SOUL.md` shipped by a profile distribution: `hermes profile
-install <git-url>` and `hermes profile update` copy a third party's `SOUL.md` into the profile home without
+the file. The exception does not extend to a `SOUL.md` shipped by a profile distribution: `seraph profile
+install <git-url>` and `seraph profile update` copy a third party's `SOUL.md` into the profile home without
 a scan or an approval prompt, so when `distribution.yaml` owns the file a scanner hit still blocks it.
 
 ## Best Practices for Production Deployment
@@ -911,7 +911,7 @@ a scan or an approval prompt, so when `distribution.yaml` owns the file a scanne
 7. **Set `terminal.cwd`** — don't let the agent operate from sensitive directories
 8. **Run as non-root** — never run the gateway as root
 9. **Monitor logs** — check `~/.hermes/logs/` for unauthorized access attempts
-10. **Keep updated** — run `hermes update` regularly for security patches
+10. **Keep updated** — run `seraph update` regularly for security patches
 
 ### Securing API Keys
 
@@ -958,7 +958,7 @@ The former startup certificate guard is gone with it: Hermes no longer
 validates `HERMES_CA_BUNDLE` / `SSL_CERT_FILE` / `REQUESTS_CA_BUNDLE` /
 `CURL_CA_BUNDLE` at launch, so there is no `SSLConfigurationError` and the
 `HERMES_SKIP_SSL_GUARD` escape hatch has no effect. `HERMES_CA_BUNDLE` is
-still honoured by the Nous Portal login flow only (`hermes login`, or its
+still honoured by the Nous Portal login flow only (`seraph login`, or its
 `--ca-bundle` flag); the standard `SSL_CERT_FILE` / `REQUESTS_CA_BUNDLE` / `CURL_CA_BUNDLE` variables
 are still read by the plain `requests`/`urllib` calls some tools make (and by
 `pip`, `uv`, `curl`, Node), so a stale path in one of them now fails at the
@@ -991,14 +991,14 @@ Hermes ships with a built-in advisory scanner that flags Python packages in the 
 
 How it runs:
 
-- **CLI startup banner.** A one-line warning is printed if any advisory matches, with a pointer to `hermes doctor` for the full remediation.
-- **`hermes doctor`.** Surfaces every active advisory with version specifics and 2-4 step remediation instructions.
+- **CLI startup banner.** A one-line warning is printed if any advisory matches, with a pointer to `seraph doctor` for the full remediation.
+- **`seraph doctor`.** Surfaces every active advisory with version specifics and 2-4 step remediation instructions.
 - **Gateway startup.** Logged to `gateway.log`; the first interactive message gets a short operator banner.
 
 Each advisory carries a stable id. Once you have read and acted on it you can dismiss it for good:
 
 ```bash
-hermes doctor --ack <advisory-id>
+seraph doctor --ack <advisory-id>
 ```
 
 The ack is persisted to `config.security.acked_advisories` and survives restart. Old advisories are intentionally **not** removed from the catalog — leaving them in place keeps fresh installs warned about historically poisoned versions that might still be cached in a private mirror.
@@ -1037,7 +1037,7 @@ constraints and exact pins remain binding.
 To disable on-demand installations, run:
 
 ```bash
-hermes config set security.allow_lazy_installs false
+seraph config set security.allow_lazy_installs false
 ```
 
 Already installed dependencies remain usable. Explicit PM install commands
@@ -1047,7 +1047,7 @@ names. This setting is not a blanket ban on explicit plugin admission or
 manual package-manager commands. The official Docker image also disables
 on-demand installs through its internal environment policy.
 
-For missing dependencies, use `hermes tools` and `hermes doctor` to identify
+For missing dependencies, use `seraph tools` and `seraph doctor` to identify
 the requirement. Do not run pip against a signed payload or the system Python.
 See [Package management](../reference/package-management.md) for installation
 ownership, diagnostics, and command boundaries.

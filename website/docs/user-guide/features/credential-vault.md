@@ -57,7 +57,7 @@ Sites that ask for a code after the password are handled the same way:
   link a site shows when you enable 2FA; 1Password and Bitwarden items that
   hold a TOTP seed count too): Hermes generates the current code and enters
   it. Nobody is asked. Add the key in **Settings → Passwords & Logins → Add**
-  or `hermes vault add`; the item shows a *2FA auto* badge. Like the
+  or `seraph vault add`; the item shows a *2FA auto* badge. Like the
   password, the code is only generated for a page on the login's saved site.
 - **Code sent to your phone or email**: a small prompt appears in your
   surface ("Verification code for github.com"), you type the code, Hermes
@@ -80,7 +80,7 @@ A manager item that lists several websites (say `amazon.co.uk`,
 `www.amazon.co.uk` and `eu.account.amazon.com`) fills on each of those exact
 origins; nothing is inferred beyond the URLs saved on the item.
 
-Prefer not to use a detected manager? `hermes vault sources --disable bitwarden`,
+Prefer not to use a detected manager? `seraph vault sources --disable bitwarden`,
 or the switch in **Settings → Passwords & Logins**.
 
 ## Logins saved in your real browser
@@ -105,7 +105,7 @@ already carries.
 ## Paying and filling addresses
 
 Cards and addresses work the same way as logins: saved once (**Settings →
-Passwords & Logins → Add**, or `hermes vault add`), bound to the checkout site,
+Passwords & Logins → Add**, or `seraph vault add`), bound to the checkout site,
 and filled by the agent on that site only. **Every card fill asks you first**,
 with the same approval prompt as a dangerous command; declining writes nothing.
 Headless sessions (cron, webhooks, the API server) cannot confirm and are
@@ -116,8 +116,8 @@ cannot spend. Address fills need no confirmation.
 
 - **Desktop → Settings → Passwords & Logins**: everything saved, the detected
   password managers with Unlock/Lock, Add, Remove.
-- **CLI**: `hermes vault list`, `hermes vault add`, `hermes vault rm <handle>`,
-  `hermes vault sources`, `hermes vault key`.
+- **CLI**: `seraph vault list`, `seraph vault add`, `seraph vault rm <handle>`,
+  `seraph vault sources`, `seraph vault key`.
 
 Items live encrypted under `~/.hermes/vault/`, scoped to the profile. Labels,
 site origins and login identifiers are visible metadata; passwords and card
@@ -131,9 +131,9 @@ system's keychain instead (macOS Keychain, Windows Credential Manager, the
 Secret Service / KWallet on Linux):
 
 ```bash
-hermes vault key                          # where the key is now, and whether a keychain is reachable
-hermes vault key migrate --to keychain    # move it (installs the small `keychain` feature if needed)
-hermes vault key migrate --to file        # move it back
+seraph vault key                          # where the key is now, and whether a keychain is reachable
+seraph vault key migrate --to keychain    # move it (installs the small `keychain` feature if needed)
+seraph vault key migrate --to file        # move it back
 ```
 
 The move writes the key to the keychain, checks that the keychain copy decrypts
@@ -150,7 +150,7 @@ With `keychain` and no reachable keychain (a headless Linux server, an SSH
 session without a desktop keyring), a new vault's key goes to `vault.key` as
 before, with a warning in the log. Each profile gets its own keychain entry,
 named in `~/.hermes/vault/vault.keyref` (which holds no secret). A profile
-made with `hermes profile create --clone-all` gets an entry of its own while it
+made with `seraph profile create --clone-all` gets an entry of its own while it
 is being created, so the original moving its key back to a file later cannot
 leave the copy without a key; if the keychain cannot be reached at that moment,
 the clone is refused with a message instead of sharing the original's entry. A
@@ -159,10 +159,10 @@ vault, and never deletes the entry it came from.
 
 What changes in keychain mode:
 
-- **Backups and copies hold the vault without its key.** `hermes backup`, a
+- **Backups and copies hold the vault without its key.** `seraph backup`, a
   synced or copied `~/.hermes`, or a disk image no longer carries everything
   needed to open the vault. Before moving a profile to another machine, run
-  `hermes vault key migrate --to file`.
+  `seraph vault key migrate --to file`.
 - **The keychain may ask.** macOS can ask whether Hermes may use the entry
   (for example after an update replaces Hermes' Python), and a locked Linux
   keyring asks to be unlocked. Cron jobs that run while you are logged out
@@ -176,7 +176,7 @@ That is why keychain storage is opt-in rather than the default.
 
 ## Headless sessions
 
-Cron jobs, webhooks, the API server and `hermes chat -q` have nobody to answer a
+Cron jobs, webhooks, the API server and `seraph chat -q` have nobody to answer a
 prompt. Saved local logins keep working there; a locked password manager reports
 `unavailable_in_this_session` and a missing login reports `prompt_unavailable`.
 Unlock or save from an interactive session first, or give 1Password a service
@@ -201,7 +201,7 @@ refused unless the page origin exactly matches the saved origin, checked again
 inside the page immediately before the write. With the Camofox browser plugin,
 which has no CDP endpoint, the same checks run and the fill goes to the Camofox
 tab through its REST evaluate endpoint, only when `CAMOFOX_URL` is loopback or
-HTTPS. In the Hermes Desktop in-app Browser the fill goes to that exact tab
+HTTPS. In the Seraph Desktop in-app Browser the fill goes to that exact tab
 through the Desktop's authenticated preview request channel, with the same
 origin checks; saved authenticator codes are bound to the login's origins too.
 

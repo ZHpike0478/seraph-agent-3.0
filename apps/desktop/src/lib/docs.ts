@@ -4,4 +4,5 @@
  * (bundled installs with a damaged payload) and any future doc links point
  * at the same place.
  */
-export const DESKTOP_DOCS_URL = 'https://hermes-agent.nousresearch.com/docs/user-guide/desktop'
+export const DESKTOP_DOCS_URL =
+  'https://github.com/ZHpike0478/seraph-agent-3.0/blob/main/website/docs/user-guide/desktop.md'

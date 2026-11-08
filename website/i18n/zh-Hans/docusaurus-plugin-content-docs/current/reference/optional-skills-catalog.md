@@ -9,14 +9,14 @@ description: "hermes-agent 附带的官方可选技能 — 通过 hermes skills 
 可选技能随 hermes-agent 一起发布，位于 `optional-skills/` 目录下，但**默认未激活**。请显式安装：
 
 ```bash
-hermes skills install official/<category>/<skill>
+seraph skills install official/<category>/<skill>
 ```
 
 示例：
 
 ```bash
-hermes skills install official/blockchain/solana
-hermes skills install official/mlops/flash-attention
+seraph skills install official/blockchain/solana
+seraph skills install official/mlops/flash-attention
 ```
 
 下方每个技能均链接至专属页面，包含完整定义、配置和使用说明。
@@ -24,7 +24,7 @@ hermes skills install official/mlops/flash-attention
 卸载方式：
 
 ```bash
-hermes skills uninstall <skill-name>
+seraph skills uninstall <skill-name>
 ```
 
 ## autonomous-ai-agents

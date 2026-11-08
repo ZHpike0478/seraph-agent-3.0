@@ -319,7 +319,7 @@ auxiliary:
 Plugins may supply provider/model registration defaults for their own
 tasks. Operator configuration in `auxiliary.<task>` overrides those
 defaults and controls the deployment choice. A registered task is a
-first-class slot on every model-assignment surface: the `hermes model` →
+first-class slot on every model-assignment surface: the `seraph model` →
 *Configure auxiliary models* picker, the dashboard Models page, and Desktop
 Settings → Models → Auxiliary all list it (after the built-in tasks, under
 the plugin's `display_name`) and can pin, reset, or flag it as a stale
@@ -502,7 +502,7 @@ plugins:
       llm:
         # Allow this plugin to choose a different Hermes provider
         # (must be one Hermes already knows about — same names as
-        # `hermes model` and config.yaml model.provider).
+        # `seraph model` and config.yaml model.provider).
         allow_provider_override: true
 
         # Optionally restrict which providers. Use ["*"] for any.

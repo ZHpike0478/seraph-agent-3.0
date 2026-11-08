@@ -14,10 +14,10 @@ Record a site's XHR into a HAR, derive an HTTP client.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/web-development/har-derived-api-client` |
+| Source | Optional — install with `seraph skills install official/web-development/har-derived-api-client` |
 | Path | `optional-skills/web-development/har-derived-api-client` |
 | Version | `0.1.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Browser`, `HAR`, `API`, `Reverse-Engineering`, `Playwright` |

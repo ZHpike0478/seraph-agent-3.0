@@ -7,12 +7,12 @@ description: "Filesystem safety nets for destructive operations using shadow git
 
 # Checkpoints and `/rollback`
 
-Hermes Agent can automatically snapshot your project before **destructive operations** and restore it with a single command. Checkpoints are **opt-in** as of v2 — most users never use `/rollback`, and the shadow-store storage is non-trivial over time, so the default is off.
+Seraph Agent 3.0 can automatically snapshot your project before **destructive operations** and restore it with a single command. Checkpoints are **opt-in** as of v2 — most users never use `/rollback`, and the shadow-store storage is non-trivial over time, so the default is off.
 
 Enable checkpoints per-session with `--checkpoints`:
 
 ```bash
-hermes chat --checkpoints
+seraph chat --checkpoints
 ```
 
 Or enable globally in `~/.hermes/config.yaml`:
@@ -49,12 +49,12 @@ CLI for inspecting and managing the store outside a session:
 
 | Command | Description |
 |---------|-------------|
-| `hermes checkpoints` | Show total size, project count, per-project breakdown |
-| `hermes checkpoints status` | Same as bare `checkpoints` |
-| `hermes checkpoints list` | Alias for `status` |
-| `hermes checkpoints prune` | Force a sweep: delete orphans/stale, GC, enforce size cap |
-| `hermes checkpoints clear` | Nuke the entire checkpoint base (asks first) |
-| `hermes checkpoints clear-legacy` | Delete only the `legacy-*` archives from v1 migration |
+| `seraph checkpoints` | Show total size, project count, per-project breakdown |
+| `seraph checkpoints status` | Same as bare `checkpoints` |
+| `seraph checkpoints list` | Alias for `status` |
+| `seraph checkpoints prune` | Force a sweep: delete orphans/stale, GC, enforce size cap |
+| `seraph checkpoints clear` | Nuke the entire checkpoint base (asks first) |
+| `seraph checkpoints clear-legacy` | Delete only the `legacy-*` archives from v1 migration |
 
 ## How Checkpoints Work
 
@@ -103,7 +103,7 @@ checkpoints:
   # large store. This sweep never deletes "orphan" entries (working directory
   # not found) — a missing workdir is ambiguous (deleted project vs. an
   # unmounted external volume / network share / VPN not yet up), so orphan
-  # cleanup is only ever done via the explicit `hermes checkpoints prune`
+  # cleanup is only ever done via the explicit `seraph checkpoints prune`
   # command below, with a confirmation prompt.
   auto_prune: true
   retention_days: 7
@@ -118,7 +118,7 @@ checkpoints:
   auto_prune: false
 ```
 
-When `enabled: false`, the Checkpoint Manager is a no-op and never attempts git operations. When `auto_prune: false`, the store grows until you run `hermes checkpoints prune` manually.
+When `enabled: false`, the Checkpoint Manager is a no-op and never attempts git operations. When `auto_prune: false`, the store grows until you run `seraph checkpoints prune` manually.
 
 ## Listing Checkpoints
 
@@ -146,7 +146,7 @@ Hermes responds with a formatted list showing change statistics:
 ## Inspecting the Store from the Shell
 
 ```bash
-hermes checkpoints
+seraph checkpoints
 ```
 
 Sample output:
@@ -173,7 +173,7 @@ Clear with: hermes checkpoints clear-legacy
 Force a full sweep (ignores the 24h idempotency marker):
 
 ```bash
-hermes checkpoints prune --retention-days 3 --max-size-mb 200
+seraph checkpoints prune --retention-days 3 --max-size-mb 200
 ```
 
 ## Previewing Changes with `/rollback diff`
@@ -305,7 +305,7 @@ With a container terminal backend (`docker`, `modal`, `daytona`, `vercel_sandbox
   └── legacy-<ts>/           # archived pre-v2 per-project shadow repos
 ```
 
-Each `<hash>` is derived from the absolute path of the working directory. You normally never need to touch these manually — use `hermes checkpoints status` / `prune` / `clear` instead.
+Each `<hash>` is derived from the absolute path of the working directory. You normally never need to touch these manually — use `seraph checkpoints status` / `prune` / `clear` instead.
 
 The sibling `.checkpoints.lock` coordinates processes and survives a store clear. Do not remove it while Hermes is running.
 
@@ -316,17 +316,17 @@ Before the v2 rewrite, each working directory got its own complete shadow git re
 On first v2 run, any pre-v2 shadow repos are moved into `~/.hermes/checkpoints/legacy-<timestamp>/` so the new single-store layout starts clean. Old `/rollback` history is still reachable by manually inspecting the legacy archive with `git`; once you're confident you don't need it, run:
 
 ```bash
-hermes checkpoints clear-legacy
+seraph checkpoints clear-legacy
 ```
 
 to reclaim the space. Legacy archives are also swept by `auto_prune` after `retention_days`.
 
 ## Best Practices
 
-- **Enable checkpoints only when you need them** — `hermes chat --checkpoints` or per-profile `enabled: true`.
+- **Enable checkpoints only when you need them** — `seraph chat --checkpoints` or per-profile `enabled: true`.
 - **Use `/rollback diff` before restoring** — preview what will change to pick the right checkpoint.
 - **Use `/rollback` instead of `git reset`** when you want to undo agent-driven changes only.
-- **Check `hermes checkpoints status` occasionally** if you use checkpoints regularly — shows which projects are active and what the store costs you.
+- **Check `seraph checkpoints status` occasionally** if you use checkpoints regularly — shows which projects are active and what the store costs you.
 - **Combine with Git worktrees** for maximum safety — keep each Hermes session in its own worktree/branch, with checkpoints as an extra layer.
 
 For running multiple agents in parallel on the same repo, see the guide on [Git worktrees](./git-worktrees.md).

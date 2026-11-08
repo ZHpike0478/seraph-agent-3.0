@@ -44,7 +44,7 @@ start. The same holds for `HERMES_PORTAL_BASE_URL`, `NOUS_PORTAL_BASE_URL` and
 A multi-profile process (gateway, dashboard) that serves a profile whose
 `secrets:` source supplies one of these names refuses to serve that profile.
 
-A Hermes process started for another profile (a `hermes -p <name>` worker, a
+A Hermes process started for another profile (a `seraph -p <name>` worker, a
 profile's cron or bot child) keeps the `HERMES_CONFIG_*` deployment of the
 process that started it, so it reads that profile's config from the plane too.
 It does not inherit the plane credential: on-prem, put the
@@ -66,14 +66,14 @@ exits with an error rather than read a local file.
 - **Changes arrive by polling.** Each process checks for changes every 5
   minutes. A change made in the plane reaches a running agent within one
   interval.
-- **Writes go to the profile's own level.** `hermes config set`, `/model`,
+- **Writes go to the profile's own level.** `seraph config set`, `/model`,
   the dashboard, and every other config writer send only the keys that changed,
   guarded against concurrent edits. If another process changed the profile
   meanwhile, Hermes re-reads it and applies only its own change on top, never
   undoing the other one. Removing a key removes it from the profile level only:
   if an upper level also sets it, that value still applies, and Hermes warns
   you.
-- **Locked keys are refused.** `hermes config set` (and any setting changed
+- **Locked keys are refused.** `seraph config set` (and any setting changed
   in the TUI or desktop app, including the prompt, reasoning display and
   details-mode settings) on a locked key reports which level locks it and
   changes nothing. When a whole document is saved, locked keys are left
@@ -83,7 +83,7 @@ exits with an error rather than read a local file.
   `.env` or a secret source and set the reference:
 
   ```bash
-  hermes config set model.api_key '${OPENROUTER_API_KEY}'
+  seraph config set model.api_key '${OPENROUTER_API_KEY}'
   ```
 
 - **`secrets:` comes from the plane** like any other key, so administrators can
@@ -106,19 +106,19 @@ exits with an error rather than read a local file.
 
 `/etc/hermes/config.yaml` (see [Managed Scope](./managed-scope.md)) is
 **ignored** in remote mode: config and locks come only from the plane. Hermes
-warns at startup, and `hermes doctor` flags the file. The managed
+warns at startup, and `seraph doctor` flags the file. The managed
 `/etc/hermes/.env` still applies.
 
 ## Commands that work on the config file
 
 These commands copy or edit `config.yaml` and are refused in remote mode:
 
-- `hermes config edit` (use `hermes config set` instead)
+- `seraph config edit` (use `seraph config set` instead)
 - profile clone, profile rename (the plane keeps a profile's settings under its
   name), and profile distribution install
-- `hermes backup`, `hermes import`, and snapshot restore
-- `hermes gateway --config <file>`
+- `seraph backup`, `seraph import`, and snapshot restore
+- `seraph gateway --config <file>`
 
-`hermes doctor` reports the backend instead of the file: the plane URL, the
+`seraph doctor` reports the backend instead of the file: the plane URL, the
 profile, the profile level's version, the number of locks, and when the config
 was last fetched.

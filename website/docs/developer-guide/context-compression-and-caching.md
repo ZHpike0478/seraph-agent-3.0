@@ -1,6 +1,6 @@
 # Context Compression and Caching
 
-Hermes Agent uses a dual compression system and Anthropic prompt caching to
+Seraph Agent 3.0 uses a dual compression system and Anthropic prompt caching to
 manage context window usage efficiently across long conversations.
 
 Source files: `agent/context_engine.py` (ABC), `agent/context_compressor.py` (default engine),
@@ -59,7 +59,7 @@ Selection is config-driven via `context.engine` in `config.yaml`. The resolution
 
 Plugin engines are **never auto-activated** — the user must explicitly set `context.engine` to the plugin's name. The default `"compressor"` always uses the built-in.
 
-Configure via `hermes plugins` → Provider Plugins → Context Engine, or edit `config.yaml` directly.
+Configure via `seraph plugins` → Provider Plugins → Context Engine, or edit `config.yaml` directly.
 
 For building a context engine plugin, see [Context Engine Plugins](./context-engine-plugin.md).
 
@@ -427,13 +427,13 @@ the same models on any other provider keep your global `threshold`. To opt back 
 the global value:
 
 ```bash
-hermes config set compression.codex_gpt55_autoraise false
+seraph config set compression.codex_gpt55_autoraise false
 ```
 
 To keep the 85% autoraise but hide only the one-time notice:
 
 ```bash
-hermes config set compression.codex_gpt55_autoraise_notice false
+seraph config set compression.codex_gpt55_autoraise_notice false
 ```
 
 ### Codex large-context `-900k` picker variants (opt-in)
@@ -678,7 +678,7 @@ session or gateway agent rebuild), `agent/prepared_compaction.py` writes the nex
 the trigger fires. When the last provider-reported prompt count is within 12% of the trigger
 (`threshold_tokens`) below it, the turn loop starts one background pass, before a tool batch runs or
 at turn end. Turn-end passes are skipped for cron runs, delegated children and one-shot sessions
-(`hermes chat -q`, `-z`), whose agents end with the turn. The pass plans the same window `compress()` plans (`_plan_compaction_window`) and calls
+(`seraph chat -q`, `-z`), whose agents end with the turn. The pass plans the same window `compress()` plans (`_plan_compaction_window`) and calls
 the same `_generate_summary` on a copy of the compressor and of the window's messages, so the live
 transcript, the system prompt and the prompt cache are untouched until compaction. There is one pass
 per compaction: while a summary is held, no further pass starts, however much the prompt grows.

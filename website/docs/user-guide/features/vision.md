@@ -1,13 +1,13 @@
 ---
 title: Vision & Image Paste
-description: Paste images from your clipboard into the Hermes CLI for multimodal vision analysis.
+description: Paste images from your clipboard into the Seraph CLI for multimodal vision analysis.
 sidebar_label: Vision & Image Paste
 sidebar_position: 7
 ---
 
 # Vision & Image Paste
 
-Hermes Agent supports **multimodal vision** — you can paste images from your clipboard directly into the CLI and ask the agent to analyze, describe, or work with them. Images are sent to the model as base64-encoded content blocks, so any vision-capable model can process them.
+Seraph Agent 3.0 supports **multimodal vision** — you can paste images from your clipboard directly into the CLI and ask the agent to analyze, describe, or work with them. Images are sent to the model as base64-encoded content blocks, so any vision-capable model can process them.
 
 :::tip
 Portal subscribers get vision-capable models (Claude, GPT-5, Gemini) in the same catalog — no extra credentials needed. See [Nous Portal](../../integrations/nous-portal.md).
@@ -151,7 +151,7 @@ powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms;
 
 ## SSH & Remote Sessions
 
-**Clipboard image paste does not fully work over SSH.** When you SSH into a remote machine, the Hermes CLI runs on the remote host. Clipboard tools (`xclip`, `wl-paste`, `powershell.exe`, `osascript`) read the clipboard of the machine they run on — which is the remote server, not your local machine. Your local clipboard image is therefore inaccessible from the remote side.
+**Clipboard image paste does not fully work over SSH.** When you SSH into a remote machine, the Seraph CLI runs on the remote host. Clipboard tools (`xclip`, `wl-paste`, `powershell.exe`, `osascript`) read the clipboard of the machine they run on — which is the remote server, not your local machine. Your local clipboard image is therefore inaccessible from the remote side.
 
 Text can sometimes still bridge through terminal paste or OSC52, but image clipboard access and local screenshot temp paths remain tied to the machine running Hermes.
 
@@ -244,7 +244,7 @@ vision:
 
 ### Images in follow-up turns: `vision.replay_recent_images`
 
-The session database stores user messages as text, with one `[screenshot]` line per attached image. A turn whose history is rebuilt from the database (every request to the [API server](api-server.md) that continues a session with `X-Hermes-Session-Id`, `hermes chat --resume`, a gateway restart) used to show the model that placeholder, so a follow-up question about a photo sent one message earlier got a guess.
+The session database stores user messages as text, with one `[screenshot]` line per attached image. A turn whose history is rebuilt from the database (every request to the [API server](api-server.md) that continues a session with `X-Hermes-Session-Id`, `seraph chat --resume`, a gateway restart) used to show the model that placeholder, so a follow-up question about a photo sent one message earlier got a guess.
 
 When the model takes images natively (see [Image Routing](#image-routing-vision-capable-vs-text-only-models)), Hermes now sends the most recent images again, in their original message:
 

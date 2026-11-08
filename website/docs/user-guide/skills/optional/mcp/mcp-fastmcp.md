@@ -14,10 +14,10 @@ Build, test, and deploy Python MCP servers.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/mcp/fastmcp` |
+| Source | Optional — install with `seraph skills install official/mcp/fastmcp` |
 | Path | `optional-skills/mcp/fastmcp` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `MCP`, `FastMCP`, `Python`, `Tools`, `Resources`, `Prompts`, `Deployment` |

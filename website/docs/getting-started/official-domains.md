@@ -1,11 +1,13 @@
 ---
-title: Official Domains & Phishing Safety
-description: How to verify you are using genuine Hermes Agent resources, and how to spot impersonation scams.
+title: Upstream Hermes Domains & Phishing Safety
+description: How to verify Nous Research's Hermes Agent resources and distinguish them from this Seraph Agent community fork.
 ---
 
-# Official Domains & Phishing Safety
+# Upstream Hermes Domains & Phishing Safety
 
-Hermes Agent's popularity has attracted impersonation campaigns: fake "Hermes" websites, GitHub accounts that mass-mention contributors with shortlinks, and cold emails offering "credits" on lookalike products. This page lists the official sources so you can check anything that claims to be Hermes Agent.
+This page documents the official sources for **Nous Research's upstream Hermes Agent**, not Seraph Agent 3.0. Seraph is a community fork in [ZHpike0478/seraph-agent-3.0](https://github.com/ZHpike0478/seraph-agent-3.0); it is not operated by Nous Research. The upstream Hermes name and popularity have attracted impersonation campaigns, so use this list only to verify resources that claim to come from Nous Research.
+
+This fork currently publishes source installers from its GitHub repository. It does not publish desktop installers, Docker images, or a Termux package. Do not treat upstream downloads or services listed below as Seraph releases.
 
 ## Official sources
 
@@ -42,7 +44,7 @@ iex (irm https://hermes-agent.nousresearch.com/install.ps1)
 
 The other supported routes also stay on official sources: Desktop packages download from the [Hermes website](https://hermes-agent.nousresearch.com/), Termux uses the signed APT repository on `hermes-assets.nousresearch.com` (see the [Termux guide](./termux.md), not the script above), Nix builds from the GitHub repository (see [Nix & NixOS](./nix-setup.md)), and Docker pulls `nousresearch/hermes-agent` from Docker Hub. Some guides fetch `install.ps1` straight from the repository at `raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.ps1`; it is the same script.
 
-If an installer, download, image, or "portal" is hosted anywhere other than the sources listed on this page, treat it as untrusted.
+These checks apply to upstream Hermes Agent resources. For Seraph source installs, use the links in this repository's [installation guide](./installation.md).
 
 ## Not official
 

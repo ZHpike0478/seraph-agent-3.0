@@ -14,10 +14,10 @@ Generate wiki docs + Mermaid diagrams for any codebase.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/software-development/code-wiki` |
+| Source | Optional — install with `seraph skills install official/software-development/code-wiki` |
 | Path | `optional-skills/software-development/code-wiki` |
 | Version | `0.1.0` |
-| Author | Teknium (teknium1), Hermes Agent |
+| Author | Teknium (teknium1), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `Documentation`, `Mermaid`, `Architecture`, `Diagrams`, `Wiki`, `Code-Analysis` |

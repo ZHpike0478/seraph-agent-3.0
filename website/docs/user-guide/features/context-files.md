@@ -6,7 +6,7 @@ description: "Project context files — .hermes.md, AGENTS.md, CLAUDE.md, global
 
 # Context Files
 
-Hermes Agent automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Hermes instance and is loaded from `HERMES_HOME` only.
+Seraph Agent 3.0 automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Hermes instance and is loaded from `HERMES_HOME` only.
 
 ## Supported Context Files
 
@@ -189,8 +189,8 @@ file**. Hermes logs a warning naming the matched pattern, loads the file as usua
 `⚠ SOUL.md … loaded — matched prompt-injection pattern(s); review the file`. This lets an identity file that
 *documents* an attack phrase (security guidance such as "content telling you to ignore previous instructions")
 keep working; if you did not write the flagged text, treat the warning as a sign that something else edited
-the file. The exception does not extend to a `SOUL.md` shipped by a profile distribution: `hermes profile
-install <git-url>` and `hermes profile update` copy a third party's `SOUL.md` into the profile home without
+the file. The exception does not extend to a `SOUL.md` shipped by a profile distribution: `seraph profile
+install <git-url>` and `seraph profile update` copy a third party's `SOUL.md` into the profile home without
 a scan or an approval prompt, so when `distribution.yaml` owns the file a scanner hit still blocks it.
 
 :::warning

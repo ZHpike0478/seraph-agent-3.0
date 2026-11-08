@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 title: "Signal"
-description: "Set up Hermes Agent as a Signal messenger bot via signal-cli daemon"
+description: "Set up Seraph Agent 3.0 as a Signal messenger bot via signal-cli daemon"
 ---
 
 # Signal Setup
@@ -83,7 +83,7 @@ curl http://127.0.0.1:8080/api/v1/check
 The easiest way:
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **Signal** from the platform menu. The wizard will:
@@ -114,8 +114,8 @@ SIGNAL_HOME_CHANNEL=+1234567890                  # Default delivery target for c
 Then start the gateway:
 
 ```bash
-hermes gateway              # Foreground
-hermes gateway install      # Install as a user service
+seraph gateway              # Foreground
+seraph gateway install      # Install as a user service
 sudo hermes gateway install --system   # Linux only: boot-time system service
 ```
 
@@ -128,7 +128,7 @@ sudo hermes gateway install --system   # Linux only: boot-time system service
 DM access follows the same pattern as all other Hermes platforms:
 
 1. **`SIGNAL_ALLOWED_USERS` set** → only those users can message
-2. **No allowlist set** → unknown users get a DM pairing code (approve via `hermes pairing approve signal CODE`)
+2. **No allowlist set** → unknown users get a DM pairing code (approve via `seraph pairing approve signal CODE`)
 3. **`SIGNAL_ALLOW_ALL_USERS=true`** → anyone can message (use with caution)
 
 ### Group Access
@@ -183,7 +183,7 @@ None of this requires additional config — it ships on by default in recent sig
 
 ### Long Messages
 
-Signal caps a single message at **8,000 characters**. Hermes splits longer responses into numbered chunks (`(1/3)`, `(2/3)`, …) automatically instead of truncating them. This applies to every delivery path — live conversation replies, cron job deliveries, `hermes send`, and MCP `send_message` calls — and native formatting (bold, italic, code, spoilers) is preserved across chunk boundaries.
+Signal caps a single message at **8,000 characters**. Hermes splits longer responses into numbered chunks (`(1/3)`, `(2/3)`, …) automatically instead of truncating them. This applies to every delivery path — live conversation replies, cron job deliveries, `seraph send`, and MCP `send_message` calls — and native formatting (bold, italic, code, spoilers) is preserved across chunk boundaries.
 
 ### Typing Indicators
 

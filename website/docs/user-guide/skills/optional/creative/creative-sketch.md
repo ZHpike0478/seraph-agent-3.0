@@ -14,10 +14,10 @@ Throwaway HTML mockups: 2-3 design variants to compare.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/creative/sketch` |
+| Source | Optional — install with `seraph skills install official/creative/sketch` |
 | Path | `optional-skills/creative/sketch` |
 | Version | `1.0.1` |
-| Author | Hermes Agent (adapted from gsd-build/get-shit-done) |
+| Author | Seraph Agent 3.0 (adapted from gsd-build/get-shit-done) |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `sketch`, `mockup`, `design`, `ui`, `prototype`, `html`, `variants`, `exploration`, `wireframe`, `comparison` |

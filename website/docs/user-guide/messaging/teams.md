@@ -1,7 +1,7 @@
 ---
 sidebar_position: 5
 title: "Microsoft Teams"
-description: "Set up Hermes Agent as a Microsoft Teams bot"
+description: "Set up Seraph Agent 3.0 as a Microsoft Teams bot"
 ---
 
 # Microsoft Teams Setup
@@ -10,11 +10,11 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-Connect Hermes Agent to Microsoft Teams as a bot. Unlike Slack's Socket Mode, Teams delivers messages by calling a **public HTTPS webhook**, so your instance needs a publicly reachable endpoint — either a dev tunnel (local dev) or a real domain (production).
+Connect Seraph Agent 3.0 to Microsoft Teams as a bot. Unlike Slack's Socket Mode, Teams delivers messages by calling a **public HTTPS webhook**, so your instance needs a publicly reachable endpoint — either a dev tunnel (local dev) or a real domain (production).
 
 Need meeting summaries from Microsoft Graph events rather than normal bot conversations? Use the dedicated setup page: [Teams Meetings](./teams-meetings.md).
 
-> Run `hermes gateway setup` and pick **Microsoft Teams** for a guided walk-through.
+> Run `seraph gateway setup` and pick **Microsoft Teams** for a guided walk-through.
 
 ## How the Bot Responds
 
@@ -120,7 +120,7 @@ HERMES_UID=$(id -u) HERMES_GID=$(id -g) docker compose up -d gateway
 **Native / systemd install** (typical `hermes` one-liner installer under `~/.hermes/hermes-agent`):
 
 ```bash
-hermes gateway restart
+seraph gateway restart
 # or foreground: hermes gateway run
 ```
 
@@ -140,7 +140,7 @@ curl http://localhost:3978/health   # should return: ok
 # Docker:
 docker logs -f hermes
 # Native:
-hermes gateway status -l
+seraph gateway status -l
 ```
 
 Look for:
@@ -264,7 +264,7 @@ Make sure the public HTTPS endpoint is reachable from the internet and uses a va
 
 | Problem | Solution |
 |---------|----------|
-| `Can't find a suitable configuration file` from `docker compose` | You are not in the repo that has `docker-compose.yml`, or you are on a native install — use `hermes gateway restart` instead, or `cd` into the clone first |
+| `Can't find a suitable configuration file` from `docker compose` | You are not in the repo that has `docker-compose.yml`, or you are on a native install — use `seraph gateway restart` instead, or `cd` into the clone first |
 | `requirements not met` / `Teams SDK missing` / `No adapter available for teams` | Request the `teams` extra through PM as shown above, then restart the gateway. Do not install into a system Python or mutate the Hermes environment. |
 | `health` endpoint works but bot doesn't respond | Check that your tunnel is still running and the bot's messaging endpoint matches the tunnel URL |
 | Logs show `"UNKNOWN / HTTP/1.0" 400` when Teams sends a message | The tunnel or reverse proxy is forwarding HTTPS to Hermes' plain HTTP listener. Terminate TLS at the proxy and forward HTTP to port `3978` |
@@ -273,7 +273,7 @@ Make sure the public HTTPS endpoint is reachable from the internet and uses a va
 | `No inference provider configured` | Check that `ANTHROPIC_API_KEY` (or another provider key) is set in `~/.hermes/.env` |
 | Bot receives messages but ignores them | Your AAD object ID may not be in `TEAMS_ALLOWED_USERS`. Run `teams status --verbose` to find it |
 | Tunnel URL changes on restart | devtunnel URLs are persistent if you use a named tunnel (`devtunnel create hermes-bot`). ngrok and cloudflared generate a new URL each run unless you have a paid plan — update the bot endpoint with `teams app update` when it changes |
-| Teams shows "This bot is not responding" | The webhook returned an error. Check `docker logs hermes` / `hermes gateway status -l` for tracebacks |
+| Teams shows "This bot is not responding" | The webhook returned an error. Check `docker logs hermes` / `seraph gateway status -l` for tracebacks |
 | `[teams] Failed to connect` in logs | The SDK failed to authenticate. Double-check your credentials and that the tenant ID matches the account you used in `teams login` |
 
 ---

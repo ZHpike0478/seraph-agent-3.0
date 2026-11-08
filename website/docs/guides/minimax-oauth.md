@@ -1,12 +1,12 @@
 ---
 sidebar_position: 15
 title: "MiniMax OAuth"
-description: "Log into MiniMax via browser OAuth and use MiniMax-M2.7 models in Hermes Agent — no API key required"
+description: "Log into MiniMax via browser OAuth and use MiniMax-M2.7 models in Seraph Agent 3.0 — no API key required"
 ---
 
 # MiniMax OAuth
 
-Hermes Agent supports **MiniMax** through a browser-based OAuth login flow, using the same credentials as the [MiniMax portal](https://www.minimax.io). No API key or credit card is required — log in once and Hermes automatically refreshes your session.
+Seraph Agent 3.0 supports **MiniMax** through a browser-based OAuth login flow, using the same credentials as the [MiniMax portal](https://www.minimax.io). No API key or credit card is required — log in once and Hermes automatically refreshes your session.
 
 The transport reuses the `anthropic_messages` adapter (MiniMax exposes an Anthropic Messages-compatible endpoint at `/anthropic`), so all existing tool-calling, streaming, and context features work without any adapter changes.
 
@@ -26,7 +26,7 @@ The transport reuses the `anthropic_messages` adapter (MiniMax exposes an Anthro
 ## Prerequisites
 
 - Python 3.9+
-- Hermes Agent installed
+- Seraph Agent 3.0 installed
 - A MiniMax account at [minimax.io](https://www.minimax.io) (global) or [minimaxi.com](https://www.minimaxi.com) (China)
 - A browser available on the local machine (or use `--no-browser` for remote sessions)
 
@@ -34,7 +34,7 @@ The transport reuses the `anthropic_messages` adapter (MiniMax exposes an Anthro
 
 ```bash
 # Launch the provider and model picker
-hermes model
+seraph model
 # → Select "MiniMax (OAuth)" from the provider list
 # → Hermes opens your browser to the MiniMax authorization page
 # → Approve access in the browser
@@ -51,7 +51,7 @@ After the first login, credentials are stored under `~/.hermes/auth.json` and ar
 You can trigger a login without going through the model picker:
 
 ```bash
-hermes auth add minimax-oauth
+seraph auth add minimax-oauth
 ```
 
 ### China region
@@ -67,7 +67,7 @@ echo 'MINIMAX_CN_API_KEY=your-key' >> ~/.hermes/.env
 On servers or containers where no browser is available:
 
 ```bash
-hermes auth add minimax-oauth --no-browser
+seraph auth add minimax-oauth --no-browser
 ```
 
 Hermes will print the verification URL and user code — open the URL on any device and enter the code when prompted.
@@ -87,7 +87,7 @@ Token refresh (standard OAuth `refresh_token` grant) runs automatically at each 
 ## Checking Login Status
 
 ```bash
-hermes doctor
+seraph doctor
 ```
 
 The `◆ Auth Providers` section will show:
@@ -105,7 +105,7 @@ or, if not logged in:
 ## Switching Models
 
 ```bash
-hermes model
+seraph model
 # → Select "MiniMax (OAuth)"
 # → Pick from the model list
 ```
@@ -113,8 +113,8 @@ hermes model
 Or set the model directly:
 
 ```bash
-hermes config set model.default MiniMax-M2.7
-hermes config set model.provider minimax-oauth
+seraph config set model.default MiniMax-M2.7
+seraph config set model.provider minimax-oauth
 ```
 
 ## Configuration Reference
@@ -140,10 +140,10 @@ model:
 All of the following resolve to `minimax-oauth`:
 
 ```bash
-hermes --provider minimax-oauth    # canonical
-hermes --provider minimax-portal   # alias
-hermes --provider minimax-global   # alias
-hermes --provider minimax_oauth    # alias (underscore form)
+seraph --provider minimax-oauth    # canonical
+seraph --provider minimax-portal   # alias
+seraph --provider minimax-global   # alias
+seraph --provider minimax_oauth    # alias (underscore form)
 ```
 
 ## Environment Variables
@@ -155,10 +155,10 @@ The `minimax-oauth` provider does **not** use `MINIMAX_API_KEY` or `MINIMAX_BASE
 | `MINIMAX_API_KEY` | Used by `minimax` provider only — ignored for `minimax-oauth` |
 | `MINIMAX_CN_API_KEY` | Used by `minimax-cn` provider only — ignored for `minimax-oauth` |
 
-To use `minimax-oauth` as the active provider, set `model.provider: minimax-oauth` in `config.yaml` (use `hermes setup` for the guided flow), or pass `--provider minimax-oauth` for a single invocation:
+To use `minimax-oauth` as the active provider, set `model.provider: minimax-oauth` in `config.yaml` (use `seraph setup` for the guided flow), or pass `--provider minimax-oauth` for a single invocation:
 
 ```bash
-hermes --provider minimax-oauth
+seraph --provider minimax-oauth
 ```
 
 ## Models
@@ -180,13 +180,13 @@ Hermes refreshes the token on every session start if it is within 60 seconds of 
 
 When the refresh failure is terminal (HTTP 4xx, `invalid_grant`, revoked grant, etc.), Hermes marks the refresh token as dead and quarantines it locally so it doesn't keep replaying the doomed exchange. The agent surfaces a single "re-authentication required" message and stays out of the way until you log in again.
 
-**Fix:** run `hermes auth add minimax-oauth` again to start a fresh login. The quarantine clears on the next successful exchange.
+**Fix:** run `seraph auth add minimax-oauth` again to start a fresh login. The quarantine clears on the next successful exchange.
 
 ### Authorization timed out
 
 The device-code flow has a finite expiry window. If you don't approve the login in time, Hermes raises a timeout error.
 
-**Fix:** re-run `hermes auth add minimax-oauth` (or `hermes model`). The flow starts fresh.
+**Fix:** re-run `seraph auth add minimax-oauth` (or `seraph model`). The flow starts fresh.
 
 ### State mismatch (possible CSRF)
 
@@ -199,7 +199,7 @@ Hermes detected that the `state` value returned by the authorization server does
 If `hermes` cannot open a browser window, use `--no-browser`:
 
 ```bash
-hermes auth add minimax-oauth --no-browser
+seraph auth add minimax-oauth --no-browser
 ```
 
 Hermes prints the URL and code. Open the URL on any device and complete the flow there.
@@ -208,20 +208,20 @@ Hermes prints the URL and code. Open the URL on any device and complete the flow
 
 The auth store has no credentials for `minimax-oauth`. You have not logged in yet, or the credential file was deleted.
 
-**Fix:** run `hermes model` and select MiniMax (OAuth), or run `hermes auth add minimax-oauth`.
+**Fix:** run `seraph model` and select MiniMax (OAuth), or run `seraph auth add minimax-oauth`.
 
 ### "Provider 'minimax-oauth' is set in config.yaml but no credentials were found"
 
 The main agent or an auxiliary task (compression, vision, …) is pinned to `minimax-oauth` and the auth store has no login. There is no `MINIMAX_API_KEY`-style environment variable for the OAuth provider — `MINIMAX_API_KEY` belongs to the plain API-key `minimax` provider.
 
-**Fix:** run `hermes auth add minimax-oauth` to sign in, or switch that provider to `minimax` with an API key.
+**Fix:** run `seraph auth add minimax-oauth` to sign in, or switch that provider to `minimax` with an API key.
 
 ## Logging Out
 
 To remove stored MiniMax OAuth credentials:
 
 ```bash
-hermes auth logout minimax-oauth
+seraph auth logout minimax-oauth
 ```
 
 ## See Also

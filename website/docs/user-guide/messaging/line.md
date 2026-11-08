@@ -1,16 +1,16 @@
 ---
 sidebar_position: 17
 title: "LINE"
-description: "Set up Hermes Agent as a LINE Messaging API bot"
+description: "Set up Seraph Agent 3.0 as a LINE Messaging API bot"
 ---
 
 # LINE Setup
 
-Run Hermes Agent as a [LINE](https://line.me/) bot via the official LINE Messaging API. The adapter lives as a bundled platform plugin under `plugins/platforms/line/` — no core edits, just enable it like any other platform.
+Run Seraph Agent 3.0 as a [LINE](https://line.me/) bot via the official LINE Messaging API. The adapter lives as a bundled platform plugin under `plugins/platforms/line/` — no core edits, just enable it like any other platform.
 
 LINE is the dominant messaging app in Japan, Taiwan, and Thailand. If your users live there, this is how they reach you.
 
-> Run `hermes gateway setup` and pick **LINE** for a guided walk-through.
+> Run `seraph gateway setup` and pick **LINE** for a guided walk-through.
 
 ## How the bot responds
 
@@ -100,7 +100,7 @@ Back in the LINE console:
 ## Step 5: Run the gateway
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 The agent log shows:

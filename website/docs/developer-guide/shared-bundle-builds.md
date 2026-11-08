@@ -89,7 +89,7 @@ the clean checkout and prepared inputs, then fails on stale or missing inputs
 instead of installing them. Bundled and Store builds may consume the same
 preparation for a stable tag; light and commit builds cannot switch to Store.
 Product builds still run each time. Native staging exposes `prepare_native` and
-`finish_native` to this composition; `hermes pm bundle` remains a complete
+`finish_native` to this composition; `seraph pm bundle` remains a complete
 native staging command, not the desktop preparation interface.
 
 Windows and macOS release jobs use **restore → prepare → save → build**. The
@@ -127,7 +127,7 @@ explicit input/output contracts in the builder README.
 a temporary snapshot of that same revision. Explicit frontend products must
 come from the selected revision.
 
-`hermes pm bundle --out /work/agent-payload --ref HEAD` stages native tools,
+`seraph pm bundle --out /work/agent-payload --ref HEAD` stages native tools,
 the application environment, and the agent. That PM command does not build
 frontends. `pnpm --dir apps/desktop run payload` uses the stage driver
 that includes them. Neither command creates an Electron installer.
@@ -152,7 +152,7 @@ separate; preparation claims a previously absent work directory. Without
 or path arguments and validates the native receipt before assembly; it never
 bootstraps or repairs dependencies. The receipt and lock are output siblings
 (`agent-payload.prepared.json`, `agent-payload.prepare.lock`), not shipped files.
-Assembly deliberately supplies no frontend products, as with `hermes pm bundle`.
+Assembly deliberately supplies no frontend products, as with `seraph pm bundle`.
 
 The `payload-test` producer on the existing cache action selects only `tools`,
 `python/runtime` and `native`. It excludes source `node_modules`, pnpm stores,

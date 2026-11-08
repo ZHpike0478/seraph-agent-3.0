@@ -1,12 +1,12 @@
 ---
-title: "Inspecting Hermes Desktop Dom — Read the live Hermes desktop DOM/CSS over CDP"
-sidebar_label: "Inspecting Hermes Desktop Dom"
+title: "Inspecting Seraph Desktop Dom — Read the live Hermes desktop DOM/CSS over CDP"
+sidebar_label: "Inspecting Seraph Desktop Dom"
 description: "Read the live Hermes desktop DOM/CSS over CDP"
 ---
 
 {/* This page is auto-generated from the skill's SKILL.md by website/scripts/generate-skill-docs.py. Edit the source SKILL.md, not this page. */}
 
-# Inspecting Hermes Desktop Dom
+# Inspecting Seraph Desktop Dom
 
 Read the live Hermes desktop DOM/CSS over CDP.
 
@@ -14,10 +14,10 @@ Read the live Hermes desktop DOM/CSS over CDP.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/software-development/inspecting-hermes-desktop-dom` |
+| Source | Optional — install with `seraph skills install official/software-development/inspecting-hermes-desktop-dom` |
 | Path | `optional-skills/software-development/inspecting-hermes-desktop-dom` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `desktop`, `electron`, `cdp`, `dom`, `ui-verification`, `self-inspection` |

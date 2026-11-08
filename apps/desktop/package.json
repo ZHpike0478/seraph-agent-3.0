@@ -3,11 +3,11 @@
   "productName": "Hermes",
   "private": true,
   "version": "0.0.0",
-  "description": "Native desktop shell for Hermes Agent.",
+  "description": "Native desktop shell for Seraph Agent 3.0, a community fork of Nous Research's Hermes Agent.",
   "author": "Nous Research",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NousResearch/hermes-agent.git"
+    "url": "git+https://github.com/ZHpike0478/seraph-agent-3.0.git"
   },
   "type": "module",
   "main": "dist/electron-main.mjs",

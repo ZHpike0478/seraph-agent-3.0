@@ -1,17 +1,17 @@
 ---
 slug: /
 sidebar_position: 0
-title: "Hermes Agent 文档"
-description: "由 Nous Research 构建的自我改进 AI 智能体。内置学习循环，从经验中创建技能，在使用过程中持续改进，并跨会话保持记忆。"
+title: "Seraph Agent 3.0 文档"
+description: "Nous Research Hermes Agent 的社区分支，内置学习循环，可从经验中创建技能、在使用过程中持续改进，并跨会话保持记忆。"
 hide_table_of_contents: true
 displayed_sidebar: docs
 ---
 
 import Link from "@docusaurus/Link";
 
-# Hermes Agent
+# Seraph Agent 3.0
 
-由 [Nous Research](https://nousresearch.com) 构建的自我改进 AI 智能体。唯一内置学习循环的智能体——它从经验中创建技能，在使用过程中持续改进，主动提示自身持久化知识，并在会话间不断深化对你的建模。
+[Nous Research Hermes Agent](https://github.com/NousResearch/hermes-agent) 的社区分支，由 Seraph Agent 3.0 维护。上游代码、集成与 MIT 许可仍归功于 Nous Research；本分支保留现有 Hermes 运行时和数据兼容性。
 
 <div
   style={{
@@ -36,7 +36,7 @@ import Link from "@docusaurus/Link";
     快速开始 →
   </Link>
   <a
-    href="https://github.com/NousResearch/hermes-agent"
+    href="https://github.com/ZHpike0478/seraph-agent-3.0"
     style={{
       display: "inline-block",
       padding: "0.6rem 1.2rem",
@@ -45,27 +45,29 @@ import Link from "@docusaurus/Link";
       textDecoration: "none",
     }}
   >
-    在 GitHub 上查看
+    查看 Seraph 源码与发布
   </a>
 </div>
 
 ## 安装
 
+Seraph Agent 3.0 目前提供源码安装；此仓库尚未发布桌面安装包。
+
 **Linux / macOS / WSL2**
 
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.sh | bash
 ```
 
 **Windows（原生，PowerShell）** — _早期测试版，[详情 →](./user-guide/windows-native.md)_
 
 ```powershell
-iex (irm https://hermes-agent.nousresearch.com/install.ps1)
+iex (irm https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.ps1)
 ```
 
-请参阅完整的 **[安装指南](./getting-started/installation.md)**，了解安装程序的具体操作、按用户与 root 的目录布局以及 Windows 相关说明。
+请参阅完整的 **[安装指南](./getting-started/installation.md)**，了解安装程序的具体操作、按用户与 root 的目录布局以及 Windows 相关说明。安装后运行 `seraph setup --portal` 完成配置；`hermes` 命令仍作为兼容别名保留。
 
-## Hermes Agent 是什么？
+## 什么是 Seraph Agent 3.0？
 
 它不是绑定在 IDE 上的编程副驾驶，也不是对单一 API 的聊天机器人封装。它是一个**自主智能体**，运行时间越长，能力越强。它可以部署在任何地方——5 美元的 VPS、GPU 集群，或者闲置时几乎零成本的 serverless 基础设施（Daytona、Modal）。在 Telegram 上与它对话，同时让它在你从未亲自 SSH 登录的云端虚拟机上工作。它不依赖你的本地电脑。
 

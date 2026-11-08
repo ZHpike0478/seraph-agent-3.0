@@ -6,11 +6,11 @@ sidebar_position: 0
 
 # 集成
 
-Hermes Agent 可连接外部系统，用于 AI 推理、工具服务器、IDE 工作流、程序化访问等。这些集成扩展了 Hermes 的能力边界与运行环境。
+Seraph Agent 3.0 可连接外部系统，用于 AI 推理、工具服务器、IDE 工作流、程序化访问等。这些集成扩展了 Hermes 的能力边界与运行环境。
 
 ## AI 提供商与路由
 
-Hermes 开箱即支持多个 AI 推理提供商。使用 `hermes model` 进行交互式配置，或在 `config.yaml` 中直接设置。
+Hermes 开箱即支持多个 AI 推理提供商。使用 `seraph model` 进行交互式配置，或在 `config.yaml` 中直接设置。
 
 - **[AI 提供商](../user-guide/features/provider-routing.md)** — OpenRouter、Anthropic、OpenAI、Google 以及任何兼容 OpenAI 的端点。Hermes 会自动检测每个提供商的能力，包括视觉、流式传输和工具调用。
 - **[提供商路由](../user-guide/features/provider-routing.md)** — 精细控制哪些底层提供商处理你的 OpenRouter 请求。通过排序、白名单、黑名单和显式优先级排序，在成本、速度或质量之间优化。
@@ -22,7 +22,7 @@ Hermes 开箱即支持多个 AI 推理提供商。使用 `hermes model` 进行�
 
 ## 网页搜索后端
 
-`web_search` 和 `web_extract` 工具支持四个后端提供商，通过 `config.yaml` 或 `hermes tools` 配置：
+`web_search` 和 `web_extract` 工具支持四个后端提供商，通过 `config.yaml` 或 `seraph tools` 配置：
 
 | 后端 | 环境变量 | 搜索 | 提取 | 爬取 |
 |---------|---------|--------|---------|-------|
@@ -49,7 +49,7 @@ Hermes 通过 `browser_exec`（基于 CDP 的 Python）提供完整的浏览器�
 - **本地 Chromium 系 CDP** — 使用 `/browser connect` 连接正在运行的 Chrome、Brave、Chromium 或 Edge 浏览器
 - **本地 Chromium** — 由 Hermes 自行启动的无头本地 Chromium（默认）
 
-Camofox 反检测浏览器以目录插件形式提供：`hermes plugins install camofox`。
+Camofox 反检测浏览器以目录插件形式提供：`seraph plugins install camofox`。
 
 详见[浏览器自动化](../user-guide/features/browser.md)的配置与使用说明。
 
@@ -69,7 +69,7 @@ Camofox 反检测浏览器以目录插件形式提供：`hermes plugins install 
 
 ## IDE 与编辑器集成
 
-- **[IDE 集成（ACP）](../user-guide/features/acp.md)** — 在兼容 ACP 的编辑器（如 VS Code、Zed 和 JetBrains）中使用 Hermes Agent。Hermes 作为 ACP 服务器运行，在编辑器内渲染聊天消息、工具活动、文件差异和终端命令。
+- **[IDE 集成（ACP）](../user-guide/features/acp.md)** — 在兼容 ACP 的编辑器（如 VS Code、Zed 和 JetBrains）中使用 Seraph Agent 3.0。Hermes 作为 ACP 服务器运行，在编辑器内渲染聊天消息、工具活动、文件差异和终端命令。
 
 ## 程序化访问
 
@@ -90,7 +90,7 @@ Hermes 可作为 gateway（网关）机器人运行于 19+ 个消息平台，均
 
 ## 家庭自动化
 
-- **[Home Assistant](../user-guide/messaging/homeassistant.md)** — 通过四个专用工具（`ha_list_entities`、`ha_get_state`、`ha_list_services`、`ha_call_service`）控制智能家居设备，并通过 gateway 响应实时状态变更。以插件目录中的 `homeassistant` 插件形式提供（`hermes plugins install homeassistant`）；配置 `HASS_TOKEN` 后，其工具集将自动激活。
+- **[Home Assistant](../user-guide/messaging/homeassistant.md)** — 通过四个专用工具（`ha_list_entities`、`ha_get_state`、`ha_list_services`、`ha_call_service`）控制智能家居设备，并通过 gateway 响应实时状态变更。以插件目录中的 `homeassistant` 插件形式提供（`seraph plugins install homeassistant`）；配置 `HASS_TOKEN` 后，其工具集将自动激活。
 
 ## 插件
 

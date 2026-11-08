@@ -7,7 +7,7 @@ description: "使用 git worktrees 和隔离检出在同一仓库中安全运行
 
 # Git Worktrees
 
-Hermes Agent 常用于大型、长期维护的仓库。当你需要：
+Seraph Agent 3.0 常用于大型、长期维护的仓库。当你需要：
 
 - 在同一项目中**并行运行多个 agent**，或
 - 将实验性重构与主分支隔离，
@@ -20,7 +20,7 @@ Git **worktrees** 是为每个 agent 提供独立检出（checkout）而无需�
 
 Hermes 将**当前工作目录**视为项目根目录：
 
-- CLI：运行 `hermes` 或 `hermes chat` 时所在的目录
+- CLI：运行 `hermes` 或 `seraph chat` 时所在的目录
 - Messaging gateway：由 `MESSAGING_CWD` 设置的目录
 
 如果在**同一检出**中运行多个 agent，它们的变更可能相互干扰：
@@ -137,13 +137,13 @@ git worktree remove ../repo-feature
 - **使用 worktrees 时避免从裸仓库根目录运行 Hermes**
   - 优先使用 worktree 目录，使每个 agent 拥有明确的作用范围。
 
-## 使用 `hermes -w`（自动 Worktree 模式）
+## 使用 `seraph -w`（自动 Worktree 模式）
 
 Hermes 内置 `-w` 标志，可**自动创建一个一次性 git worktree** 及其独立分支。无需手动配置 worktree——只需 `cd` 进入仓库并运行：
 
 ```bash
 cd /path/to/your/repo
-hermes -w
+seraph -w
 ```
 
 Hermes 将：
@@ -157,10 +157,10 @@ Hermes 检出该 worktree 时不会执行仓库自身的 git 配置：其 hooks�
 这是获得 worktree 隔离的最简便方式。也可与单次查询结合使用：
 
 ```bash
-hermes -w -z "Fix issue #123"
+seraph -w -z "Fix issue #123"
 ```
 
-如需并行运行多个 agent，在多个终端中分别运行 `hermes -w`——每次调用都会自动获得独立的 worktree 和分支。
+如需并行运行多个 agent，在多个终端中分别运行 `seraph -w`——每次调用都会自动获得独立的 worktree 和分支。
 
 ## 综合运用
 

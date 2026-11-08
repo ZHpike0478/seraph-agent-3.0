@@ -41,7 +41,7 @@ From the page's perspective, `prompt()` still returns the agent-supplied
 string. From the agent's perspective, it's the same `browser_dialog(action=...)`
 API either way.
 
-The Camofox catalog plugin (`hermes plugins install camofox`) drives a REST-only
+The Camofox catalog plugin (`seraph plugins install camofox`) drives a REST-only
 browser with no CDP surface, so the supervisor does not apply to it.
 
 ## Architecture

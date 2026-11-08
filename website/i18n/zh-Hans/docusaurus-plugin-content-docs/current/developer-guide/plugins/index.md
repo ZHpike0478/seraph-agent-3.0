@@ -29,7 +29,7 @@ Hermes 有多种不同的可插拔接口——有些使用 Python `register_*` A
 | **通过 MCP 接入外部工具**（文件系统、GitHub、Linear、任意 MCP 服务器） | [MCP](../../user-guide/features/mcp.md)——在 `config.yaml` 中声明 `mcp_servers.<name>` |
 | **网关事件钩子**（在启动、会话事件、命令时触发） | [事件钩子](../../user-guide/features/hooks.md#gateway-event-hooks)——将 `HOOK.yaml` + `handler.py` 放入 `~/.hermes/hooks/<name>/` |
 | **Shell 钩子**（在事件发生时运行 shell 命令） | [Shell 钩子](../../user-guide/features/hooks.md#shell-hooks)——在 `config.yaml` 的 `hooks:` 下声明 |
-| **额外技能来源**（自定义 GitHub 仓库、私有技能索引） | [技能](../../user-guide/features/skills.md)——`hermes skills tap add <repo>` · [发布 tap](../../user-guide/features/skills.md#发布自定义-skill-tap) |
+| **额外技能来源**（自定义 GitHub 仓库、私有技能索引） | [技能](../../user-guide/features/skills.md)——`seraph skills tap add <repo>` · [发布 tap](../../user-guide/features/skills.md#发布自定义-skill-tap) |
 | 一流的**核心**推理提供商（非插件） | [添加提供商](../adding-providers.md) |
 
 查看完整的[可插拔接口表](../../user-guide/features/plugins.md#可插拔接口--各场景对应文档)，获取每种扩展接口的汇总视图，包括配置驱动（TTS、STT、MCP、shell 钩子）和放入目录（网关钩子）两种方式。
@@ -69,9 +69,9 @@ provides_hooks:
 
 请在 `provides_tools` 中列出 `register()` 注册的每一个工具。该字段**不**决定用户安装的插件的工具是否加载：插件启用后，`register()` 注册的所有工具都可用，无论是否声明。它实际影响的是：
 
-- **`hermes plugins validate`**：注册的工具与列表不一致时，“declared tools”检查失败，插件无法进入目录（catalog）。
+- **`seraph plugins validate`**：注册的工具与列表不一致时，“declared tools”检查失败，插件无法进入目录（catalog）。
 - **目录展示**：目录及仪表盘/桌面端插件页中的“N 个工具”标签和按工具名搜索。
-- **仪表盘认证提示**：只有已声明工具的可用性检查会用于显示“需要认证”及 `hermes auth <name>` 命令。
+- **仪表盘认证提示**：只有已声明工具的可用性检查会用于显示“需要认证”及 `seraph auth <name>` 命令。
 - **仅限内置的 `kind: platform` 插件**：该字段决定是否在 CLI/TUI 会话中加载 `tools.py`（适配器本身仍延迟加载）。参见 [添加平台适配器](../adding-platform-adapters.md)。
 
 可选字段示例：
@@ -274,7 +274,7 @@ def register(ctx):
 - 在启动时恰好调用一次
 - `ctx.register_tool()` 将你的工具放入注册表——模型立即可见
 - `ctx.register_hook()` 订阅生命周期事件
-- `ctx.register_cli_command()` 注册 CLI 子命令（例如 `hermes my-plugin <subcommand>`）
+- `ctx.register_cli_command()` 注册 CLI 子命令（例如 `seraph my-plugin <subcommand>`）
 - `ctx.register_command()` 注册会话内斜杠命令（例如在 CLI / 网关聊天中输入 `/myplugin <args>`）——详见下方[注册斜杠命令](#注册斜杠命令)
 - `ctx.dispatch_tool(name, arguments)` ——以父代理的上下文（审批、凭证、task_id 自动连接）调用任意其他工具（内置或来自其他插件）。适用于需要直接调用 `terminal`、`read_file` 或其他工具的斜杠命令处理器，效果等同于模型直接调用。
 - 如果此函数崩溃，插件将被禁用，但 Hermes 继续正常运行
@@ -342,12 +342,12 @@ HERMES_PLUGINS_DEBUG=1 hermes plugins list
 同样的日志始终写入 `~/.hermes/logs/agent.log`，失败时为 WARNING 级别，设置环境变量时为 DEBUG 级别（全部内容）。如果无法使用环境变量运行（例如从网关内部），可以改为追踪日志文件：
 
 ```bash
-hermes logs --level WARNING | grep -i plugin
+seraph logs --level WARNING | grep -i plugin
 ```
 
 插件未出现的常见原因：
 
-- **未在配置中启用**——插件需要手动启用。运行 `hermes plugins enable <name>`（名称来自 `plugins list` 输出，嵌套布局下可能是 `<category>/<plugin>`）。
+- **未在配置中启用**——插件需要手动启用。运行 `seraph plugins enable <name>`（名称来自 `plugins list` 输出，嵌套布局下可能是 `<category>/<plugin>`）。
 - **目录结构错误**——必须是 `~/.hermes/plugins/<plugin-name>/plugin.yaml`（扁平）或 `~/.hermes/plugins/<category>/<plugin-name>/plugin.yaml`（一级分类嵌套，最多）。更深层的目录会被忽略。
 - **缺少 `__init__.py`**——插件目录需要同时包含 `plugin.yaml` 和带有 `register(ctx)` 函数的 `__init__.py`。
 - **`kind` 错误**——网关适配器需要在清单中设置 `kind: platform`。记忆提供商会被自动检测为 `kind: exclusive`，并通过 `memory.provider` 配置路由，而非 `plugins.enabled`。
@@ -441,7 +441,7 @@ requires_env:
 
 如果 `WEATHER_API_KEY` 未设置，插件将被禁用并显示清晰的提示信息。不会崩溃，代理中也不会报错——只会显示"Plugin weather disabled (missing: WEATHER_API_KEY)"。
 
-用户运行 `hermes plugins install` 时，会**交互式提示**输入任何缺失的 `requires_env` 变量。值会自动保存到 `.env`。
+用户运行 `seraph plugins install` 时，会**交互式提示**输入任何缺失的 `requires_env` 变量。值会自动保存到 `.env`。
 
 为了获得更好的安装体验，使用带有描述和注册 URL 的富格式：
 
@@ -657,7 +657,7 @@ def register(ctx):
 
 ### 注册 CLI 命令
 
-插件可以添加自己的 `hermes <plugin>` 子命令树：
+插件可以添加自己的 `seraph <plugin>` 子命令树：
 
 ```python
 def _my_command(args):
@@ -687,7 +687,7 @@ def register(ctx):
     )
 ```
 
-注册后，用户可以运行 `hermes my-plugin status`、`hermes my-plugin config` 等命令。
+注册后，用户可以运行 `seraph my-plugin status`、`seraph my-plugin config` 等命令。
 
 **记忆提供商插件**使用基于约定的方式：在插件的 `cli.py` 文件中添加 `register_cli(subparser)` 函数。记忆插件发现系统会自动找到它——无需调用 `ctx.register_cli_command()`。详见[记忆提供商插件指南](../memory-provider-plugin.md#添加-cli-命令)。
 
@@ -726,7 +726,7 @@ def register(ctx):
 
 | | `register_command()` | `register_cli_command()` |
 |---|---|---|
-| 调用方式 | 会话中的 `/name` | 终端中的 `hermes name` |
+| 调用方式 | 会话中的 `/name` | 终端中的 `seraph name` |
 | 适用范围 | CLI 会话、Telegram、Discord 等 | 仅终端 |
 | 处理器接收 | 原始参数字符串 | argparse `Namespace` |
 | 使用场景 | 诊断、状态查询、快速操作 | 复杂子命令树、设置向导 |
@@ -856,7 +856,7 @@ def register(ctx):
         check_fn=check_requirements,
         required_env=["MYPLATFORM_TOKEN"],
         # 从环境变量自动填充 PlatformConfig.extra，使仅环境变量的设置
-        # 在 `hermes gateway status` 中显示，无需 SDK 实例化。
+        # 在 `seraph gateway status` 中显示，无需 SDK 实例化。
         env_enablement_fn=_env_enablement,
         # 启用 cron 投递：`deliver=myplatform` 路由到此变量。
         cron_deliver_env_var="MYPLATFORM_HOME_CHANNEL",
@@ -1040,9 +1040,9 @@ hooks:
 如果你维护了一个技能 GitHub 仓库（或想从内置来源之外的社区索引拉取），将其添加为 **tap**：
 
 ```bash
-hermes skills tap add myorg/skills-repo
-hermes skills search my-workflow --source myorg/skills-repo
-hermes skills install myorg/skills-repo/my-workflow
+seraph skills tap add myorg/skills-repo
+seraph skills search my-workflow --source myorg/skills-repo
+seraph skills install myorg/skills-repo/my-workflow
 ```
 
 发布你自己的 tap 只需一个包含 `skills/<skill-name>/SKILL.md` 目录的 GitHub 仓库——无需服务器或注册表注册。
@@ -1081,8 +1081,8 @@ my-plugin = "my_plugin_package"
 当安装所有者提供的环境中包含该发行包时（例如 Nix 派生），entry-point 发现仍受支持。
 发现机制不代表可以向 PM 选中的环境直接注入 pip 包。对于 PM 管理的安装，
 请分发带有 `pyproject.toml` 或清单 Python 依赖声明的目录插件，并使用
-`hermes plugins install` / `enable` 进行事务式准入。新环境选定后重启 Hermes。
-`hermes pm install` 接受托管工具名称，不接受任意 PyPI 包名。
+`seraph plugins install` / `enable` 进行事务式准入。新环境选定后重启 Hermes。
+`seraph pm install` 接受托管工具名称，不接受任意 PyPI 包名。
 
 ## 为 NixOS 分发
 

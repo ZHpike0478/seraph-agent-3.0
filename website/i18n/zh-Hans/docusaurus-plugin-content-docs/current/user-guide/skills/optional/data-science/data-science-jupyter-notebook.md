@@ -14,10 +14,10 @@ description: "通过实时 Jupyter 内核进行迭代式 Python 开发（hamelnb
 
 | | |
 |---|---|
-| 来源 | 可选 — 通过 `hermes skills install official/data-science/jupyter-notebook` 安装 |
+| 来源 | 可选 — 通过 `seraph skills install official/data-science/jupyter-notebook` 安装 |
 | 路径 | `optional-skills/data-science/jupyter-notebook` |
 | 版本 | `1.0.0` |
-| 作者 | Hermes Agent |
+| 作者 | Seraph Agent 3.0 |
 | 许可证 | MIT |
 | 平台 | linux, macos, windows |
 | 标签 | `jupyter`, `notebook`, `repl`, `data-science`, `exploration`, `iterative` |

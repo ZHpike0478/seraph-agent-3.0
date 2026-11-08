@@ -1,7 +1,7 @@
 ---
 sidebar_position: 16
 title: "Manage Hermes Cloud with MCP"
-description: "Connect Hermes Agent to the Nous Portal MCP server so your local agent can list, start, stop, and manage your Hermes Cloud instances conversationally"
+description: "Connect Seraph Agent 3.0 to the Nous Portal MCP server so your local agent can list, start, stop, and manage your Hermes Cloud instances conversationally"
 ---
 
 # Manage Hermes Cloud with MCP
@@ -10,7 +10,7 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Hermes.
 
-[Hermes Cloud](https://portal.nousresearch.com/cloud) runs hosted Hermes Agent instances for you. Normally you manage them from the `/agents` page in the [Nous Portal](../integrations/nous-portal.md). This guide connects your **local** Hermes Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
+[Hermes Cloud](https://portal.nousresearch.com/cloud) runs hosted Seraph Agent 3.0 instances for you. Normally you manage them from the `/agents` page in the [Nous Portal](../integrations/nous-portal.md). This guide connects your **local** Seraph Agent 3.0 to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
 
 It's a standard [MCP](../user-guide/features/mcp.md) server hosted by Nous Research, gated by the same OAuth login you already use for the Portal. Once connected, Hermes gets two tools it can call on your behalf.
 
@@ -45,7 +45,7 @@ You do **not** need a separate API key or client secret — the server uses OAut
 ## Step 1: add the server
 
 ```bash
-hermes mcp add --url https://portal.nousresearch.com/mcp --auth oauth hermes-cloud
+seraph mcp add --url https://portal.nousresearch.com/mcp --auth oauth hermes-cloud
 ```
 
 `--auth oauth` tells Hermes this is an OAuth-protected HTTP server. On first connect Hermes:
@@ -59,18 +59,18 @@ hermes mcp add --url https://portal.nousresearch.com/mcp --auth oauth hermes-clo
 
 If your Portal account belongs to **more than one organization**, the browser shows an **org picker** during authorization — pick which org this connection should manage. The choice is made once, in the browser; there's nothing to pass on the command line. Single-org accounts skip this step and bind automatically.
 
-If you ever need to point the connection at a different org, remove and re-add the server (`hermes mcp remove hermes-cloud`, then the `add` command again) and pick the other org in the browser.
+If you ever need to point the connection at a different org, remove and re-add the server (`seraph mcp remove hermes-cloud`, then the `add` command again) and pick the other org in the browser.
 
 ## Step 2: verify it connected
 
 ```bash
-hermes mcp test hermes-cloud
+seraph mcp test hermes-cloud
 ```
 
 Then start (or reload) a session:
 
 ```bash
-hermes chat
+seraph chat
 ```
 
 ```text
@@ -107,7 +107,7 @@ Hermes reports what each tool returned — the instance list, the new status, th
 
 ## Configuration
 
-After `hermes mcp add`, the server lives in `~/.hermes/config.yaml`:
+After `seraph mcp add`, the server lives in `~/.hermes/config.yaml`:
 
 ```yaml
 mcp_servers:
@@ -144,9 +144,9 @@ You belong to multiple Portal organizations. Pick the org whose Hermes Cloud ins
 The stored client registration no longer matches the server (for example, you connected to a different environment previously). Clear this server's cached OAuth state and re-add it:
 
 ```bash
-hermes mcp remove hermes-cloud
+seraph mcp remove hermes-cloud
 rm -f ~/.hermes/mcp-tokens/hermes-cloud.*
-hermes mcp add --url https://portal.nousresearch.com/mcp --auth oauth hermes-cloud
+seraph mcp add --url https://portal.nousresearch.com/mcp --auth oauth hermes-cloud
 ```
 
 ### The tools aren't showing up after adding the server
@@ -161,11 +161,11 @@ Reload MCP inside the session and re-check:
 Tell me which MCP-backed tools are available right now.
 ```
 
-If they're still missing, run `hermes mcp test hermes-cloud` to see the connection error directly.
+If they're still missing, run `seraph mcp test hermes-cloud` to see the connection error directly.
 
 ### It asks me to log in again
 
-OAuth tokens refresh automatically, but if the Portal invalidates your session (password change, revoke, expiry) the next call asks you to re-authorize. Re-run the `hermes mcp add` command — the browser flow re-mints a token.
+OAuth tokens refresh automatically, but if the Portal invalidates your session (password change, revoke, expiry) the next call asks you to re-authorize. Re-run the `seraph mcp add` command — the browser flow re-mints a token.
 
 ### Headless / SSH / remote host
 

@@ -1,12 +1,12 @@
 ---
 sidebar_label: "Desktop Plugin SDK"
 title: "Desktop Plugin SDK (@hermes/plugin-sdk)"
-description: "Extend the native Hermes Desktop app — panes, pages, sidebar nav, status bar, palette commands, keybinds, themes, and a scoped backend namespace, with one import and no build step."
+description: "Extend the native Seraph Desktop app — panes, pages, sidebar nav, status bar, palette commands, keybinds, themes, and a scoped backend namespace, with one import and no build step."
 ---
 
 # Desktop Plugin SDK
 
-The native [Hermes Desktop](../user-guide/desktop.md) app is contribution-driven: every
+The native [Seraph Desktop](../user-guide/desktop.md) app is contribution-driven: every
 surface in the window — panes, routes, sidebar nav, status-bar items, palette
 entries, keybinds, themes — registers into one central registry. Core registers
 its surfaces exactly the way a plugin does, so the plugin story is the real one,
@@ -22,8 +22,8 @@ and hot-reloads every save.
 
 :::warning This is not the web-dashboard plugin SDK
 "Plugin" means several unrelated things across Hermes. This page is the **native
-desktop app** (`hermes desktop`) SDK — the `@hermes/plugin-sdk` module and
-`$HERMES_HOME/desktop-plugins/`. The **web dashboard** (`hermes dashboard`) has
+desktop app** (`seraph desktop`) SDK — the `@hermes/plugin-sdk` module and
+`$HERMES_HOME/desktop-plugins/`. The **web dashboard** (`seraph dashboard`) has
 its own, unrelated plugin system on `window.__HERMES_PLUGIN_SDK__` with a
 `manifest.json` — documented at
 [Extending the Dashboard](../user-guide/features/extending-the-dashboard.md). Python
@@ -2051,7 +2051,7 @@ Where English has a **function** entry (``results: n => `${n} results` ``), a pa
 gives a plain string with POSITIONAL placeholders — `{0}`, `{1}` in argument
 order — and the merge wraps it into the same call shape. The full key set is
 published in `locales/_keys.desktop.json` (regenerate with `pnpm run i18n:keys`
-in `apps/desktop` and commit it; CI pins the file to `en.ts`), which is what `hermes plugins
+in `apps/desktop` and commit it; CI pins the file to `en.ts`), which is what `seraph plugins
 validate` checks a pack's `<lang>.desktop.yaml` against.
 
 `host.i18n.registerAppLocale` is the same call for code with no `ctx` in reach;
@@ -2156,7 +2156,7 @@ package folder is copied as the desktop half (without `.git` and
 `__pycache__`). It must hold no symlinks and stay under 64 MB, or nothing is
 copied.
 Installing, sharing, or removing the feature is one folder: the app-root copy
-is refreshed when the source `plugin.js` changes (`hermes plugins update`, or
+is refreshed when the source `plugin.js` changes (`seraph plugins update`, or
 **Rescan**) and removed when the package folder disappears. The copy is what
 makes the desktop half **app-level**: it exists once, however many profiles
 carry the package, and it never appears or disappears when the user switches
@@ -2189,7 +2189,7 @@ checkout's `desktop/plugin.js`; every save re-syncs the copy (by content, not
 mtime, so `git stash pop` counts) and hot-reloads the plugin. Catalog and Git
 installs keep the mtime rule.
 
-`hermes plugins doctor <path-or-id>` warns when the copy differs from your
+`seraph plugins doctor <path-or-id>` warns when the copy differs from your
 source and names the copy it found:
 
 ```text
@@ -2305,10 +2305,10 @@ your handler). Where it lands depends on the process the call runs in:
 
 | Caller runs in | Reaches |
 |---|---|
-| the process Desktop is connected to — the host gateway a local Desktop attaches to, or a remote `hermes serve`: `plugin_api.py` routers, plugin slash commands, tools and hooks in the agent turn | every Desktop window connected to that process |
+| the process Desktop is connected to — the host gateway a local Desktop attaches to, or a remote `seraph serve`: `plugin_api.py` routers, plugin slash commands, tools and hooks in the agent turn | every Desktop window connected to that process |
 | the `dashboard.turn_isolation` compute-host child (tools/hooks of an isolated turn) | relayed over the host pipe to its parent process, then every connected window |
 | the stdio TUI (`hermes` in a terminal) | that terminal's client |
-| `hermes chat`, cron, `hermes plugins validate`, or a gateway with no Desktop window connected | nobody — no Desktop client is attached to that process; the call is a logged no-op |
+| `seraph chat`, cron, `seraph plugins validate`, or a gateway with no Desktop window connected | nobody — no Desktop client is attached to that process; the call is a logged no-op |
 
 Use this instead of importing `tui_gateway.server` internals; for plugin-scoped frames
 with a payload tailored per connection, `ctx.socket('/events')` remains the
@@ -2507,7 +2507,7 @@ human/developer reference; the skill is the working checklist.
 **My plugin doesn't appear.** Confirm the file is at
 `$HERMES_HOME/desktop-plugins/<id>/plugin.js` and the folder name matches the
 export `id`. Run ⌘K → **Reload desktop plugins**. Check the app for an error
-toast naming the failure, and tail `hermes logs gui -f`.
+toast naming the failure, and tail `seraph logs gui -f`.
 
 **"unsupported import" on load.** A disk plugin may only import
 `@hermes/plugin-sdk`, `react`, and `react/jsx-runtime`. Remove any other import.

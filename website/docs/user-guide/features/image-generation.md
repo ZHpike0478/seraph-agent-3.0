@@ -1,13 +1,13 @@
 ---
 title: Image Generation
-description: Generate images via FAL.ai — 11 models including FLUX 2, GPT Image (1.5 & 2), Nano Banana Pro, Ideogram, Recraft V4 Pro, Krea 2, and more, selectable via `hermes tools`.
+description: Generate images via FAL.ai — 11 models including FLUX 2, GPT Image (1.5 & 2), Nano Banana Pro, Ideogram, Recraft V4 Pro, Krea 2, and more, selectable via `seraph tools`.
 sidebar_label: Image Generation
 sidebar_position: 6
 ---
 
 # Image Generation
 
-Hermes Agent generates images from text prompts via FAL.ai. Eleven models are supported out of the box, each with different speed, quality, and cost tradeoffs. The active model is user-configurable via `hermes tools` and persists in `config.yaml`.
+Seraph Agent 3.0 generates images from text prompts via FAL.ai. Eleven models are supported out of the box, each with different speed, quality, and cost tradeoffs. The active model is user-configurable via `seraph tools` and persists in `config.yaml`.
 
 ## Supported Models
 
@@ -30,11 +30,11 @@ Prices are FAL's pricing at time of writing; check [fal.ai](https://fal.ai/) for
 ## Setup
 
 :::tip Nous Subscribers
-If you have a paid [Nous Portal](https://portal.nousresearch.com) subscription, you can use image generation through the **[Tool Gateway](tool-gateway.md)** without a FAL API key. Your model selection persists across both paths. New installs can run `hermes setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Nous Subscription** as the image-gen backend via `hermes tools`.
+If you have a paid [Nous Portal](https://portal.nousresearch.com) subscription, you can use image generation through the **[Tool Gateway](tool-gateway.md)** without a FAL API key. Your model selection persists across both paths. New installs can run `seraph setup --portal` to log in and turn on every gateway tool at once; existing installs can pick **Nous Subscription** as the image-gen backend via `seraph tools`.
 
 The **Nous Subscription** row is the only managed row. Its model picker spans every gateway the subscription runs — the FAL catalog above, native **Krea 3** (`krea-3`) and **Krea 2** (`krea-2-medium`, `krea-2-large`, `krea-2-medium-turbo`) and any Nous Portal image models — each model listed once, and the model you pick decides which gateway serves the request. Free tool-pool accounts see the FAL models only; Krea and Portal models are paid-subscription. With Krea 3 selected, `image_url` is a picture to edit (up to 4 reference images in total; an edit keeps the picture's own framing) and `image_generate` offers `thinking` (`fast` or `high`) and `resolution` (`1K` or `2K`). With a Krea 2 model selected, it offers Krea's `creativity` setting and its `intensity`, `complexity` and `movement` sliders (-100 to 100) instead.
 
-If the managed gateway returns `HTTP 4xx` for a specific model, that model isn't yet proxied on the portal side — the agent will tell you so, with remediation steps (switch to FAL.ai in `hermes tools` with your own `FAL_KEY` for direct access, or pick a different model).
+If the managed gateway returns `HTTP 4xx` for a specific model, that model isn't yet proxied on the portal side — the agent will tell you so, with remediation steps (switch to FAL.ai in `seraph tools` with your own `FAL_KEY` for direct access, or pick a different model).
 :::
 
 ### Get a FAL API Key
@@ -47,7 +47,7 @@ If the managed gateway returns `HTTP 4xx` for a specific model, that model isn't
 Run the tools command:
 
 ```bash
-hermes tools
+seraph tools
 ```
 
 Navigate to **🎨 Image Generation**, pick your backend (Nous Subscription or FAL.ai), then the picker shows all supported models in a column-aligned table — arrow keys to navigate, Enter to select:
@@ -69,7 +69,7 @@ image_gen:
   max_parallel_requests: 4      # concurrent images in one tool-call batch
 ```
 
-`image_gen.provider` is the single selection key: `nous` routes through the managed Tool Gateway; a vendor name (`fal`, `openai`, `xai`, `krea`, ...) goes direct with your own key. The runtime always follows this stored selection — a `FAL_KEY` in `.env` is ignored while `provider: nous`, and `provider: fal` without `FAL_KEY` errors with `image_gen is configured to use fal (set via hermes tools), but FAL_KEY is not set. Run 'hermes tools' to change it.` rather than silently rerouting. Change providers via `hermes tools`, not by adding/removing keys. (The old `use_gateway` boolean is legacy — still read as `nous` when `true`, but never written anymore.)
+`image_gen.provider` is the single selection key: `nous` routes through the managed Tool Gateway; a vendor name (`fal`, `openai`, `xai`, `krea`, ...) goes direct with your own key. The runtime always follows this stored selection — a `FAL_KEY` in `.env` is ignored while `provider: nous`, and `provider: fal` without `FAL_KEY` errors with `image_gen is configured to use fal (set via hermes tools), but FAL_KEY is not set. Run 'hermes tools' to change it.` rather than silently rerouting. Change providers via `seraph tools`, not by adding/removing keys. (The old `use_gateway` boolean is legacy — still read as `nous` when `true`, but never written anymore.)
 
 `max_parallel_requests` defaults to `4`. Hermes clamps it to at least one and
 to the global tool-worker limit, so image providers receive bounded parallel
@@ -131,7 +131,7 @@ only for now; responses are saved to `$HERMES_HOME/cache/images/`.
 ## FAL: GPT Image 2.5
 
 Select **GPT Image 2.5 Flare** or **GPT Image 2.5 Sunburst** under
-`hermes tools` → Image Generation → FAL.ai. The model IDs are:
+`seraph tools` → Image Generation → FAL.ai. The model IDs are:
 
 - `openai/gpt-image-2.5/flare/text-to-image`
 - `openai/gpt-image-2.5/sunburst/text-to-image`
@@ -139,8 +139,8 @@ Select **GPT Image 2.5 Flare** or **GPT Image 2.5 Sunburst** under
 For example:
 
 ```bash
-hermes config set image_gen.provider fal
-hermes config set image_gen.model openai/gpt-image-2.5/flare/text-to-image
+seraph config set image_gen.provider fal
+seraph config set image_gen.model openai/gpt-image-2.5/flare/text-to-image
 ```
 
 Providing `image_url` or reference images automatically selects the corresponding
@@ -163,11 +163,11 @@ Existing provider and model defaults are unchanged.
 
 The **OpenAI** provider supports GPT Image 2.5 Flare (fast everyday creation)
 and Sunburst (precision generation and editing), using `OPENAI_API_KEY`.
-Select them through `hermes tools` → Image Generation → OpenAI, or set:
+Select them through `seraph tools` → Image Generation → OpenAI, or set:
 
 ```bash
-hermes config set image_gen.provider openai
-hermes config set image_gen.openai.model gpt-image-2.5-flare
+seraph config set image_gen.provider openai
+seraph config set image_gen.openai.model gpt-image-2.5-flare
 ```
 
 `gpt-image-2.5-flare` and `gpt-image-2.5-sunburst` use automatic quality.
@@ -378,7 +378,7 @@ If upscaling fails (network issue, rate limit), the original image is returned a
 3. **Submission** — `_submit_fal_request()` routes via direct FAL credentials or the managed Nous gateway, according to the stored `image_gen.provider` selection.
 4. **Upscaling** — runs only when the agent passed `upscale: true`; every model's catalog default is off.
 5. **Delivery** — final image URL returned to the agent, which emits a `MEDIA:<url>` tag that platform adapters convert to native media.
-6. **Usage accounting** — token-billed image models (OpenRouter chat-image and Image API models such as `google/gemini-3.1-flash-lite-image`, OpenAI `gpt-image`) return real token counts, so each call is recorded in `session_model_usage` as task `image_generation` under the billing provider and model, and shows up in `hermes insights` and the dashboard's Usage analytics alongside other model calls. Per-image backends (FAL, xAI, Krea, ...) return no token usage and are not recorded there.
+6. **Usage accounting** — token-billed image models (OpenRouter chat-image and Image API models such as `google/gemini-3.1-flash-lite-image`, OpenAI `gpt-image`) return real token counts, so each call is recorded in `session_model_usage` as task `image_generation` under the billing provider and model, and shows up in `seraph insights` and the dashboard's Usage analytics alongside other model calls. Per-image backends (FAL, xAI, Krea, ...) return no token usage and are not recorded there.
 
 ## Debugging
 

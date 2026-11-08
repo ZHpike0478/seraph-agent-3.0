@@ -1,7 +1,7 @@
 ---
 sidebar_position: 9
 title: "Run Hermes Locally with Ollama — Zero API Cost"
-description: "Step-by-step guide to running Hermes Agent entirely on your own machine with Ollama and open-weight models like Gemma 4, no cloud API keys or paid subscriptions needed"
+description: "Step-by-step guide to running Seraph Agent 3.0 entirely on your own machine with Ollama and open-weight models like Gemma 4, no cloud API keys or paid subscriptions needed"
 ---
 
 # Run Hermes Locally with Ollama — Zero API Cost
@@ -20,7 +20,7 @@ Cloud LLM APIs charge per token. A heavy coding session can cost $5–20. For pe
 
 ## What This Guide Solves
 
-You'll set up Hermes Agent running entirely on your own hardware, using [Ollama](https://ollama.com) as the model backend. No API keys, no subscriptions, no data leaving your machine. Once configured, Hermes works exactly like it does with OpenRouter or Anthropic — terminal commands, file editing, web browsing, delegation — but the model runs locally.
+You'll set up Seraph Agent 3.0 running entirely on your own hardware, using [Ollama](https://ollama.com) as the model backend. No API keys, no subscriptions, no data leaving your machine. Once configured, Hermes works exactly like it does with OpenRouter or Anthropic — terminal commands, file editing, web browsing, delegation — but the model runs locally.
 
 By the end, you'll have:
 
@@ -104,7 +104,7 @@ You should see a JSON response with the model's reply.
 Run the Hermes setup wizard:
 
 ```bash
-hermes setup
+seraph setup
 ```
 
 When prompted for a provider, select **Custom Endpoint** and enter:
@@ -230,7 +230,7 @@ platforms:
 3. Start the gateway:
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 Now message your bot on Telegram — it responds using your local model.
@@ -247,7 +247,7 @@ platforms:
     token: "YOUR_DISCORD_BOT_TOKEN"
 ```
 
-3. Start: `hermes gateway`
+3. Start: `seraph gateway`
 
 ## Step 8: Set Up Fallbacks (Optional)
 
@@ -270,7 +270,7 @@ This way, 90% of your usage is free (local), and only the hard tasks hit the pai
 
 ### "provider 'ollama' has no endpoint configured"
 
-`hermes chat --provider ollama` (or `vllm`) stops with this error when no endpoint is configured for that alias anywhere — no `providers.ollama.base_url`, no `model.base_url`. Hermes refuses to send the request rather than fall back to OpenRouter with a cloud key (`OPENROUTER_API_KEY` / `OPENAI_API_KEY`) that happens to be set. Add the endpoint:
+`seraph chat --provider ollama` (or `vllm`) stops with this error when no endpoint is configured for that alias anywhere — no `providers.ollama.base_url`, no `model.base_url`. Hermes refuses to send the request rather than fall back to OpenRouter with a cloud key (`OPENROUTER_API_KEY` / `OPENAI_API_KEY`) that happens to be set. Add the endpoint:
 
 ```yaml
 providers:
@@ -302,7 +302,7 @@ What helps:
 
 - **Keep the model loaded** — Ollama unloads idle models after 5 minutes, adding a full reload before the next prefill. Set `OLLAMA_KEEP_ALIVE=24h` (see [Step 6](#keep-the-model-loaded)).
 - **Widen the API timeout** — set `HERMES_API_TIMEOUT=1800` in `~/.hermes/.env` (see [What You Need](#what-you-need)).
-- **Measure and trim the fixed prompt** — run `hermes prompt-size` for a byte breakdown of the system prompt and tool schemas, then disable unused toolsets with `hermes tools` and uninstall skills you don't need with `hermes skills`.
+- **Measure and trim the fixed prompt** — run `seraph prompt-size` for a byte breakdown of the system prompt and tool schemas, then disable unused toolsets with `seraph tools` and uninstall skills you don't need with `seraph skills`.
 - **Use GPU offloading** — even a partial offload gives a significant speedup (see [Step 6](#use-gpu-offloading-if-available)).
 
 ### Model doesn't follow tool calls

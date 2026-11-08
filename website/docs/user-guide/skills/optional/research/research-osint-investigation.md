@@ -14,10 +14,10 @@ Follow the money via public records and sanctions data.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/research/osint-investigation` |
+| Source | Optional — install with `seraph skills install official/research/osint-investigation` |
 | Path | `optional-skills/research/osint-investigation` |
 | Version | `0.1.0` |
-| Author | Hermes Agent (adapted from ShinMegamiBoson/OpenPlanter, MIT) |
+| Author | Seraph Agent 3.0 (adapted from ShinMegamiBoson/OpenPlanter, MIT) |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `osint`, `investigation`, `public-records`, `sec`, `sanctions`, `corporate-registry`, `property`, `courts`, `due-diligence`, `journalism` |

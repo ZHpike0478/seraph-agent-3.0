@@ -14,10 +14,10 @@ Deploy a Worker live, no account, via wrangler --temporary.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/web-development/cloudflare-temporary-deploy` |
+| Source | Optional — install with `seraph skills install official/web-development/cloudflare-temporary-deploy` |
 | Path | `optional-skills/web-development/cloudflare-temporary-deploy` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `cloudflare`, `workers`, `wrangler`, `deploy`, `temporary`, `agent`, `serverless`, `web-development` |

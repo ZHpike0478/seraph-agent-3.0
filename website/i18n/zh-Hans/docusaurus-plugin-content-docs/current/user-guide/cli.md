@@ -1,15 +1,15 @@
 ---
 sidebar_position: 1
 title: "CLI 界面"
-description: "掌握 Hermes Agent 终端界面——命令、快捷键、人格设定等"
+description: "掌握 Seraph Agent 3.0 终端界面——命令、快捷键、人格设定等"
 ---
 
 # CLI 界面
 
-Hermes Agent 的 CLI 是一个完整的终端用户界面（TUI），而非 Web UI。它支持多行编辑、斜杠命令自动补全、对话历史、中断并重定向，以及流式工具输出。专为常驻终端的用户而生。
+Seraph Agent 3.0 的 CLI 是一个完整的终端用户界面（TUI），而非 Web UI。它支持多行编辑、斜杠命令自动补全、对话历史、中断并重定向，以及流式工具输出。专为常驻终端的用户而生。
 
 :::tip
-Hermes 还提供了一个现代 TUI，支持模态覆盖层、鼠标选择和非阻塞输入。使用 `hermes --tui` 启动——参见 [TUI](tui.md) 指南。
+Hermes 还提供了一个现代 TUI，支持模态覆盖层、鼠标选择和非阻塞输入。使用 `seraph --tui` 启动——参见 [TUI](tui.md) 指南。
 :::
 
 ## 运行 CLI
@@ -19,38 +19,38 @@ Hermes 还提供了一个现代 TUI，支持模态覆盖层、鼠标选择和非
 hermes
 
 # 单次查询模式（非交互式）
-hermes chat -q "Hello"
+seraph chat -q "Hello"
 
 # 使用指定模型
-hermes chat --model "anthropic/claude-sonnet-4"
+seraph chat --model "anthropic/claude-sonnet-4"
 
 # 使用指定提供商
-hermes chat --provider nous        # 使用 Nous Portal
-hermes chat --provider openrouter  # 强制使用 OpenRouter
+seraph chat --provider nous        # 使用 Nous Portal
+seraph chat --provider openrouter  # 强制使用 OpenRouter
 
 # 使用指定工具集
-hermes chat --toolsets "web,terminal,skills"
+seraph chat --toolsets "web,terminal,skills"
 
 # 启动时预加载一个或多个 skill
-hermes -s hermes-agent-dev,github-auth
-hermes chat -s github-pr-workflow -q "open a draft PR"
+seraph -s hermes-agent-dev,github-auth
+seraph chat -s github-pr-workflow -q "open a draft PR"
 
 # 恢复之前的会话
-hermes --continue             # 恢复最近的 CLI 会话（-c）
-hermes --resume <session_id>  # 通过 ID 恢复指定会话（-r）
+seraph --continue             # 恢复最近的 CLI 会话（-c）
+seraph --resume <session_id>  # 通过 ID 恢复指定会话（-r）
 
 # 详细模式（调试输出）
-hermes chat --verbose
+seraph chat --verbose
 
 # 隔离的 git worktree（用于并行运行多个 agent）
-hermes -w                         # 在 worktree 中以交互模式运行
-hermes -w -z "Fix issue #123"     # 在 worktree 中以单次查询模式运行
+seraph -w                         # 在 worktree 中以交互模式运行
+seraph -w -z "Fix issue #123"     # 在 worktree 中以单次查询模式运行
 ```
 
 ## 界面布局
 
-<img className="docs-terminal-figure" src="/img/docs/cli-layout.svg" alt="Hermes CLI 布局的风格化预览，展示了横幅、对话区域和固定输入提示符。" />
-<p className="docs-figure-caption">Hermes CLI 横幅、对话流和固定输入提示符，以稳定的文档图示形式呈现，而非脆弱的文字艺术。</p>
+<img className="docs-terminal-figure" src="/img/docs/cli-layout.svg" alt="Seraph CLI 布局的风格化预览，展示了横幅、对话区域和固定输入提示符。" />
+<p className="docs-figure-caption">Seraph CLI 横幅、对话流和固定输入提示符，以稳定的文档图示形式呈现，而非脆弱的文字艺术。</p>
 
 欢迎横幅一目了然地显示当前模型、终端后端、工作目录、可用工具和已安装的 skill。
 
@@ -71,7 +71,7 @@ hermes -w -z "Fix issue #123"     # 在 worktree 中以单次查询模式运行
 | 🗜️ N | **上下文压缩次数**——当前运行会话被自动压缩的次数。首次压缩触发后显示。 |
 | ▶ N | **活跃后台任务数**——当前会话中仍在运行的 `/bg` prompt（提示词）数量。至少有一个任务进行中时显示。 |
 | 时长 | 会话已用时间 |
-| ⚠ YOLO | **YOLO 模式警告**——当 `HERMES_YOLO_MODE` 开启时显示（通过启动时的 `hermes --yolo` 或会话中的 `/yolo` 切换）。与横幅行警告保持同步，确保你不会忘记自己处于自动批准模式。 |
+| ⚠ YOLO | **YOLO 模式警告**——当 `HERMES_YOLO_MODE` 开启时显示（通过启动时的 `seraph --yolo` 或会话中的 `/yolo` 切换）。与横幅行警告保持同步，确保你不会忘记自己处于自动批准模式。 |
 
 状态栏会根据终端宽度自适应——≥ 76 列时显示完整布局，52–75 列时显示紧凑布局，低于 52 列时显示最简布局（模型 + 时长，以及 YOLO 徽章（如已激活））。
 
@@ -88,7 +88,7 @@ hermes -w -z "Fix issue #123"     # 在 worktree 中以单次查询模式运行
 
 ### 会话恢复显示
 
-恢复之前的会话时（`hermes -c` 或 `hermes --resume <id>`），横幅与输入提示符之间会出现一个"Previous Conversation"面板，显示对话历史的简洁摘要。详情及配置说明参见[会话——恢复时的对话摘要](sessions.md#conversation-recap-on-resume)。
+恢复之前的会话时（`seraph -c` 或 `seraph --resume <id>`），横幅与输入提示符之间会出现一个"Previous Conversation"面板，显示对话历史的简洁摘要。详情及配置说明参见[会话——恢复时的对话摘要](sessions.md#conversation-recap-on-resume)。
 
 ## 快捷键
 
@@ -167,8 +167,8 @@ quick_commands:
 如果你已知道本次会话需要哪些 skill，可在启动时传入：
 
 ```bash
-hermes -s hermes-agent-dev,github-auth
-hermes chat -s github-pr-workflow -s github-auth
+seraph -s hermes-agent-dev,github-auth
+seraph chat -s github-pr-workflow -s github-auth
 ```
 
 Hermes 会在第一轮对话前将每个指定的 skill 加载到会话 prompt 中。该标志在交互模式和单次查询模式下均有效。
@@ -287,7 +287,7 @@ display:
 在 Unix 系统上，按 **`Ctrl+Z`** 将 Hermes 挂起到后台——与任何终端进程一样。shell 会打印确认信息：
 
 ```
-Hermes Agent has been suspended. Run `fg` to bring Hermes Agent back.
+Seraph Agent 3.0 has been suspended. Run `fg` to bring Seraph Agent 3.0 back.
 ```
 
 在 shell 中输入 `fg` 即可从中断处恢复会话。Windows 不支持此功能。
@@ -332,7 +332,7 @@ display:
 
 ```
 Resume this session with:
-  hermes --resume 20260225_143052_a1b2c3
+  seraph --resume 20260225_143052_a1b2c3
 
 Session:        20260225_143052_a1b2c3
 Duration:       12m 34s
@@ -342,17 +342,17 @@ Messages:       28 (5 user, 18 tool calls)
 恢复选项：
 
 ```bash
-hermes --continue                          # 恢复最近的 CLI 会话
-hermes -c                                  # 简写形式
-hermes -c "my project"                     # 恢复命名会话（谱系中最新的）
-hermes --resume 20260225_143052_a1b2c3     # 通过 ID 恢复指定会话
-hermes --resume "refactoring auth"         # 通过标题恢复
-hermes -r 20260225_143052_a1b2c3           # 简写形式
+seraph --continue                          # 恢复最近的 CLI 会话
+seraph -c                                  # 简写形式
+seraph -c "my project"                     # 恢复命名会话（谱系中最新的）
+seraph --resume 20260225_143052_a1b2c3     # 通过 ID 恢复指定会话
+seraph --resume "refactoring auth"         # 通过标题恢复
+seraph -r 20260225_143052_a1b2c3           # 简写形式
 ```
 
 恢复会从 SQLite 中还原完整的对话历史。agent 能看到所有之前的消息、工具调用和响应——就像从未离开一样。
 
-在聊天中使用 `/title My Session Name` 为当前会话命名，或从命令行使用 `hermes sessions rename <id> <title>`。使用 `hermes sessions list` 浏览历史会话。
+在聊天中使用 `/title My Session Name` 为当前会话命名，或从命令行使用 `seraph sessions rename <id> <title>`。使用 `seraph sessions list` 浏览历史会话。
 
 ### 会话存储
 
@@ -441,5 +441,5 @@ Hermes 立即确认任务并将提示符还给你：
 
 如需调试输出：
 ```bash
-hermes chat --verbose
+seraph chat --verbose
 ```

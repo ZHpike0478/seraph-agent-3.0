@@ -88,7 +88,7 @@ Create PDFs from structured specs, build and fill AcroForm forms (with layout li
   host, so it is on PATH):
   `$env:PY = hermes pm environment documents --extra documents --extra documents-pdf`.
   Never `pip install` into the interpreter that runs Hermes or into the
-  `hermes pm environment` one; Hermes owns both.
+  `seraph pm environment` one; Hermes owns both.
 - Page rasterization (`pdf_page_image.py`, overlay rendering) uses `pypdfium2`, which the documents environment already has (if your `python` lacks it, switch `PY` to that environment with the command above), or poppler's `pdftoppm` on PATH. Scripts fall back pypdfium2 → pdftoppm and report `{"rendered": false, "missing": [...]}` (exit 0) when neither exists.
 - Each helper script checks imports lazily and prints an install hint if a dependency is missing.
 

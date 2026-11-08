@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: "贡献指南"
-description: "如何为 Hermes Agent 做贡献 — 开发环境配置、代码风格、PR 流程"
+description: "如何为 Seraph Agent 3.0 做贡献 — 开发环境配置、代码风格、PR 流程"
 ---
 
 # 贡献指南
 
-感谢您为 Hermes Agent 做贡献！本指南涵盖开发环境配置、代码库结构说明以及 PR 合并流程。
+感谢您为 Seraph Agent 3.0 做贡献！本指南涵盖开发环境配置、代码库结构说明以及 PR 合并流程。
 
 ## 贡献优先级
 
@@ -45,14 +45,14 @@ Bash：
 
 ```bash
 source ./activate
-hermes --version
+seraph --version
 ```
 
 PowerShell：
 
 ```powershell
 . .\activate.ps1
-hermes --version
+seraph --version
 ```
 
 PowerShell 开头的点和空格用于 dot-source，不能省略。
@@ -80,7 +80,7 @@ PM 不会自动删除已有目录。不要通过原始 pip 或 uv 命令修改 H
 Windows 上通过 Bash 运行 `scripts/run_tests.sh`，并预先准备本机 C++ 编译环境。
 
 独立测试环境不替代 PM 工具存储或应用的依赖选择。不要修改签名应用的载荷。
-运行开发实例前，选择临时的 `HERMES_HOME`，再使用 `hermes setup` 配置它。
+运行开发实例前，选择临时的 `HERMES_HOME`，再使用 `seraph setup` 配置它。
 不要把生产凭据复制到 checkout。
 
 从仓库根目录运行 `pnpm install --frozen-lockfile` 安装 JS workspaces。网站是独立的 npm 项目：
@@ -232,7 +232,7 @@ fix(security): prevent shell injection in sudo password piping
 ## 报告问题
 
 - 使用 [GitHub Issues](https://github.com/NousResearch/hermes-agent/issues)
-- 请包含：操作系统、Python 版本、Hermes 版本（`hermes --version`）、完整错误堆栈
+- 请包含：操作系统、Python 版本、Hermes 版本（`seraph --version`）、完整错误堆栈
 - 包含复现步骤
 - 创建前请检查是否已有重复 issue
 - 安全漏洞请私下报告

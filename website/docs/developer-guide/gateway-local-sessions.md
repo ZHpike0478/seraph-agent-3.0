@@ -67,7 +67,7 @@ The server issues `session:operator` only at these existing trusted boundaries:
   legacy session token when that authentication path is enabled. With `webapp.enabled`, that
   session token is the browser-hosted Desktop's credential: the gateway keeps it in its home so
   Webapp tabs survive a restart, hands it out only through a one-use link minted for a same-user
-  control-socket peer, and replaces it on `hermes webapp --sign-out` and whenever the Webapp's
+  control-socket peer, and replaces it on `seraph webapp --sign-out` and whenever the Webapp's
   listener fails to start, since its port then belongs to someone else. Behind the sign-in gate a
   Webapp login is bound to that token by the `hermes_webapp_signin_<gateway>` cookie (HMAC-SHA256 of
   `webapp-sign-in` keyed with the token), so replacing it ends those logins too; sign-out closes
@@ -143,7 +143,7 @@ listener keeps working.
   excludes hidden/archived/internal and foreign-owned rows, and never adopts a session merely
   by listing it. Explicit resume performs adoption; the default live feed is unchanged.
   Both scopes take `workspace`: only conversations whose first row is in that folder, by
-  `hermes -c`'s rule (`hermes_state_sessions.workspace_key`): the row's git repo root equals it, or
+  `seraph -c`'s rule (`hermes_state_sessions.workspace_key`): the row's git repo root equals it, or
   (no root recorded) its cwd is the folder or under it. Pass the caller's repo root (else its cwd).
   With `picker: true` each row also carries what a picker shows (`gateway/session_picker_fields.py`):
   `cwd` and `workspace` from the same first row the filter reads, and from the conversation's current

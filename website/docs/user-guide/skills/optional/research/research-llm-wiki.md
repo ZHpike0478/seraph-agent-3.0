@@ -14,10 +14,10 @@ Karpathy's LLM Wiki: build/query interlinked markdown KB.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/research/llm-wiki` |
+| Source | Optional — install with `seraph skills install official/research/llm-wiki` |
 | Path | `optional-skills/research/llm-wiki` |
 | Version | `2.1.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `wiki`, `knowledge-base`, `research`, `notes`, `markdown`, `rag-alternative` |

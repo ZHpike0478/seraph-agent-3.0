@@ -1,12 +1,12 @@
 ---
 sidebar_position: 15
 title: "Google Vertex AI"
-description: "Use Hermes Agent with Gemini on Google Cloud Vertex AI — OAuth2 service account or ADC, GCP billing and quotas, no static API key"
+description: "Use Seraph Agent 3.0 with Gemini on Google Cloud Vertex AI — OAuth2 service account or ADC, GCP billing and quotas, no static API key"
 ---
 
 # Google Vertex AI
 
-Hermes Agent supports **Gemini models on Google Cloud Vertex AI** through Vertex's OpenAI-compatible endpoint. Unlike the [Google AI Studio provider](./google-gemini.md) (which uses a static API key against `generativelanguage.googleapis.com`), Vertex gives you **enterprise-grade rate limits and GCP billing/credits**, and is the right choice when you want Gemini usage to draw on your Google Cloud account rather than an AI Studio key.
+Seraph Agent 3.0 supports **Gemini models on Google Cloud Vertex AI** through Vertex's OpenAI-compatible endpoint. Unlike the [Google AI Studio provider](./google-gemini.md) (which uses a static API key against `generativelanguage.googleapis.com`), Vertex gives you **enterprise-grade rate limits and GCP billing/credits**, and is the right choice when you want Gemini usage to draw on your Google Cloud account rather than an AI Studio key.
 
 :::info Vertex authenticates with OAuth2, not an API key
 Vertex has **no static API key** for the standard endpoint. Every request needs a short-lived **OAuth2 access token** (≈1 hour TTL) minted from either a service-account JSON or Application Default Credentials (ADC). Hermes mints and **auto-refreshes** these tokens for you — you never paste a token by hand. This is why pasting a temporary token into a custom provider's `api_key` field does not work: it expires mid-session.
@@ -18,7 +18,7 @@ Vertex has **no static API key** for the standard endpoint. Every request needs 
 - **Credentials**, one of:
   - a **service-account JSON** key file with the `roles/aiplatform.user` role, or
   - **Application Default Credentials** via `gcloud auth application-default login` (or the metadata server when running on a GCP VM).
-- **`google-auth`** — installed automatically the first time you select Vertex (lazy install). Run `hermes setup` to repair a managed install if that fails.
+- **`google-auth`** — installed automatically the first time you select Vertex (lazy install). Run `seraph setup` to repair a managed install if that fails.
 
 ## Quick Start
 
@@ -30,14 +30,14 @@ echo "VERTEX_CREDENTIALS_PATH=/path/to/service-account.json" >> ~/.hermes/.env
 gcloud auth application-default login
 
 # Select Vertex as your provider
-hermes model
+seraph model
 # → Choose "More providers..." → "Google Vertex AI"
 # → Enter your GCP project ID (or leave blank to use the one in your credentials)
 # → Choose a region (default: global)
 # → Select a Gemini model
 
 # Start chatting
-hermes chat
+seraph chat
 ```
 
 ## Configuration
@@ -84,7 +84,7 @@ vertex:
 
 ## Available Models
 
-Vertex requires the `google/` vendor prefix on model IDs. The `hermes model` picker offers:
+Vertex requires the `google/` vendor prefix on model IDs. The `seraph model` picker offers:
 
 | Model | ID |
 |-------|----|
@@ -108,7 +108,7 @@ The Gemini 3.x preview models are served through the `global` endpoint. Regional
 /model google/gemini-3-flash-preview
 ```
 
-`/model` switches among already-configured providers and models; it does not collect new credentials. Configure Vertex with `hermes model` first.
+`/model` switches among already-configured providers and models; it does not collect new credentials. Configure Vertex with `seraph model` first.
 
 ## Reasoning / Thinking
 
@@ -117,7 +117,7 @@ Vertex exposes Gemini's thinking budget through the OpenAI-compatible surface. H
 ## Diagnostics
 
 ```bash
-hermes doctor
+seraph doctor
 ```
 
 The doctor reports whether Vertex credentials can be resolved (service-account path or ADC) and whether the provider is configured.
@@ -130,7 +130,7 @@ Hermes found neither a service-account JSON nor working ADC. Either set `VERTEX_
 
 ### `google-auth` not installed
 
-Hermes lazy-installs it the first time you select the Vertex provider. If that fails, run `hermes setup` to repair the managed install.
+Hermes lazy-installs it the first time you select the Vertex provider. If that fails, run `seraph setup` to repair the managed install.
 
 ### 404 on Gemini 3.x models
 

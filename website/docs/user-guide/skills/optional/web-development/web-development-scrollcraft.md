@@ -14,10 +14,10 @@ Premium scroll-driven landing pages; scroll = timeline.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/web-development/scrollcraft` |
+| Source | Optional — install with `seraph skills install official/web-development/scrollcraft` |
 | Path | `optional-skills/web-development/scrollcraft` |
 | Version | `1.0.0` |
-| Author | nateherkai (upstream scroll-craft), ported by Hermes Agent |
+| Author | nateherkai (upstream scroll-craft), ported by Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `web-development`, `landing-page`, `scrollytelling`, `animation`, `design`, `frontend` |

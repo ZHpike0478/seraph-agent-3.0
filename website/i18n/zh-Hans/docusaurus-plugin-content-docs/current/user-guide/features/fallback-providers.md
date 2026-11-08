@@ -7,7 +7,7 @@ sidebar_position: 8
 
 # 备用提供商
 
-Hermes Agent 具备三层弹性机制，在提供商出现问题时保持会话正常运行：
+Seraph Agent 3.0 具备三层弹性机制，在提供商出现问题时保持会话正常运行：
 
 1. **[凭据池](./credential-pools.md)** — 在*同一*提供商的多个 API 密钥之间轮换（优先尝试）
 2. **主模型备用** — 当主模型失败时，自动切换到*不同*的提供商:模型
@@ -24,10 +24,10 @@ Hermes Agent 具备三层弹性机制，在提供商出现问题时保持会话�
 最简便的方式是使用交互式管理器：
 
 ```bash
-hermes fallback
+seraph fallback
 ```
 
-`hermes fallback` 复用 `hermes model` 的提供商选择器——相同的提供商列表、相同的凭据提示、相同的验证流程。使用子命令 `add`、`list`（别名 `ls`）、`remove`（别名 `rm`）和 `clear` 来管理备用链。更改会持久化到 `config.yaml` 顶层的 `fallback_providers:` 列表中。
+`seraph fallback` 复用 `seraph model` 的提供商选择器——相同的提供商列表、相同的凭据提示、相同的验证流程。使用子命令 `add`、`list`（别名 `ls`）、`remove`（别名 `rm`）和 `clear` 来管理备用链。更改会持久化到 `config.yaml` 顶层的 `fallback_providers:` 列表中。
 
 如果你更倾向于直接编辑 YAML，可在 `~/.hermes/config.yaml` 中添加 `fallback_model` 部分：
 
@@ -40,7 +40,7 @@ fallback_model:
 `provider` 和 `model` 均为**必填项**。若任一缺失，备用功能将被禁用。
 
 :::note `fallback_model` 与 `fallback_providers`
-`fallback_model`（单数）是旧版单备用键——Hermes 仍支持以保持向后兼容。`fallback_providers`（复数，列表）支持按顺序尝试多个备用；`hermes fallback` 写入此键。当两者同时设置时，Hermes 会合并它们，`fallback_providers` 优先。
+`fallback_model`（单数）是旧版单备用键——Hermes 仍支持以保持向后兼容。`fallback_providers`（复数，列表）支持按顺序尝试多个备用；`seraph fallback` 写入此键。当两者同时设置时，Hermes 会合并它们，`fallback_providers` 优先。
 :::
 
 ### 支持的提供商
@@ -49,8 +49,8 @@ fallback_model:
 |----------|-------|-------------|
 | AI Gateway | `ai-gateway` | `AI_GATEWAY_API_KEY` |
 | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
-| Nous Portal | `nous` | `hermes setup --portal`（全新安装）或 `hermes auth add nous`（OAuth） |
-| OpenAI Codex | `openai-codex` | `hermes model` → **ChatGPT or Codex Subscription**（ChatGPT OAuth） |
+| Nous Portal | `nous` | `seraph setup --portal`（全新安装）或 `seraph auth add nous`（OAuth） |
+| OpenAI Codex | `openai-codex` | `seraph model` → **ChatGPT or Codex Subscription**（ChatGPT OAuth） |
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` 或 Claude Code 凭据 |
 | z.ai / GLM | `zai` | `GLM_API_KEY` |
 | Kimi / Moonshot | `kimi-coding` | `KIMI_API_KEY` |
@@ -63,10 +63,10 @@ fallback_model:
 | Ollama Cloud | `ollama-cloud` | `OLLAMA_API_KEY` |
 | Google AI Studio | `gemini` | `GOOGLE_API_KEY`（别名：`GEMINI_API_KEY`） |
 | xAI（Grok） | `xai`（别名 `grok`） | `XAI_API_KEY`（可选：`XAI_BASE_URL`） |
-| xAI Grok OAuth（SuperGrok） | `xai-oauth`（别名 `grok-oauth`） | `hermes model` → xAI Grok OAuth（浏览器登录；需 SuperGrok 订阅） |
+| xAI Grok OAuth（SuperGrok） | `xai-oauth`（别名 `grok-oauth`） | `seraph model` → xAI Grok OAuth（浏览器登录；需 SuperGrok 订阅） |
 | AWS Bedrock | `bedrock` | 标准 boto3 认证（`AWS_REGION` + `AWS_PROFILE` 或 `AWS_ACCESS_KEY_ID`） |
-| Qwen Portal（OAuth） | `qwen-oauth` | `hermes model`（Qwen Portal OAuth；可选：`HERMES_QWEN_BASE_URL`） |
-| MiniMax（OAuth） | `minimax-oauth` | `hermes model`（MiniMax 门户 OAuth） |
+| Qwen Portal（OAuth） | `qwen-oauth` | `seraph model`（Qwen Portal OAuth；可选：`HERMES_QWEN_BASE_URL`） |
+| MiniMax（OAuth） | `minimax-oauth` | `seraph model`（MiniMax 门户 OAuth） |
 | OpenCode Zen | `opencode-zen` | `OPENCODE_ZEN_API_KEY` |
 | OpenCode Go | `opencode-go` | `OPENCODE_GO_API_KEY` |
 | Kilo Code | `kilocode` | `KILOCODE_API_KEY` |
@@ -170,7 +170,7 @@ fallback_model:
 | 辅助任务（视觉、压缩等） | ✘（使用各自的提供商链——见下文） |
 
 :::tip
-没有针对主备用链的环境变量——只能通过 `config.yaml` 或 `hermes fallback` 进行配置。这是有意为之：备用配置是一个经过深思熟虑的选择，不应被过期的 shell 导出变量覆盖。
+没有针对主备用链的环境变量——只能通过 `config.yaml` 或 `seraph fallback` 进行配置。这是有意为之：备用配置是一个经过深思熟虑的选择，不应被过期的 shell 导出变量覆盖。
 :::
 
 ---
@@ -189,7 +189,7 @@ Hermes 为附属任务使用独立的轻量级模型。每个任务都有自己�
 | 审批 | 智能命令审批分类 | `auxiliary.approval` |
 | 标题生成 | 会话标题摘要 | `auxiliary.title_generation` |
 | 评审 | `/review` 评审子智能体（完整智能体，而非单次 LLM 调用） | `auxiliary.review` |
-| Triage Specifier | `hermes kanban specify` / 看板（kanban）✨ 按钮——将单行 triage 任务扩展为完整规格 | `auxiliary.triage_specifier` |
+| Triage Specifier | `seraph kanban specify` / 看板（kanban）✨ 按钮——将单行 triage 任务扩展为完整规格 | `auxiliary.triage_specifier` |
 
 ### 自动检测链
 
@@ -261,8 +261,8 @@ fallback_model:
 |----------|-------------|-------------|
 | `"auto"` | 按顺序尝试各提供商直到找到可用的（默认） | 至少配置一个提供商 |
 | `"openrouter"` | 强制使用 OpenRouter | `OPENROUTER_API_KEY` |
-| `"nous"` | 强制使用 Nous Portal | `hermes auth` |
-| `"codex"` | 强制使用 Codex OAuth | `hermes model` → ChatGPT or Codex Subscription |
+| `"nous"` | 强制使用 Nous Portal | `seraph auth` |
+| `"codex"` | 强制使用 Codex OAuth | `seraph model` → ChatGPT or Codex Subscription |
 | `"main"` | 使用主 Agent 当前的提供商（仅限辅助任务） | 已配置活跃的主提供商 |
 | `"anthropic"` | 强制使用 Anthropic 原生 | `ANTHROPIC_API_KEY` 或 Claude Code 凭据 |
 

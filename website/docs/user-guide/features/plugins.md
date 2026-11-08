@@ -96,9 +96,9 @@ The model-facing tool description belongs in `schema["description"]`. The option
 
 ### Project-local plugins (`./.hermes/plugins/`) {#project-local-plugins}
 
-The gateway does not load project-local plugins. Every Hermes session (`hermes`, `hermes --tui`, the Desktop app, messaging and cron) runs in the one gateway, which discovers plugins once for the whole process and never from the folder you started a session in. Setting `HERMES_ENABLE_PROJECT_PLUGINS=true` therefore has no effect on sessions: when a CLI or TUI session on the gateway's machine starts with it set in a folder whose `./.hermes/plugins/` has plugins, Hermes shows a warning at the start of that session and writes the same line to `gateway.log`.
+The gateway does not load project-local plugins. Every Hermes session (`hermes`, `seraph --tui`, the Desktop app, messaging and cron) runs in the one gateway, which discovers plugins once for the whole process and never from the folder you started a session in. Setting `HERMES_ENABLE_PROJECT_PLUGINS=true` therefore has no effect on sessions: when a CLI or TUI session on the gateway's machine starts with it set in a folder whose `./.hermes/plugins/` has plugins, Hermes shows a warning at the start of that session and writes the same line to `gateway.log`.
 
-To use a plugin, install it as a user plugin (`~/.hermes/plugins/` or `hermes plugins install`) and enable it with `hermes plugins enable <name>`.
+To use a plugin, install it as a user plugin (`~/.hermes/plugins/` or `seraph plugins install`) and enable it with `seraph plugins enable <name>`.
 
 ## What plugins can do
 
@@ -110,12 +110,12 @@ Every `ctx.*` API below is available inside a plugin's `register(ctx)` function.
 | Add hooks | `ctx.register_hook("post_tool_call", callback)` |
 | Add slash commands | `ctx.register_command(name, handler, description)` — adds `/name` in CLI and gateway sessions |
 | Dispatch tools from commands | `ctx.dispatch_tool(name, args)` — invokes a registered tool with parent-agent context auto-wired |
-| Add CLI commands | `ctx.register_cli_command(name, help, setup_fn, handler_fn)` — adds `hermes <plugin> <subcommand>` |
+| Add CLI commands | `ctx.register_cli_command(name, help, setup_fn, handler_fn)` — adds `seraph <plugin> <subcommand>` |
 | Inject messages | `ctx.inject_message(content, role="user", session_key=... \| origin=...)` - see [Injecting Messages](#injecting-messages) |
 | Post and edit a status message | `handle = ctx.post_message(text)`, then `handle.edit(text)` — see [Posting a live message](#posting-a-live-message) |
 | Ship data files | `Path(__file__).parent / "data" / "file.yaml"` |
 | Bundle skills | `ctx.register_skill(name, path)` — namespaced as `plugin:skill`, loaded via `skill_view("plugin:skill")` |
-| Gate on env vars | `requires_env: [API_KEY]` in plugin.yaml — prompted during `hermes plugins install` |
+| Gate on env vars | `requires_env: [API_KEY]` in plugin.yaml — prompted during `seraph plugins install` |
 | Distribute via pip | `[project.entry-points."hermes_agent.plugins"]` |
 | Register a gateway platform (Discord, Telegram, IRC, …) | `ctx.register_platform(name, label, adapter_factory, check_fn, ...)` — see [Adding Platform Adapters](../../developer-guide/adding-platform-adapters.md) |
 | Register an image-generation backend | `ctx.register_image_gen_provider(provider)` — see [Image Generation Provider Plugins](../../developer-guide/image-gen-provider-plugin.md) |
@@ -131,7 +131,7 @@ Every `ctx.*` API below is available inside a plugin's `register(ctx)` function.
 | Register an inference backend (LLM provider) | `register_provider(ProviderProfile(...))` in `plugins/model-providers/<name>/__init__.py` — see [Model Provider Plugins](../../developer-guide/model-provider-plugin.md) (uses a separate discovery system) |
 
 :::note Slash command handlers run in the gateway
-A `/command` registered with `ctx.register_command()` runs in the gateway process that owns the session, beside the plugin's hooks, tools and MCP servers. That includes commands typed in the classic `hermes chat` CLI. So a handler should:
+A `/command` registered with `ctx.register_command()` runs in the gateway process that owns the session, beside the plugin's hooks, tools and MCP servers. That includes commands typed in the classic `seraph chat` CLI. So a handler should:
 
 - **Return its text** instead of calling `print()`. Printed output goes to the gateway's stdout, not to the user's chat.
 - **Read the session's working directory with `agent.runtime_cwd.resolve_agent_cwd()`**, not `os.getcwd()`, which is the gateway's own directory. The gateway pins the session's directory while the handler runs.
@@ -172,7 +172,7 @@ User plugins at `~/.hermes/plugins/model-providers/<name>/` override bundled mod
 
 ## Plugins are opt-in (with a few exceptions)
 
-**General plugins and user-installed backends are disabled by default** — discovery finds them (so they show up in `hermes plugins` and `/plugins`), but nothing with hooks or tools loads until you add the plugin's name to `plugins.enabled` in `~/.hermes/config.yaml`. This stops third-party code from running without your explicit consent.
+**General plugins and user-installed backends are disabled by default** — discovery finds them (so they show up in `seraph plugins` and `/plugins`), but nothing with hooks or tools loads until you add the plugin's name to `plugins.enabled` in `~/.hermes/config.yaml`. This stops third-party code from running without your explicit consent.
 
 :::note `plugins.enabled` governs plugins only
 [Gateway event hooks](./hooks.md#gateway-event-hooks) under `~/.hermes/hooks/<name>/` are not plugins and are **not** gated by `plugins.enabled` or `plugins.disabled`. That directory is trusted by placement: any subdirectory holding a valid `HOOK.yaml` + `handler.py` is imported by the gateway at startup, and placing the files there is the opt-in. See the [gateway hook trust model](./hooks.md#gateway-hook-trust).
@@ -209,50 +209,50 @@ plugins:
 Three ways to flip state:
 
 ```bash
-hermes plugins                    # interactive toggle (space to check/uncheck)
-hermes plugins enable <name>      # add to allow-list
-hermes plugins disable <name>     # remove from allow-list + add to disabled
+seraph plugins                    # interactive toggle (space to check/uncheck)
+seraph plugins enable <name>      # add to allow-list
+seraph plugins disable <name>     # remove from allow-list + add to disabled
 ```
 
-If you saved a tool selection (`hermes tools`, so `platform_toolsets` lists toolsets explicitly), disabling a
+If you saved a tool selection (`seraph tools`, so `platform_toolsets` lists toolsets explicitly), disabling a
 plugin also takes its toolset out of those saved lists, and enabling it puts the toolset back. The CLI and the
 Desktop/TUI/dashboard switch behave the same. With no saved selection the lists are left alone: a plugin's
 toolset is on by default.
 
-After `hermes plugins install owner/repo`, you're asked `Enable 'name' now? [y/N]` — defaults to no. Skip the prompt for scripted installs with `--enable` or `--no-enable`. A memory provider (a plugin whose `__init__.py` registers a `MemoryProvider`) asks `Use 'name' as the memory provider now?` instead: yes (or `--enable`) sets `memory.provider`, which is the only switch that activates a provider; no leaves it for `hermes memory setup`.
+After `seraph plugins install owner/repo`, you're asked `Enable 'name' now? [y/N]` — defaults to no. Skip the prompt for scripted installs with `--enable` or `--no-enable`. A memory provider (a plugin whose `__init__.py` registers a `MemoryProvider`) asks `Use 'name' as the memory provider now?` instead: yes (or `--enable`) sets `memory.provider`, which is the only switch that activates a provider; no leaves it for `seraph memory setup`.
 
 For a reproducible install, pin a full immutable commit (tags, branches, and
 abbreviated SHAs are not accepted):
 
 ```bash
-hermes plugins install owner/repo --ref 0123456789abcdef0123456789abcdef01234567
+seraph plugins install owner/repo --ref 0123456789abcdef0123456789abcdef01234567
 ```
 
 Hermes checks out the commit detached, verifies that `HEAD` exactly matches the
 requested SHA, and records the canonical source, installed revision, and pin
-status in the current profile. `hermes plugins update` refuses to move a pinned
+status in the current profile. `seraph plugins update` refuses to move a pinned
 plugin; choose a new exact commit explicitly with
-`hermes plugins install <source> --force --ref <new-commit>`. Like an
+`seraph plugins install <source> --force --ref <new-commit>`. Like an
 update, a forced reinstall from the source the plugin was installed from
 replaces its code but keeps your files: untracked and git-ignored files stay in
 place, and edits to tracked files are copied to
 `~/.hermes/plugins-backup/<name>-<sha>/`. A reinstall from a different source
-starts clean; to reset a plugin completely, `hermes plugins remove` it first. The
+starts clean; to reset a plugin completely, `seraph plugins remove` it first. The
 profile-local install metadata contains no config values, environment values,
 secrets, or capability grants.
 
-The same pin is available in Hermes Desktop: **Skills → Plugins → Install from
+The same pin is available in Seraph Desktop: **Skills → Plugins → Install from
 Git** has a *Pin to commit* field that takes the full 40-character SHA, and the
 plugins list shows a `pinned @ <sha8>` badge on every pinned install so a team
-can confirm everyone is running the same commit. `hermes plugins list` prints
+can confirm everyone is running the same commit. `seraph plugins list` prints
 the pin in its Source column (`git pinned@<sha8>`). Pins work for private
 repositories too, through the same stored credentials described below.
 
 ### Installing from a private repository
 
-`hermes plugins install` clones non-interactively (it never prompts for a
+`seraph plugins install` clones non-interactively (it never prompts for a
 username or password), so a private repo needs a credential Hermes can find on
-its own. Every clone, pinned `--ref` fetch and `hermes plugins update` pull is
+its own. Every clone, pinned `--ref` fetch and `seraph plugins update` pull is
 attempted anonymously first — public repos never see your credential, so a
 stale or revoked token cannot break a public install. Only when the remote
 refuses anonymous access does Hermes look for a credential. For an `https://`
@@ -266,10 +266,10 @@ source it tries, in order:
 The credential is sent as a one-shot HTTP header for that install or update;
 it is never written into the plugin's `.git/config` or the install metadata.
 SSH sources (`git@host:owner/repo.git`) authenticate through your ssh-agent as
-before. The same resolution applies to `hermes plugins update`, catalog MCP
+before. The same resolution applies to `seraph plugins update`, catalog MCP
 installs from git, and profile distributions fetched from a git URL.
 
-`hermes doctor` sends a configured `GITHUB_TOKEN`/`GH_TOKEN` to `api.github.com`
+`seraph doctor` sends a configured `GITHUB_TOKEN`/`GH_TOKEN` to `api.github.com`
 (under **API Connectivity**) and, when GitHub rejects it, names the variable and the
 `.env` file that carries the expired token so you can remove or replace it.
 
@@ -381,7 +381,7 @@ The table above shows the four plugin categories, but within "General plugins" t
 | A **tool** the LLM can call | Python plugin — `ctx.register_tool()` | [Build a Hermes Plugin](../../developer-guide/plugins/index.md) · [Adding Tools](../../developer-guide/adding-tools.md) |
 | A **lifecycle hook** (pre/post LLM, session start/end, tool filter) | Python plugin — `ctx.register_hook()` | [Hooks reference](./hooks.md) · [Build a Hermes Plugin](../../developer-guide/plugins/index.md) |
 | A **slash command** for the CLI / gateway | Python plugin — `ctx.register_command()` | [Build a Hermes Plugin](../../developer-guide/plugins/index.md) · [Extending the CLI](../../developer-guide/extending-the-cli.md) |
-| A **subcommand** for `hermes <thing>` | Python plugin — `ctx.register_cli_command()` | [Extending the CLI](../../developer-guide/extending-the-cli.md) |
+| A **subcommand** for `seraph <thing>` | Python plugin — `ctx.register_cli_command()` | [Extending the CLI](../../developer-guide/extending-the-cli.md) |
 | A bundled **skill** that your plugin ships | Python plugin — `ctx.register_skill()` | [Creating Skills](../../developer-guide/creating-skills.md) |
 | An **inference backend** (LLM provider: OpenAI-compat, Codex, Anthropic-Messages, Bedrock) | Provider plugin — `register_provider(ProviderProfile(...))` in `plugins/model-providers/<name>/` | **[Model Provider Plugins](../../developer-guide/model-provider-plugin.md)** · [Adding Providers](../../developer-guide/adding-providers.md) |
 | A **gateway channel** (Discord / Telegram / IRC / Teams / etc.) | Platform plugin — `ctx.register_platform()` in `plugins/platforms/<name>/` | [Adding Platform Adapters](../../developer-guide/adding-platform-adapters.md) |
@@ -394,7 +394,7 @@ The table above shows the four plugin categories, but within "General plugins" t
 | A **TTS backend** (any CLI — Piper, VoxCPM, Kokoro, xtts, voice-cloning scripts, …) | Config-driven (recommended) — declare under `tts.providers.<name>` with `type: command` in `config.yaml`. OR Python backend plugin — `ctx.register_tts_provider()` for Python-SDK / streaming engines that need more than a shell template. | [TTS Setup](./tts.md#custom-command-providers) · [Python plugin guide](./tts.md#python-plugin-providers) |
 | An **STT backend** (any CLI — whisper.cpp, custom whisper binary, local ASR CLI) | Config-driven (recommended) — declare under `stt.providers.<name>` with `type: command` in `config.yaml`, or set `HERMES_LOCAL_STT_COMMAND` for the legacy single-command escape hatch. OR Python backend plugin — `ctx.register_transcription_provider()` for Python-SDK engines (OpenRouter, SenseAudio, Gemini-STT, etc.). | [STT Setup](./tts.md#stt-custom-command-providers) · [Python plugin guide](./tts.md#python-plugin-providers-stt) |
 | **External tools via MCP** (filesystem, GitHub, Linear, Notion, any MCP server) | Config-driven — declare `mcp_servers.<name>` with `command:` / `url:` in `config.yaml`. Hermes auto-discovers the server's tools and registers them alongside built-ins. | [MCP](./mcp.md) |
-| **Additional skill sources** (custom GitHub repos, private skill indexes) | CLI — `hermes skills tap add <repo>` | [Skills Hub](./skills.md#skills-hub) · [Publishing a custom tap](./skills.md#publishing-a-custom-skill-tap) |
+| **Additional skill sources** (custom GitHub repos, private skill indexes) | CLI — `seraph skills tap add <repo>` | [Skills Hub](./skills.md#skills-hub) · [Publishing a custom tap](./skills.md#publishing-a-custom-skill-tap) |
 | **Gateway event hooks** (fire on `gateway:startup`, `session:start`, `agent:end`, `command:*`) | Drop `HOOK.yaml` + `handler.py` into `~/.hermes/hooks/<name>/` | [Event Hooks](./hooks.md#gateway-event-hooks) |
 | **Shell hooks** (run a shell command on events — notifications, audit logs, desktop alerts) | Config-driven — declare under `hooks:` in `config.yaml` | [Shell Hooks](./hooks.md#shell-hooks) |
 
@@ -404,7 +404,7 @@ Not everything is a Python plugin. Some extension surfaces intentionally use **c
 
 ## NixOS declarative plugins
 
-On NixOS, plugins can be installed declaratively via the module options — no `hermes plugins install` needed. See the **[Nix Setup guide](../../getting-started/nix-setup.md#plugins)** for full details.
+On NixOS, plugins can be installed declaratively via the module options — no `seraph plugins install` needed. See the **[Nix Setup guide](../../getting-started/nix-setup.md#plugins)** for full details.
 
 ```nix
 services.hermes-agent = {
@@ -422,27 +422,27 @@ Declarative plugins are symlinked with a `nix-managed-` prefix — they coexist 
 ## Managing plugins
 
 ```bash
-hermes plugins                               # unified interactive UI
-hermes plugins list                          # table: enabled / disabled / not enabled (bundled backends,
+seraph plugins                               # unified interactive UI
+seraph plugins list                          # table: enabled / disabled / not enabled (bundled backends,
                                              # platforms and the live memory.provider count as enabled)
-hermes plugins search <term>                 # search the Hermes plugin catalog
-hermes plugins install <name>                # install a catalog entry (repo @ reviewed pinned SHA)
-hermes plugins install user/repo             # install from Git, then prompt Enable? [y/N]
-hermes plugins install user/repo --enable    # request enable; dependency consent still applies
-hermes plugins install user/repo --no-enable # install but leave disabled (no prompt)
-hermes plugins update my-plugin              # pull latest (local edits are autostashed and re-applied)
-hermes plugins update my-plugin --force      # same, accepting a caution security-scan verdict without the question
-hermes plugins update                        # list every plugin with an update, then "Update all N? [Y/n]"
-hermes plugins update --yes                  # same, without the question (scripts, cron; required without a terminal)
-hermes plugins remove my-plugin              # uninstall; also drops it from plugins.enabled/disabled/entries
+seraph plugins search <term>                 # search the Hermes plugin catalog
+seraph plugins install <name>                # install a catalog entry (repo @ reviewed pinned SHA)
+seraph plugins install user/repo             # install from Git, then prompt Enable? [y/N]
+seraph plugins install user/repo --enable    # request enable; dependency consent still applies
+seraph plugins install user/repo --no-enable # install but leave disabled (no prompt)
+seraph plugins update my-plugin              # pull latest (local edits are autostashed and re-applied)
+seraph plugins update my-plugin --force      # same, accepting a caution security-scan verdict without the question
+seraph plugins update                        # list every plugin with an update, then "Update all N? [Y/n]"
+seraph plugins update --yes                  # same, without the question (scripts, cron; required without a terminal)
+seraph plugins remove my-plugin              # uninstall; also drops it from plugins.enabled/disabled/entries
                                              # and resets memory.provider when it was the live provider
-hermes plugins enable my-plugin              # add to allow-list
-hermes plugins disable my-plugin             # remove from allow-list + add to disabled (bundled platforms:
+seraph plugins enable my-plugin              # add to allow-list
+seraph plugins disable my-plugin             # remove from allow-list + add to disabled (bundled platforms:
                                              # either spelling works, e.g. photon-platform or platforms/photon)
-hermes plugins capabilities [my-plugin]      # declared vs granted capabilities
-hermes plugins check-updates                 # read-only: is any installed plugin outdated?
-hermes plugins adopt my-plugin               # track a self-cloned plugin dir (read its git origin)
-hermes plugins trust-update-url my-plugin    # confirm a changed update_url after review
+seraph plugins capabilities [my-plugin]      # declared vs granted capabilities
+seraph plugins check-updates                 # read-only: is any installed plugin outdated?
+seraph plugins adopt my-plugin               # track a self-cloned plugin dir (read its git origin)
+seraph plugins trust-update-url my-plugin    # confirm a changed update_url after review
 ```
 
 ### Update checks and provenance
@@ -450,23 +450,23 @@ hermes plugins trust-update-url my-plugin    # confirm a changed update_url afte
 Hermes records Git install source and revision in `.install-metadata.json`.
 Unpinned tracked installs compare the saved source's remote HEAD, or a matching
 saved `update_url` feed. Pinned installs remain pinned. Self-cloned directories
-need `hermes plugins adopt NAME` before they become tracked installations.
+need `seraph plugins adopt NAME` before they become tracked installations.
 Manually copied or provenance-drifted directories receive diagnostic guidance.
 Pip entry-point plugins can report an owning distribution's available version;
 that check does not turn them into Git-managed installs.
 
-`hermes plugins check-updates` leaves plugin files unchanged. A scheduled gateway
+`seraph plugins check-updates` leaves plugin files unchanged. A scheduled gateway
 check runs when `plugins.auto_update_check_hours` is due: default 24 hours,
-`0` disables it. Its receipt is available through `hermes pm status` and the
+`0` disables it. Its receipt is available through `seraph pm status` and the
 desktop sync-status view. This is not a hard once-per-day limit if you configure
 a different interval.
 
-`hermes plugins update` with no name runs the same check and lists the
+`seraph plugins update` with no name runs the same check and lists the
 plugins it can move: catalog installs (re-pinned to the reviewed catalog
 commit) and tracked Git installs (pulled). It names every plugin it skips and
 why: pinned, held with `--ref`, needs fixing, status unknown, or a pip
 distribution Hermes does not upgrade. In a terminal it asks once, then updates each plugin through the
-same path as `hermes plugins update NAME`, so new capabilities, a widened
+same path as `seraph plugins update NAME`, so new capabilities, a widened
 catalog pin and scan findings still prompt per plugin. One failure does not
 stop the rest; the summary lists what updated, what was already current and
 what failed with its reason (exit code 1 if any failed). Without a terminal
@@ -474,7 +474,7 @@ it prints the list and updates nothing unless you pass `--yes`; with `--yes`,
 consent prompts fail closed as in any non-interactive update (new
 capabilities stay ungranted, a widened catalog pin is not applied).
 
-By default, plugins only update when you run `hermes plugins update`. Turning
+By default, plugins only update when you run `seraph plugins update`. Turning
 on auto-update (`plugins.auto_apply: true`) lets the gateway's scheduled check
 apply the same catalog re-pins and tracked Git pulls on its own. Both routes
 use the update security scan, and an unattended update never accepts a widened
@@ -484,7 +484,7 @@ verdict, because a reviewer read that pin when it was admitted to the catalog.)
 Auto-update does not manage pinned, manual, drifted, or pip-distribution rows,
 nor a catalog plugin you installed with `--ref` at a commit other than its
 catalog pin: that stays on the commit you chose until you name it
-(`hermes plugins update <name>`); every Update all, `hermes plugins update`
+(`seraph plugins update <name>`); every Update all, `seraph plugins update`
 with no name included, skips it. A `--ref` equal to the catalog pin is recorded
 as an ordinary catalog install, so auto-update moves it with the catalog. It runs on the gateway's housekeeping thread, so it
 never delays starting a session, and an offline check costs one warning.
@@ -495,7 +495,7 @@ The same switch and an "Update all" action are on every surface:
 
 | Surface | Update all | Auto-update |
 |---|---|---|
-| CLI | `hermes plugins update` | `hermes plugins auto-update [on\|off]` |
+| CLI | `seraph plugins update` | `seraph plugins auto-update [on\|off]` |
 | Chat (classic CLI and TUI) | `/plugins update` | `/plugins auto-update [on\|off]` |
 | Desktop app | Plugins tab, **Update all** | Plugins tab, **Auto-update** switch |
 | Web dashboard | Plugins page, **Update all** | Plugins page, **Auto-update** switch |
@@ -509,13 +509,13 @@ Python tools load in new sessions. Two
 updates of the same plugin never run at once: the second one is refused and
 changes nothing.
 
-`hermes update` can move catalog pins. Installed catalog plugins stay on their
+`seraph update` can move catalog pins. Installed catalog plugins stay on their
 old pin until updated, so the update names them for every profile and asks
 that profile's gateway to check again on its next tick (which applies them
 when auto-update is on).
 
 If a manifest changes or introduces `update_url`, Hermes refuses the new address
-until you approve it with `hermes plugins trust-update-url NAME`. This is a
+until you approve it with `seraph plugins trust-update-url NAME`. This is a
 feed-source check, not a sandbox against already trusted plugin code.
 
 ### Dependency preparation and preservation
@@ -545,7 +545,7 @@ can change those files. See [Package management](../../reference/package-managem
 and the [plugin authoring guide](../../developer-guide/plugins/index.md#lazy-install-optional-python-dependencies).
 ### One-click install links (Desktop)
 
-Hermes Desktop registers the `hermes://` URL scheme, so a website, README, or
+Seraph Desktop registers the `hermes://` URL scheme, so a website, README, or
 chat message can link straight to a plugin install:
 
 ```
@@ -556,7 +556,7 @@ hermes://plugin/install?repo=owner/repo&force=1    # replace an existing install
 hermes://plugin/install?catalog=<name>             # reviewed catalog entry at its pinned commit
 ```
 
-The `catalog=<name>` form is what the **Open in Hermes Desktop** button on
+The `catalog=<name>` form is what the **Open in Seraph Desktop** button on
 every [Plugin Catalog](./plugin-catalog.md) card uses. Desktop resolves the
 name against the live catalog (the same feed the **Capabilities → Plugins**
 picker shows) and opens the same **reviewed catalog entry** dialog an in-app
@@ -573,7 +573,7 @@ backend Python, a **desktop plugin** — app UI, or both). You pick the
 components with checkboxes and confirm. Nothing is installed until you do;
 deep links never auto-install, and agent-plugin installs go through the same
 [install-time security scanning](#install-time-security-scanning) as
-`hermes plugins install`.
+`seraph plugins install`.
 
 Hybrid repos (agent + desktop halves in one repo) use one link and one
 dialog. The same modal is reachable without a link via **Capabilities →
@@ -602,8 +602,8 @@ capabilities:
   - llm.model_override    # pick the model for host-owned LLM calls
 ```
 
-When a plugin declares capabilities, `hermes plugins install` (and
-`hermes plugins enable`) shows the list with one-line risk descriptions and
+When a plugin declares capabilities, `seraph plugins install` (and
+`seraph plugins enable`) shows the list with one-line risk descriptions and
 asks once. Consenting records the grant under
 `plugins.entries.<id>.granted_capabilities` together with a consent hash and
 timestamp. Declining leaves the plugin enabled with those capabilities off —
@@ -611,7 +611,7 @@ a well-behaved plugin probes with `ctx.has_capability()` and degrades
 gracefully.
 
 **Update re-consent:** if a plugin update declares capabilities you haven't
-granted, `hermes plugins update` surfaces the additions and asks again. New
+granted, `seraph plugins update` surfaces the additions and asks again. New
 capabilities stay off until you consent — a plugin update can never silently
 widen its access. Catalog re-pins go one step further: when the new pin adds
 tools, hooks, Python dependencies, host capabilities, a provider sign-in
@@ -622,13 +622,13 @@ the old pin.
 
 **Non-interactive sessions fail closed:** installing or updating without a
 TTY completes the install, but declared capabilities are *not* granted. Run
-`hermes plugins enable <id>` interactively to grant them later.
+`seraph plugins enable <id>` interactively to grant them later.
 
 Inspect the state at any time:
 
 ```bash
-hermes plugins capabilities             # all plugins with declared/granted capabilities
-hermes plugins capabilities my-plugin   # one plugin, declared vs granted
+seraph plugins capabilities             # all plugins with declared/granted capabilities
+seraph plugins capabilities my-plugin   # one plugin, declared vs granted
 ```
 
 Capability ids map 1:1 to the older per-feature config gates, which keep
@@ -706,23 +706,23 @@ separate design, and has not shipped.
 
 ### Discovering plugins — the Hermes plugin catalog
 
-`hermes plugins search <term>` searches the **Hermes plugin catalog** — the
+`seraph plugins search <term>` searches the **Hermes plugin catalog** — the
 curated, SHA-pinned catalog maintained in the hermes-agent repository
 (`plugin-catalog/`). Matching covers entry names, descriptions, and declared
 tools:
 
 ```bash
-hermes plugins search telegram    # search the catalog
-hermes plugins browse             # browse every entry
-hermes plugins info <name>        # full details for one entry
+seraph plugins search telegram    # search the catalog
+seraph plugins browse             # browse every entry
+seraph plugins info <name>        # full details for one entry
 ```
 
 Once you've found a plugin, install it by bare name — the name resolves to
 the entry's repository at its **pinned commit SHA**, and catalog provenance is
-recorded so `hermes plugins update` can re-pin when the catalog moves:
+recorded so `seraph plugins update` can re-pin when the catalog moves:
 
 ```bash
-hermes plugins install <catalog-name>
+seraph plugins install <catalog-name>
 ```
 
 Explicit `owner/repo` or Git-URL identifiers never touch the catalog and are
@@ -764,16 +764,16 @@ skills: []                               # declared list only (not auto-installe
 ```
 
 ```bash
-hermes plugins pack show ./hermes-pack.yaml     # dry-run review
-hermes plugins pack install ./hermes-pack.yaml  # review → confirm → install
-hermes plugins pack export > hermes-pack.yaml   # snapshot the current install
-hermes plugins pack export --enabled-only       # only plugins.enabled
+seraph plugins pack show ./hermes-pack.yaml     # dry-run review
+seraph plugins pack install ./hermes-pack.yaml  # review → confirm → install
+seraph plugins pack export > hermes-pack.yaml   # snapshot the current install
+seraph plugins pack export --enabled-only       # only plugins.enabled
 ```
 
 **Supply-chain posture.** Every entry's `ref` must be an exact 40-character
 commit SHA — tags and branch names are rejected with an error naming the
 entry, the same rule as the plugin catalog. Pack installs ride the exact
-same pinned install path as `hermes plugins install --ref <sha>` and record
+same pinned install path as `seraph plugins install --ref <sha>` and record
 the same provenance in `plugins/.install-metadata.json`, so two installs of
 the same pack resolve identically. Packs build on the
 [manifest v2 fields](../../developer-guide/plugins/index.md) (`manifest_version`,
@@ -784,7 +784,7 @@ validates through the normal install path.
 screen (every plugin, source, pinned ref, and the capabilities it declares),
 then asks **one** confirmation for the pack contents. After that, each
 plugin's declared capabilities go through the standard per-plugin
-capability-consent prompt — identical to a single `hermes plugins install`.
+capability-consent prompt — identical to a single `seraph plugins install`.
 There is no `--yes`, and non-interactive sessions cannot install packs.
 
 **Secrets never travel in packs.** `config:` seeds are limited to
@@ -800,16 +800,16 @@ reported per plugin, the rest continue, and the command exits non-zero if
 any plugin failed.
 
 **Export caveats.** `pack export` only includes plugins with known Git
-provenance (installed via `hermes plugins install`). Local-only plugins are
+provenance (installed via `seraph plugins install`). Local-only plugins are
 listed as warning comments in the emitted YAML, not as installable entries.
 
 The `skills:` list is parsed and displayed at install time but not yet
-auto-installed — install those manually for now (`hermes skills`). Wiring
+auto-installed — install those manually for now (`seraph skills`). Wiring
 skill-hub ids into pack install is a documented follow-up seam.
 
 ### Install-time security scanning
 
-Every `hermes plugins install` and `hermes plugins update` runs a static
+Every `seraph plugins install` and `seraph plugins update` runs a static
 security scan over the plugin tree before it is activated (inspired by
 Claude Cowork's skill & plugin security scanning). The scanner reuses the
 same threat-pattern engine as the [Skills Hub guard](./skills.md)
@@ -827,21 +827,21 @@ Three verdicts, matching Cowork's pass/warn/fail:
 | **caution** | Findings are shown; you confirm `Install anyway? [y/N]` (or pass `--force`) |
 | **dangerous** | Blocked. `--force` does **not** override |
 
-`hermes plugins update` scans the new code with the same rules before it
+`seraph plugins update` scans the new code with the same rules before it
 replaces the installed copy, so a plugin that picks up risky code in an update
 is flagged before it runs. A caution verdict on a Git update asks
-`Update anyway? [y/N]`, and `hermes plugins update NAME --force` accepts it
-without the question. Hermes Desktop shows the same findings in a dialog with an
+`Update anyway? [y/N]`, and `seraph plugins update NAME --force` accepts it
+without the question. Seraph Desktop shows the same findings in a dialog with an
 **Update anyway** button. Catalog updates move to a reviewed pin, so a caution
 verdict there does not ask. In every case nothing changes until the update is
 accepted.
 
-Hermes Desktop shows an **Update** button on a Git-installed plugin when the
+Seraph Desktop shows an **Update** button on a Git-installed plugin when the
 last update check found a newer commit. The gateway runs that check every
-`plugins.auto_update_check_hours` (default 24), and `hermes plugins check-updates`
+`plugins.auto_update_check_hours` (default 24), and `seraph plugins check-updates`
 runs it on demand.
 
-On `hermes plugins update`, a dangerous verdict on the updated tree
+On `seraph plugins update`, a dangerous verdict on the updated tree
 disables the plugin until you review the findings and re-enable it. A
 dangerous block names the critical findings that caused it (e.g.
 `1 critical of 42 findings (destructive_root_rm)`), so a single blocking
@@ -939,7 +939,7 @@ What changes in `host` mode:
 **Locking it for a shared deployment.** `plugins.isolation` is ordinary profile config, so whoever can
 edit a profile's `config.yaml` can turn it off. When the profiles belong to people you are isolating from
 each other, pin it in the [managed scope](../managed-scope.md) instead; the managed value wins over every
-profile's own config and `hermes config set` refuses to change it:
+profile's own config and `seraph config set` refuses to change it:
 
 ```yaml
 # /etc/hermes/config.yaml (root-owned, read by every profile on the machine)
@@ -952,13 +952,13 @@ plugins:
 Run the agents' terminal on an isolated backend (Docker, SSH, ...) as well, so the agent itself cannot
 reach the operator's files.
 
-`hermes plugins validate <dir>` and `hermes plugins show <name>` report whether a plugin runs in the host
+`seraph plugins validate <dir>` and `seraph plugins show <name>` report whether a plugin runs in the host
 and, if not, why. Across the plugin catalog at the time of writing, 299 of 348 entries run in the host
 unchanged.
 
 ### Interactive UI
 
-Running `hermes plugins` with no arguments opens a composite interactive screen:
+Running `seraph plugins` with no arguments opens a composite interactive screen:
 
 ```
 Plugins
@@ -998,7 +998,7 @@ Plugins occupy one of three states:
 | `disabled` | Explicitly off — won't load even if also in `enabled` | (irrelevant) | Yes |
 | `not enabled` | Discovered but never opted in | No | No |
 
-The default for a newly-installed or bundled plugin is `not enabled`. `hermes plugins list` shows all three distinct states so you can tell what's been explicitly turned off vs. what's just waiting to be enabled.
+The default for a newly-installed or bundled plugin is `not enabled`. `seraph plugins list` shows all three distinct states so you can tell what's been explicitly turned off vs. what's just waiting to be enabled.
 
 In a running session, `/plugins` shows which plugins are currently loaded.
 
@@ -1047,7 +1047,7 @@ What each surface does:
 | Messaging platforms that can edit (Telegram, Discord, Slack, Matrix, ...) | the adapter's normal `send` into the chat/thread | edits the same message in place |
 | Platforms without edit support (SMS, email, plugin adapters that do not implement `edit_message`) | `send` | sends a new message; the handle follows it (`edited: False, fallback: True`) |
 | Desktop and the Ink TUI | a keyed notice to the session's viewers (Desktop toast, TUI status line) | replaces that notice in place |
-| Classic CLI (`hermes chat`) | queued as a notice line, printed at the end of the next turn (the classic CLI has no live notice slot) | each edit queues another line |
+| Classic CLI (`seraph chat`) | queued as a notice line, printed at the end of the next turn (the classic CLI has no live notice slot) | each edit queues another line |
 
 Text is clamped to the platform's message limit with an ellipsis (never split). It is plain text: an
 adapter may render its own formatting, but the plugin should not depend on it. No permission is needed,
@@ -1096,7 +1096,7 @@ When the classic CLI runs plugins in its own process (no gateway session):
 Without a session key (`session_key` and `origin` both omitted), when the plugin runs in the gateway (or its plugin host) — which is where plugins run for classic CLI, TUI and Desktop sessions — the gateway picks the chat:
 
 1. If the plugin is handling a local session's own call (its slash command, a hook fired for that session, or a tool or hook in its turn), the message goes to that session. This never guesses, however many sessions are open.
-2. With no session in the calling context (a timer, a background thread — a thread the plugin starts does not inherit the call's context), it goes to the one local session of the plugin's profile that was started by the classic CLI (`hermes chat`) and has a viewer attached. TUI and Desktop sessions, messaging chats and other profiles' sessions are never picked this way.
+2. With no session in the calling context (a timer, a background thread — a thread the plugin starts does not inherit the call's context), it goes to the one local session of the plugin's profile that was started by the classic CLI (`seraph chat`) and has a viewer attached. TUI and Desktop sessions, messaging chats and other profiles' sessions are never picked this way.
 3. Otherwise (no such session, or several) it is refused: `False`, nothing is injected anywhere, and the gateway log names the plugin and says to pass a session key.
 
 The chosen session receives the text as a queued input, the same way as a keyed injection; it needs the `allow_gateway_injection` permission below. When that is a classic CLI session, the turn and its reply are in the session's transcript, but the attached classic CLI does not display them. A call made for a messaging chat without a key is refused, as before. Prefer passing `session_key`: a key-less call can be refused when the chat is ambiguous, and key-less injection may be retired later.
@@ -1123,7 +1123,7 @@ Starting a session with `origin` (gateway mode only):
 - Authorisation is not bypassed: the origin's user must pass the gateway's current allowlists, pairing, or allow-all configuration for that profile, the same check as the `session_key` path. Choose a `user_id` that is authorised, or the request is dropped at dispatch and logged.
 - The same text rules apply: no slash commands, approvals, or prompt resolution. The permission below is read from the plugin's own profile `config.yaml`.
 
-Ink TUI (`hermes --tui`) and the desktop / dashboard chat are a third host. They do not set the classic CLI reference and they do not register on the messaging-gateway injector — those two hosts stay separate so a live gateway cannot clobber the TUI (or the reverse). Pass the session's durable `session_key` (the `ses_…` id), not the ephemeral UI session id. Hermes queues the text on that session's prompt queue: a busy session keeps the message for the next turn, an idle session starts one. A key that is not a live TUI session is left for the messaging gateway when one is running, and is never rerouted to a different chat.
+Ink TUI (`seraph --tui`) and the desktop / dashboard chat are a third host. They do not set the classic CLI reference and they do not register on the messaging-gateway injector — those two hosts stay separate so a live gateway cannot clobber the TUI (or the reverse). Pass the session's durable `session_key` (the `ses_…` id), not the ephemeral UI session id. Hermes queues the text on that session's prompt queue: a busy session keeps the message for the next turn, an idle session starts one. A key that is not a live TUI session is left for the messaging gateway when one is running, and is never rerouted to a different chat.
 
 This enables plugins like remote control viewers, messaging bridges, or webhook receivers to feed messages into the conversation from external sources.
 

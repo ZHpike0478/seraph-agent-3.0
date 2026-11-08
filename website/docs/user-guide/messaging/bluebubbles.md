@@ -26,7 +26,7 @@ In BlueBubbles Server → **Settings → API**, note:
 Run the setup wizard:
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **BlueBubbles (iMessage)** and enter your server URL and password.
@@ -70,9 +70,9 @@ Choose one approach:
 **DM Pairing (recommended):**
 When someone messages your iMessage, Hermes automatically sends them a pairing code. Approve it with:
 ```bash
-hermes pairing approve bluebubbles <CODE>
+seraph pairing approve bluebubbles <CODE>
 ```
-Use `hermes pairing list` to see pending codes and approved users.
+Use `seraph pairing list` to see pending codes and approved users.
 
 **Pre-authorize specific users** (in `~/.hermes/.env`):
 ```bash
@@ -87,7 +87,7 @@ BLUEBUBBLES_ALLOW_ALL_USERS=true
 ### 5. Start the Gateway
 
 ```bash
-hermes gateway run
+seraph gateway run
 ```
 
 Hermes will connect to your BlueBubbles server, register a webhook, and start listening for iMessage messages.
@@ -99,7 +99,7 @@ The setup wizard saves your credentials to `~/.hermes/.env` — it does **not** 
 Check the stored setting:
 
 ```bash
-hermes config get platforms.bluebubbles.enabled
+seraph config get platforms.bluebubbles.enabled
 ```
 
 - `true` — explicitly enabled
@@ -109,7 +109,7 @@ hermes config get platforms.bluebubbles.enabled
 Then check the gateway log for the two lines that prove the connection and the webhook registration:
 
 ```bash
-hermes logs gateway
+seraph logs gateway
 ```
 
 ```text
@@ -206,14 +206,14 @@ One caveat: "basic messaging works without Private API" assumes BlueBubbles can 
 - Ensure network connectivity (firewall, port forwarding)
 
 ### Messages not arriving
-- Check `hermes logs gateway` for webhook errors (or `hermes logs -f` to follow in real-time)
+- Check `seraph logs gateway` for webhook errors (or `seraph logs -f` to follow in real-time)
 - Hermes registers the webhook itself on connect — only inspect BlueBubbles Server → Settings → API → Webhooks if the log shows a registration failure
 - A webhook row in the BlueBubbles UI is not proof of delivery; the end-to-end proof is Hermes logging the message and replying
 - If Hermes and BlueBubbles run on different machines, the default webhook bind address `127.0.0.1` is unreachable from the Mac — set `BLUEBUBBLES_WEBHOOK_HOST` to a reachable address and restart the gateway
 
 ### Setup succeeded, but the adapter never starts
-- `hermes gateway setup` saves credentials to `~/.hermes/.env`; it does not set `platforms.bluebubbles.enabled: true`
-- An explicit `enabled: false` in `~/.hermes/config.yaml` wins over credentials being present — check with `hermes config get platforms.bluebubbles.enabled`
+- `seraph gateway setup` saves credentials to `~/.hermes/.env`; it does not set `platforms.bluebubbles.enabled: true`
+- An explicit `enabled: false` in `~/.hermes/config.yaml` wins over credentials being present — check with `seraph config get platforms.bluebubbles.enabled`
 - This commonly bites after switching iMessage bridges: if you used another iMessage bridge and disabled BlueBubbles at the time, re-running setup will not re-enable it. Set `enabled: true` (and disable the bridge you no longer use — two iMessage bridges will double-handle messages)
 
 ### Two BlueBubbles servers on one Mac (wrong Apple ID)

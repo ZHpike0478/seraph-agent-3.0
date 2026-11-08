@@ -1,7 +1,7 @@
 ---
 sidebar_position: 15
 title: "Weixin (WeChat)"
-description: "Connect Hermes Agent to personal WeChat accounts via the iLink Bot API"
+description: "Connect Seraph Agent 3.0 to personal WeChat accounts via the iLink Bot API"
 ---
 
 # Weixin (WeChat)
@@ -47,7 +47,7 @@ python -c "import pm; pm.sync_venv(['messaging'], explicit=True)"
 The easiest way to connect your WeChat account is through the interactive setup:
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **Weixin** when prompted. The wizard will:
@@ -91,7 +91,7 @@ WEIXIN_HOME_CHANNEL_NAME=Home
 ### 3. Start the Gateway
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 The adapter will restore saved credentials, connect to the iLink API, and begin long-polling for messages.
@@ -99,7 +99,7 @@ The adapter will restore saved credentials, connect to the iLink API, and begin 
 ## Features
 
 - **Long-poll transport** — no public endpoint, webhook, or WebSocket needed
-- **QR code login** — scan-to-connect setup via `hermes gateway setup`
+- **QR code login** — scan-to-connect setup via `seraph gateway setup`
 - **DM messaging** — configurable access policies; group messaging depends on iLink actually delivering group events for the connected identity (often not the case for iLink bot accounts — see the warning above)
 - **Media support** — images, video, files, and voice messages
 - **AES-128-ECB encrypted CDN** — automatic encryption/decryption for all media transfers
@@ -155,7 +155,7 @@ Weixin user ID is present in `WEIXIN_ALLOWED_USERS`.
 
 A practical setup flow is:
 
-1. Pair Hermes once with `hermes gateway setup` and note the connected iLink bot
+1. Pair Hermes once with `seraph gateway setup` and note the connected iLink bot
    account.
 2. Have each allowed user send a direct message to that bot/contact.
 3. Read the sender/user ID from the gateway logs or the inbound event payload.
@@ -321,10 +321,10 @@ Only one Weixin gateway instance can use a given token at a time. The adapter ac
 | Problem | Fix |
 |---------|-----|
 | `Weixin startup failed: aiohttp and cryptography are required` | Install both: `python -c "import pm; pm.sync_venv(['messaging'], explicit=True)"` |
-| `Weixin startup failed: WEIXIN_TOKEN is required` | Run `hermes gateway setup` to complete QR login, or set `WEIXIN_TOKEN` manually |
-| `Weixin startup failed: WEIXIN_ACCOUNT_ID is required` | Set `WEIXIN_ACCOUNT_ID` in your `.env` or run `hermes gateway setup` |
+| `Weixin startup failed: WEIXIN_TOKEN is required` | Run `seraph gateway setup` to complete QR login, or set `WEIXIN_TOKEN` manually |
+| `Weixin startup failed: WEIXIN_ACCOUNT_ID is required` | Set `WEIXIN_ACCOUNT_ID` in your `.env` or run `seraph gateway setup` |
 | `Another local Hermes gateway is already using this Weixin token` | Stop the other gateway instance first — only one poller per token is allowed |
-| Session expired (`errcode=-14`) | Your login session has expired. Re-run `hermes gateway setup` to scan a new QR code |
+| Session expired (`errcode=-14`) | Your login session has expired. Re-run `seraph gateway setup` to scan a new QR code |
 | Proactive send (cron / notification) fails with `ret=-2 errmsg=prepare failed` or `unknown error` | The peer's `context_token` went stale (no recent inbound message from them). The adapter treats this as a stale session — not a rate limit — and re-sends once without the token, so the message still arrives. If iLink still answers `prepare failed` (or there was no token to drop — a freshly paired bot), the send (text or media) fails with `iLink sendmessage session not ready … the user must send the bot a message first (or re-pair)`; the rate-limit cooldown never opens for it. Only other `-2` responses trigger the rate-limit backoff/cooldown, and that cooldown error carries the raw `ret`/`errcode`/`errmsg` |
 | QR code expired during setup | The QR auto-refreshes up to 3 times. If it keeps expiring, check your network connection |
 | Bot doesn't respond to DMs | Check `WEIXIN_DM_POLICY` — if set to `allowlist`, the sender must be in `WEIXIN_ALLOWED_USERS` |

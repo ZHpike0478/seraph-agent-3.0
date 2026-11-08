@@ -1,12 +1,12 @@
 ---
 sidebar_position: 10
 title: "Voice Mode"
-description: "Real-time voice conversations with Hermes Agent — CLI, Telegram, Discord (DMs, text channels, and voice channels)"
+description: "Real-time voice conversations with Seraph Agent 3.0 — CLI, Telegram, Discord (DMs, text channels, and voice channels)"
 ---
 
 # Voice Mode
 
-Hermes Agent supports full voice interaction across CLI and messaging platforms. Talk to the agent using your microphone, hear spoken replies, and have live voice conversations in Discord voice channels.
+Seraph Agent 3.0 supports full voice interaction across CLI and messaging platforms. Talk to the agent using your microphone, hear spoken replies, and have live voice conversations in Discord voice channels.
 
 If you want a practical setup walkthrough with recommended configurations and real usage patterns, see [Use Voice Mode with Hermes](../../guides/use-voice-mode-with-hermes.md).
 
@@ -16,8 +16,8 @@ For hands-free session start — saying "hey hermes" (or any phrase) to open a f
 
 Before using voice features, make sure you have:
 
-1. **Hermes Agent installed** — via the install script (see [Installation](../../getting-started/installation.md))
-2. **An LLM provider configured** — run `hermes model` or set your preferred provider credentials in `~/.hermes/.env`
+1. **Seraph Agent 3.0 installed** — via the install script (see [Installation](../../getting-started/installation.md))
+2. **An LLM provider configured** — run `seraph model` or set your preferred provider credentials in `~/.hermes/.env`
 3. **A working base setup** — run `hermes` to verify the agent responds to text before enabling voice
 
 :::tip
@@ -25,7 +25,7 @@ The `~/.hermes/` directory and default `config.yaml` are created automatically t
 :::
 
 :::tip Nous Portal covers both
-A paid [Nous Portal](./tool-gateway.md) subscription supplies the LLM (step 2) **and** OpenAI TTS via the Tool Gateway — no separate OpenAI key needed. On a fresh install, `hermes setup --portal` wires both up at once.
+A paid [Nous Portal](./tool-gateway.md) subscription supplies the LLM (step 2) **and** OpenAI TTS via the Tool Gateway — no separate OpenAI key needed. On a fresh install, `seraph setup --portal` wires both up at once.
 :::
 
 ## Overview
@@ -40,7 +40,7 @@ A paid [Nous Portal](./tool-gateway.md) subscription supplies the LLM (step 2) *
 
 ### Python Packages
 
-Use `hermes tools` to configure voice providers. Missing built-in feature
+Use `seraph tools` to configure voice providers. Missing built-in feature
 requirements go through PM, subject to `security.allow_lazy_installs` and the
 target's dependency support. Restart Hermes if the selected dependency
 environment changes.
@@ -120,14 +120,14 @@ Disabling Xet avoids authentication failures from Xet's separate CAS hosts when 
 
 ## CLI Voice Mode
 
-Voice mode is available in both the **classic CLI** (`hermes chat`) and the **TUI** (`hermes --tui`). Behavior is identical across both — same slash commands, same VAD silence detection, same streaming TTS, same hallucination filter. The TUI additionally forwards crash-forensic logs to `~/.hermes/logs/` so push-to-talk failures on exotic audio backends can be reported with a full stack trace rather than disappearing silently.
+Voice mode is available in both the **classic CLI** (`seraph chat`) and the **TUI** (`seraph --tui`). Behavior is identical across both — same slash commands, same VAD silence detection, same streaming TTS, same hallucination filter. The TUI additionally forwards crash-forensic logs to `~/.hermes/logs/` so push-to-talk failures on exotic audio backends can be reported with a full stack trace rather than disappearing silently.
 
 ### Quick Start
 
 Start the CLI and enable voice mode:
 
 ```bash
-hermes                # Start the interactive CLI
+seraph                # Start the interactive CLI
 ```
 
 Then use these commands inside the CLI:
@@ -207,7 +207,7 @@ The same pipeline runs in the classic CLI, the TUI, and the desktop app. In a de
 
 ### Desktop remote: client-direct voice (lowest-hop path)
 
-When Hermes Desktop is connected to a **remote gateway**, audio does not need to be relayed through the gateway at all. At voice-session start the desktop fetches the active profile's resolved STT/TTS settings (provider, model, language/voice, and credential) from the gateway over the authenticated REST channel (`GET /api/audio/voice-config`) and then calls the providers **directly**:
+When Seraph Desktop is connected to a **remote gateway**, audio does not need to be relayed through the gateway at all. At voice-session start the desktop fetches the active profile's resolved STT/TTS settings (provider, model, language/voice, and credential) from the gateway over the authenticated REST channel (`GET /api/audio/voice-config`) and then calls the providers **directly**:
 
 - **Dictation / voice input:** the mic recording goes straight from your desktop to the profile's STT provider; only the resulting *text* is sent to the gateway as the prompt.
 - **Spoken replies:** the reply text is already streaming to the desktop over the chat socket, so the desktop synthesizes it locally with the profile's TTS provider and plays it — the gateway link never carries audio.
@@ -243,7 +243,7 @@ Not supported in this mode: the Nous-managed audio proxy (direct key only), the 
 
 ### Voice chat model
 
-Spoken turns can run on a different (usually faster) model than the one you type to. Set the `voice_chat` auxiliary slot, in Settings → Models → Auxiliary models on Desktop, in `hermes model` → Auxiliary models, or in config.yaml:
+Spoken turns can run on a different (usually faster) model than the one you type to. Set the `voice_chat` auxiliary slot, in Settings → Models → Auxiliary models on Desktop, in `seraph model` → Auxiliary models, or in config.yaml:
 
 ```yaml
 auxiliary:
@@ -287,8 +287,8 @@ If you haven't set up your messaging bots yet, see the platform-specific guides:
 Start the gateway to connect to your messaging platforms:
 
 ```bash
-hermes gateway        # Start the gateway (connects to configured platforms)
-hermes gateway setup  # Interactive setup wizard for first-time configuration
+seraph gateway        # Start the gateway (connects to configured platforms)
+seraph gateway setup  # Interactive setup wizard for first-time configuration
 ```
 
 ### Discord: Channels vs DMs
@@ -433,7 +433,7 @@ DISCORD_ALLOWED_USERS=your-user-id
 ### Start the Gateway
 
 ```bash
-hermes gateway        # Start with existing configuration
+seraph gateway        # Start with existing configuration
 ```
 
 The bot should come online in Discord within a few seconds.

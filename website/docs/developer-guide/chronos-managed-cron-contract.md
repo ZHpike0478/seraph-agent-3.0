@@ -229,7 +229,7 @@ maps to a provisioned instance (hop 1 above). When `provision` answers 403
 `invalid_client` — the token in `auth.json` is a plain `hermes-cli` user login
 rather than the `hermes-cli-vps` bootstrap session or an `agent:*` client — the
 rejection is deterministic for the life of that credential: every arm, re-arm
-and `list` would fail the same way, and a `hermes auth` re-login makes it
+and `list` would fail the same way, and a `seraph auth` re-login makes it
 permanent (it *replaces* the bootstrap session; only NAS can re-mint one). The
 provider therefore logs ONE warning naming that remedy, stops calling NAS, and
 starts the built-in ticker for the rest of the process so jobs keep firing on

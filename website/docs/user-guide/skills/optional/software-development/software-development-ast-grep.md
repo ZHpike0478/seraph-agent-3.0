@@ -14,10 +14,10 @@ AST-aware structural code search and rewrite via ast-grep.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/software-development/ast-grep` |
+| Source | Optional — install with `seraph skills install official/software-development/ast-grep` |
 | Path | `optional-skills/software-development/ast-grep` |
 | Version | `1.0.0` |
-| Author | Yeongyu Kim (code-yeongyu), adapted by Hermes Agent |
+| Author | Yeongyu Kim (code-yeongyu), adapted by Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `ast`, `codemod`, `refactoring`, `structural-search`, `code-search`, `rewrite`, `tree-sitter` |

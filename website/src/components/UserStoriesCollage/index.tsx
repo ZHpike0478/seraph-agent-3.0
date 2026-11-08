@@ -295,7 +295,7 @@ export default function UserStoriesCollage(): React.JSX.Element {
       <div className={styles.footer}>
         Built something with Hermes?{' '}
         <a
-          href="https://github.com/NousResearch/hermes-agent/edit/main/website/src/data/userStories.json"
+          href="https://github.com/ZHpike0478/seraph-agent-3.0/edit/main/website/src/data/userStories.json"
           target="_blank"
           rel="noopener noreferrer"
         >

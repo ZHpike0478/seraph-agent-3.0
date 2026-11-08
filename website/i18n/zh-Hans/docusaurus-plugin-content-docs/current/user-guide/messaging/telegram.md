@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: "Telegram"
-description: "将 Hermes Agent 设置为 Telegram 机器人"
+description: "将 Seraph Agent 3.0 设置为 Telegram 机器人"
 ---
 
 # Telegram 设置
 
-Hermes Agent 与 Telegram 集成，作为功能完整的对话机器人。连接后，你可以从任何设备与 Agent 聊天、发送自动转录的语音备忘录、接收定时任务结果，并在群聊中使用 Agent。该集成基于 [python-telegram-bot](https://python-telegram-bot.org/) 构建，支持文本、语音、图片和文件附件。
+Seraph Agent 3.0 与 Telegram 集成，作为功能完整的对话机器人。连接后，你可以从任何设备与 Agent 聊天、发送自动转录的语音备忘录、接收定时任务结果，并在群聊中使用 Agent。该集成基于 [python-telegram-bot](https://python-telegram-bot.org/) 构建，支持文本、语音、图片和文件附件。
 
 ## 第一步：通过 BotFather 创建机器人
 
@@ -14,7 +14,7 @@ Hermes Agent 与 Telegram 集成，作为功能完整的对话机器人。连接
 
 1. 打开 Telegram，搜索 **@BotFather**，或访问 [t.me/BotFather](https://t.me/BotFather)
 2. 发送 `/newbot`
-3. 选择一个**显示名称**（例如 "Hermes Agent"）——可以是任意名称
+3. 选择一个**显示名称**（例如 "Seraph Agent 3.0"）——可以是任意名称
 4. 选择一个**用户名**——必须唯一且以 `bot` 结尾（例如 `my_hermes_bot`）
 5. BotFather 会回复你的 **API token**，格式如下：
 
@@ -103,7 +103,7 @@ TELEGRAM_OBSERVE_UNMENTIONED_GROUP_MESSAGES=true
 
 ## 第四步：获取你的用户 ID
 
-Hermes Agent 使用 Telegram 数字用户 ID 来控制访问权限。你的用户 ID **不是**你的用户名——它是一个类似 `123456789` 的数字。
+Seraph Agent 3.0 使用 Telegram 数字用户 ID 来控制访问权限。你的用户 ID **不是**你的用户名——它是一个类似 `123456789` 的数字。
 
 **方法一（推荐）：** 向 [@userinfobot](https://t.me/userinfobot) 发送消息——它会立即回复你的用户 ID。
 
@@ -116,7 +116,7 @@ Hermes Agent 使用 Telegram 数字用户 ID 来控制访问权限。你的用�
 ### 方式 A：交互式设置（推荐）
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 在提示时选择 **Telegram**。向导会询问你的机器人 token 和允许的用户 ID，然后为你写入配置。
@@ -133,7 +133,7 @@ TELEGRAM_ALLOWED_USERS=123456789    # 多个用户用逗号分隔
 ### 启动 Gateway
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 机器人应在几秒内上线。在 Telegram 上向它发送消息以验证。
@@ -429,7 +429,7 @@ platforms:
 重启 gateway 并查找确认日志行：
 
 ```bash
-hermes gateway restart
+seraph gateway restart
 grep -E "Using custom Telegram base_url|Using Telegram local_mode" ~/.hermes/logs/gateway.log | tail
 ```
 
@@ -466,7 +466,7 @@ tail -f ~/.hermes/logs/gateway.log | grep -iE "telegram|cache"
 
 ## 群聊使用
 
-Hermes Agent 在 Telegram 群聊中工作时有几点注意事项：
+Seraph Agent 3.0 在 Telegram 群聊中工作时有几点注意事项：
 
 - **隐私模式**决定机器人能看到哪些消息（见[第三步](#step-3-privacy-mode-critical-for-groups)）
 - `TELEGRAM_ALLOWED_USERS` 仍然适用——即使在群组中，也只有授权用户才能触发机器人
@@ -501,17 +501,17 @@ telegram:
 
 ```bash
 # 默认配置文件
-hermes gateway start
-hermes gateway status
-hermes gateway stop
+seraph gateway start
+seraph gateway status
+seraph gateway stop
 
 # 命名配置文件
-hermes -p research gateway start
-hermes -p research gateway status
-hermes -p research gateway stop
+seraph -p research gateway start
+seraph -p research gateway status
+seraph -p research gateway stop
 ```
 
-对于小型固定机器人集群，使用 shell 循环或脚本，对默认配置文件调用 `hermes gateway <action>`，对每个命名配置文件调用 `hermes -p <profile> gateway <action>`。这比假设单个进程级命令在每个服务管理器上控制所有命名配置文件更可靠。
+对于小型固定机器人集群，使用 shell 循环或脚本，对默认配置文件调用 `seraph gateway <action>`，对每个命名配置文件调用 `seraph -p <profile> gateway <action>`。这比假设单个进程级命令在每个服务管理器上控制所有命名配置文件更可靠。
 
 ### 故障排除：私聊正常但群组无响应
 
@@ -718,7 +718,7 @@ gateway:
         disable_topic_auto_rename: true
 ```
 
-启用此标志后，Hermes 仍会生成内部会话标题（供 `hermes sessions`、TUI 等使用），但永远不会编辑 Telegram 话题名称。当你在 BotFather Threaded Mode 下手动整理话题，且不希望每次第一次回复都覆盖标题时，此功能很有用。
+启用此标志后，Hermes 仍会生成内部会话标题（供 `seraph sessions`、TUI 等使用），但永远不会编辑 Telegram 话题名称。当你在 BotFather Threaded Mode 下手动整理话题，且不希望每次第一次回复都覆盖标题时，此功能很有用。
 
 ### 话题内的 `/new`
 
@@ -1104,7 +1104,7 @@ platforms:
 
 ```bash
 export HTTPS_PROXY=http://proxy.example.com:8080
-hermes gateway
+seraph gateway
 ```
 
 或添加到 `~/.hermes/.env`：
@@ -1175,7 +1175,7 @@ telegram:
 
 | 问题 | 解决方案 |
 |---------|----------|
-| 机器人完全不响应 | 验证 `TELEGRAM_BOT_TOKEN` 是否正确。检查 `hermes gateway` 日志中的错误。 |
+| 机器人完全不响应 | 验证 `TELEGRAM_BOT_TOKEN` 是否正确。检查 `seraph gateway` 日志中的错误。 |
 | 机器人回复"unauthorized" | 你的用户 ID 不在 `TELEGRAM_ALLOWED_USERS` 中。用 @userinfobot 再次确认。 |
 | 机器人忽略群组消息 | 隐私模式可能已开启。禁用它（第三步）或将机器人设为群组管理员。**记住更改隐私设置后要移除并重新添加机器人。** |
 | 语音消息未转录 | 验证 STT 是否可用：安装 `faster-whisper` 进行本地转录，或在 `~/.hermes/.env` 中设置 `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY`。 |

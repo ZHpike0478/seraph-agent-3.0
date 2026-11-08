@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: "MCP（模型上下文协议）"
-description: "通过 MCP 将 Hermes Agent 连接到外部工具服务器，并精确控制 Hermes 加载哪些 MCP 工具"
+description: "通过 MCP 将 Seraph Agent 3.0 连接到外部工具服务器，并精确控制 Hermes 加载哪些 MCP 工具"
 ---
 
 # MCP（模型上下文协议）
@@ -9,7 +9,7 @@ description: "通过 MCP 将 Hermes Agent 连接到外部工具服务器，并�
 本页的 Python 依赖命令使用 [PM 准备的源码环境](../../reference/package-management.md#developer-workflow)。
 依赖变更后，请重新激活该 checkout 并重启 Hermes。
 
-MCP 让 Hermes Agent 连接到外部工具服务器，使 agent 能够使用 Hermes 本身之外的工具——GitHub、数据库、文件系统、浏览器栈、内部 API 等等。
+MCP 让 Seraph Agent 3.0 连接到外部工具服务器，使 agent 能够使用 Hermes 本身之外的工具——GitHub、数据库、文件系统、浏览器栈、内部 API 等等。
 
 如果你曾经希望 Hermes 使用某个已经存在于其他地方的工具，MCP 通常是最简洁的方式。
 
@@ -42,7 +42,7 @@ mcp_servers:
 3. 启动 Hermes：
 
 ```bash
-hermes chat
+seraph chat
 ```
 
 4. 让 Hermes 使用 MCP 支持的能力。
@@ -132,7 +132,7 @@ mcp_servers:
 
 ## 内置预设
 
-对于知名 MCP 服务器，`hermes mcp add` 接受 `--preset` 标志，自动填写传输层细节，无需手动查找命令和参数。预设只提供默认值——你在同一命令行传入的其他内容（环境变量、头信息、过滤规则）仍然优先生效。
+对于知名 MCP 服务器，`seraph mcp add` 接受 `--preset` 标志，自动填写传输层细节，无需手动查找命令和参数。预设只提供默认值——你在同一命令行传入的其他内容（环境变量、头信息、过滤规则）仍然优先生效。
 
 | 预设 | 配置内容 |
 |---|---|
@@ -140,7 +140,7 @@ mcp_servers:
 
 ```bash
 # 一行命令将 Codex CLI 添加为 MCP 服务器
-hermes mcp add codex --preset codex
+seraph mcp add codex --preset codex
 ```
 
 等价于写入：
@@ -152,7 +152,7 @@ mcp_servers:
     args: ["mcp-server"]
 ```
 
-你可以使用任意本地名称（`hermes mcp add my-codex --preset codex` 完全可以）；预设只提供 `command`/`args` 默认值。
+你可以使用任意本地名称（`seraph mcp add my-codex --preset codex` 完全可以）；预设只提供 `command`/`args` 默认值。
 
 ## Hermes 注册 MCP 工具的方式
 
@@ -492,7 +492,7 @@ mcp_servers:
 Hermes 也可以**作为** MCP 服务器运行，让 Claude Code、Claude Desktop、Cursor、Codex 或任何 MCP 客户端列出和读取你的消息会话、等待新消息、跨所有已连接平台发送消息，并可选地调用 Hermes 自己的网页、浏览器、视觉、图像生成、技能和 TTS 工具。该功能现由官方 **mcp-serve** 插件提供：
 
 ```bash
-hermes plugins install mcp-serve
+seraph plugins install mcp-serve
 ```
 
 ```json
@@ -506,7 +506,7 @@ hermes plugins install mcp-serve
 }
 ```
 
-它以前内置为 `hermes mcp serve`。配置了 `"args": ["mcp", "serve"]` 的 MCP 客户端需改为 `["mcp-serve"]`；工具名称和参数保持不变，`hermes mcp serve` 现在会提示新的写法和安装命令。工具列表、`--tools` 模式及其安全限制见[插件 README](https://github.com/NousResearch/hermes-official-plugins/tree/main/mcp-serve)。
+它以前内置为 `seraph mcp serve`。配置了 `"args": ["mcp", "serve"]` 的 MCP 客户端需改为 `["mcp-serve"]`；工具名称和参数保持不变，`seraph mcp serve` 现在会提示新的写法和安装命令。工具列表、`--tools` 模式及其安全限制见[插件 README](https://github.com/NousResearch/hermes-official-plugins/tree/main/mcp-serve)。
 
 ## 相关文档
 

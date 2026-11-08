@@ -5,7 +5,7 @@ sidebar_position: 16
 
 # Computer Use
 
-Hermes Agent can drive your desktop — clicking, typing, scrolling,
+Seraph Agent 3.0 can drive your desktop — clicking, typing, scrolling,
 dragging — in the **background** on **macOS, Windows, and Linux**. Your
 cursor doesn't move, keyboard focus doesn't change, and your virtual
 desktops / Spaces don't switch on you. You and the agent co-work on the
@@ -42,7 +42,7 @@ no-foreground invariant, click-dispatch internals — see
 ## Which machine it drives
 
 `computer_use` acts on the same machine the bot's screen lives on, never on
-the machine running Hermes Desktop. On a gateway with `terminal.backend:
+the machine running Seraph Desktop. On a gateway with `terminal.backend:
 local` that is the gateway host. With a sandboxed terminal (`docker`, `ssh`,
 or a plugin backend that declares `supports_streams`, such as `singularity`) the
 driver runs **inside the sandbox** on the sandbox's own
@@ -56,16 +56,16 @@ runs](./bot-screen.md#where-the-screen-runs).
 ## Enabling
 
 **The driver ships with Hermes.** `cua-driver` is pinned in `pm/lock.json`
-and is a default PM package: the installers, a bare `hermes pm install`, and
-`hermes update` install it on every macOS, Windows, and glibc Linux target
+and is a default PM package: the installers, a bare `seraph pm install`, and
+`seraph update` install it on every macOS, Windows, and glibc Linux target
 (cua-driver publishes no musl or Android build). The desktop app's bundle
 carries it too. To leave it out, pass `--skip-computer-use` on POSIX or
-`-SkipComputerUse` on Windows (or run `hermes pm install --without cua-driver`);
-Hermes remembers the choice, and `hermes pm install cua-driver` undoes it.
+`-SkipComputerUse` on Windows (or run `seraph pm install --without cua-driver`);
+Hermes remembers the choice, and `seraph pm install cua-driver` undoes it.
 
 If the download failed or you opted out earlier, any of these installs it:
 
-- **`hermes tools`** → pick `🖱️  Computer Use` — installs the driver
+- **`seraph tools`** → pick `🖱️  Computer Use` — installs the driver
   automatically if it's still missing.
 - **Dashboard / desktop app** → toggle the Computer Use toolset — if the
   driver is missing, the toggle kicks off the install in the background
@@ -74,15 +74,15 @@ If the download failed or you opted out earlier, any of these installs it:
 **Manual install / repair:**
 
 ```
-hermes computer-use install
+seraph computer-use install
 ```
 
 This asks PM to prepare the pinned `cua-driver` package (verified against
 `pm/lock.json`) — it does not run the upstream installer. Use
-`hermes computer-use status` to verify the install.
+`seraph computer-use status` to verify the install.
 
 Already have cua-driver? Hermes reuses it when it supports the 0.20 runtime
-contract. During setup, toolset enablement, `hermes update`, and the first
+contract. During setup, toolset enablement, `seraph update`, and the first
 `computer_use` call of a session, Hermes checks the local version and
 manifest. It repairs an old or incomplete standard installation through
 PM (at most once per session at runtime). A binary
@@ -103,14 +103,14 @@ platform-appropriate prereqs:
 
 | Platform | Prereqs |
 |---|---|
-| **macOS** | System Settings → Privacy & Security → **Accessibility** + **Screen Recording**. Grant the identity named by `hermes computer-use doctor` (CuaDriver, `com.trycua.driver`, in every permission mode — the driver daemon always launches through `CuaDriver.app`). |
+| **macOS** | System Settings → Privacy & Security → **Accessibility** + **Screen Recording**. Grant the identity named by `seraph computer-use doctor` (CuaDriver, `com.trycua.driver`, in every permission mode — the driver daemon always launches through `CuaDriver.app`). |
 | **Windows** | None at install time. If you're driving over SSH (not RDP / console), you need the autostart pattern — see [cua.ai/docs/how-to-guides/driver/windows-ssh](https://cua.ai/docs/how-to-guides/driver/windows-ssh) for the Session 0 ↔ Session 1+ proxy. |
 | **Linux** | A reachable display server: `DISPLAY` set for X11, or `XDG_SESSION_TYPE=wayland`. Wayland sessions need an XWayland bridge for capture. AT-SPI must be on (default on GNOME/KDE/Xfce). |
 
 Then start a session with the toolset enabled:
 
 ```
-hermes -t computer_use chat
+seraph -t computer_use chat
 ```
 
 or add `computer_use` to your enabled toolsets in `~/.hermes/config.yaml`.
@@ -187,9 +187,9 @@ compromise you accept.
 
 </div>
 
-## `hermes computer-use doctor` — your first triage stop
+## `seraph computer-use doctor` — your first triage stop
 
-`hermes computer-use doctor` runs cua-driver's structured
+`seraph computer-use doctor` runs cua-driver's structured
 `health_report` MCP tool and prints a per-check matrix. It's the single
 fastest way to find out *why* an action isn't working.
 
@@ -232,7 +232,7 @@ and a unit that runs `cua-driver serve` gets a `daemon (...)` check that
 connects to its socket — `fail` when nothing is listening (crash loop,
 stopped, never started), `pass` when the daemon answers. Reinstalling the
 driver does not start a daemon; `systemctl --user status <unit>` does.
-`hermes computer-use status` prints the same dead-daemon line and exits 1.
+`seraph computer-use status` prints the same dead-daemon line and exits 1.
 
 ## The agent cursor and sessions
 
@@ -450,7 +450,7 @@ of screenshot context, not ~600K.
   affects every Windows automation stack. To drive elevated windows,
   run the Hermes agent itself at High integrity (launch from an
   elevated terminal); otherwise target non-elevated windows.
-- **Windows: `hermes computer-use doctor` fails with "Access is denied"
+- **Windows: `seraph computer-use doctor` fails with "Access is denied"
   while the tool works.** A cua-driver installed under
   `C:\Program Files\WindowsApps` cannot be executed by the Hermes venv
   interpreter (WinError 5 from `CreateProcess`), even though the shell
@@ -469,9 +469,9 @@ of screenshot context, not ~600K.
     has the recipe.
   - **Linux** requires a reachable display server. Headless servers
     get one from [Bot Screen](./bot-screen.md): a per-profile Xfce
-    desktop over TigerVNC, streamed into Hermes Desktop, where you can
+    desktop over TigerVNC, streamed into Seraph Desktop, where you can
     take over for logins and 2FA. You start it from the Desktop's
-    Screen pane or `hermes computer-use screen start`; it starts on
+    Screen pane or `seraph computer-use screen start`; it starts on
     first use (the first `computer_use` call or headed browser use) only
     when `bot_desktop.auto_start: true` is set (off by default).
     Pure Wayland sessions need an XWayland bridge for screen capture
@@ -536,7 +536,7 @@ from an elevated shell — Hermes does not re-register it once
 Swap the driver entirely: `computer_use.backend` in `config.yaml` names the one
 active provider (`cua`, the default, or an installed provider plugin; see
 [computer-use backend plugins](../../developer-guide/plugins/index.md#computer-use-backend-plugins)).
-`hermes tools` → Computer Use lists every installed provider.
+`seraph tools` → Computer Use lists every installed provider.
 
 ### Telemetry
 
@@ -553,7 +553,7 @@ computer_use:
   cua_telemetry: true   # default: false (telemetry off)
 ```
 
-When it's on, `hermes computer-use doctor` reports `telemetry: enabled`;
+When it's on, `seraph computer-use doctor` reports `telemetry: enabled`;
 when off (the default), it reports `telemetry: disabled via
 CUA_DRIVER_RS_TELEMETRY_ENABLED`.
 
@@ -618,9 +618,9 @@ HERMES_CUA_DRIVER_CMD=/path/to/cua/libs/cua-driver/rust/target/debug/cua-driver
 
 ### Confirm Hermes is using your build
 
-- `hermes computer-use status` prints the resolved binary path and
+- `seraph computer-use status` prints the resolved binary path and
   version.
-- `hermes computer-use doctor` confirms the binary is reachable and
+- `seraph computer-use doctor` confirms the binary is reachable and
   exercises the full MCP path end-to-end.
 - In a session, `computer_use(action="capture")` exercises the spawned
   `cua-driver mcp` child process.
@@ -650,21 +650,21 @@ HERMES_CUA_DRIVER_CMD=/path/to/cua/libs/cua-driver/rust/target/debug/cua-driver
 
 ## Troubleshooting
 
-**First action when anything's off: run `hermes computer-use doctor`.**
+**First action when anything's off: run `seraph computer-use doctor`.**
 The structured per-check matrix tells you (and any agent helping you
 debug) exactly what's wrong.
 
 Specific failure modes the doctor doesn't catch:
 
 **`computer_use backend unavailable: cua-driver is not installed`** —
-Run `hermes computer-use install` to fetch the cua-driver binary, or
-run `hermes tools` and enable the Computer Use toolset.
+Run `seraph computer-use install` to fetch the cua-driver binary, or
+run `seraph tools` and enable the Computer Use toolset.
 
 **Clicks seem to have no effect** — Capture and verify. A modal you
 didn't see may be blocking input. Dismiss it with `escape` or the close
 button.
 
-**macOS: System Settings shows CuaDriver ON, but `hermes computer-use
+**macOS: System Settings shows CuaDriver ON, but `seraph computer-use
 permissions status` / `doctor` report Accessibility or Screen Recording as
 not granted** — the stored grant is stale. macOS keys each permission row to
 the app's code-signing requirement; a row written for an earlier CuaDriver
@@ -674,7 +674,7 @@ rewrite it. Reset the affected rows and re-grant:
 ```
 tccutil reset Accessibility com.trycua.driver
 tccutil reset ScreenCapture com.trycua.driver
-hermes computer-use permissions grant
+seraph computer-use permissions grant
 ```
 
 **Element indices are stale** — SOM indices are only valid until the
@@ -687,7 +687,7 @@ matches the dangerous-shell-pattern list. Break the command up or
 reconsider.
 
 **Empty captures on Linux** — `DISPLAY` not set, or you're on pure
-Wayland without an XWayland bridge. `hermes computer-use doctor` will
+Wayland without an XWayland bridge. `seraph computer-use doctor` will
 flag this as `ax_capability: fail` with a `Set DISPLAY (X11)…` hint.
 
 **Empty captures on Windows over SSH** — You're in Session 0 (the

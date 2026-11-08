@@ -2,7 +2,7 @@
 sidebar_position: 12
 sidebar_label: "内置插件"
 title: "内置插件"
-description: "随 Hermes Agent 附带并通过生命周期 hook 自动运行的插件——disk-cleanup 等"
+description: "随 Seraph Agent 3.0 附带并通过生命周期 hook 自动运行的插件——disk-cleanup 等"
 ---
 
 # 内置插件
@@ -22,14 +22,14 @@ Hermes 随仓库附带了一小组插件。它们位于 `<repo>/plugins/<name>/`
 
 名称冲突时，后面的来源优先——名为 `disk-cleanup` 的用户插件会替换内置版本。
 
-`plugins/memory/` 和 `plugins/context_engine/` 被刻意排除在内置扫描之外。这两个目录使用各自的发现路径，因为内存提供者和上下文引擎是通过 `hermes memory setup` / 配置中的 `context.engine` 进行单选配置的提供者。
+`plugins/memory/` 和 `plugins/context_engine/` 被刻意排除在内置扫描之外。这两个目录使用各自的发现路径，因为内存提供者和上下文引擎是通过 `seraph memory setup` / 配置中的 `context.engine` 进行单选配置的提供者。
 
 ## 内置插件默认不启用
 
-内置插件随附时处于禁用状态。发现机制会找到它们（它们会出现在 `hermes plugins list` 和交互式 `hermes plugins` UI 中），但在你明确启用之前不会加载：
+内置插件随附时处于禁用状态。发现机制会找到它们（它们会出现在 `seraph plugins list` 和交互式 `seraph plugins` UI 中），但在你明确启用之前不会加载：
 
 ```bash
-hermes plugins enable disk-cleanup
+seraph plugins enable disk-cleanup
 ```
 
 或通过 `~/.hermes/config.yaml`：
@@ -45,13 +45,13 @@ plugins:
 要再次关闭内置插件：
 
 ```bash
-hermes plugins disable disk-cleanup
+seraph plugins disable disk-cleanup
 # 或：从 config.yaml 的 plugins.enabled 中移除它
 ```
 
 ## 当前附带的插件
 
-仓库在 `plugins/` 下附带了以下内置插件。所有插件均需手动启用——通过 `hermes plugins enable <name>` 启用。
+仓库在 `plugins/` 下附带了以下内置插件。所有插件均需手动启用——通过 `seraph plugins enable <name>` 启用。
 
 | 插件 | 类型 | 用途 |
 |---|---|---|
@@ -63,7 +63,7 @@ hermes plugins disable disk-cleanup
 | `hermes-achievements` | 仪表盘标签页 | Steam 风格的可收集徽章，根据你真实的 Hermes 会话历史生成 |
 | `kanban/dashboard` | 仪表盘标签页 | 多智能体调度器的看板（Kanban）UI——任务、评论、扇出、切换看板。参见 [Kanban 多智能体](./kanban.md)。 |
 
-内存提供者（`plugins/memory/*`）和上下文引擎（`plugins/context_engine/*`）在 [内存提供者](./memory-providers.md) 中单独列出——它们分别通过 `hermes memory` 和 `hermes plugins` 管理。以下是两个长期运行的基于 hook 的插件的详细说明。
+内存提供者（`plugins/memory/*`）和上下文引擎（`plugins/context_engine/*`）在 [内存提供者](./memory-providers.md) 中单独列出——它们分别通过 `seraph memory` 和 `seraph plugins` 管理。以下是两个长期运行的基于 hook 的插件的详细说明。
 
 ### disk-cleanup
 
@@ -109,9 +109,9 @@ hermes plugins disable disk-cleanup
 
 **安全性** — 清理操作仅涉及 `HERMES_HOME` 或 `/tmp/hermes-*` 下的路径。Windows 挂载点（`/mnt/c/...`）会被拒绝。已知的顶级状态目录（`logs/`、`memories/`、`sessions/`、`cron/`、`cache/`、`skills/`、`plugins/`、`disk-cleanup/` 本身）即使为空也不会被删除——全新安装不会在第一次会话结束时被清空。
 
-**启用：** `hermes plugins enable disk-cleanup`（或在 `hermes plugins` 中勾选复选框）。
+**启用：** `seraph plugins enable disk-cleanup`（或在 `seraph plugins` 中勾选复选框）。
 
-**再次禁用：** `hermes plugins disable disk-cleanup`。
+**再次禁用：** `seraph plugins disable disk-cleanup`。
 
 ### Langfuse（已移至插件目录）
 
@@ -119,10 +119,10 @@ Langfuse 追踪不再随 Hermes 内置，而是作为官方目录插件 [`langfu
 hook、`HERMES_LANGFUSE_*` 环境变量和捕获模式保持不变：
 
 ```bash
-hermes plugins install langfuse
+seraph plugins install langfuse
 ```
 
-已启用 `observability/langfuse` 的配置文件会在 `hermes update`（或更新后的首次启动）时自动安装并启用该插件，
+已启用 `observability/langfuse` 的配置文件会在 `seraph update`（或更新后的首次启动）时自动安装并启用该插件，
 继续向同一个 Langfuse 项目发送 trace。安装、调优和捕获模式见[插件 README](https://github.com/NousResearch/hermes-official-plugins/tree/main/langfuse)。
 
 ### google_meet
@@ -139,7 +139,7 @@ hermes plugins install langfuse
 **设置：**
 
 ```bash
-hermes plugins enable google_meet
+seraph plugins enable google_meet
 # 首次使用时会提示你通过插件的 OAuth 流程登录——
 # 需要有 Meet 访问权限的 Google 账号。如果会议强制要求
 # "仅受邀参与者可加入"，可能需要主持人批准。
@@ -153,7 +153,7 @@ agent 会启动会议加入流程，在通话进行时将转录内容流式传�
 
 **适用场景：** 需要机器人转录并为异步参与者总结的定期站会；需要结构化笔记的访谈式会议；任何原本需要 Fireflies / Otter / Grain 的场景。如果你不希望有 AI 在旁监听——请勿启用。
 
-**禁用：** `hermes plugins disable google_meet`。已缓存的转录和录音保留在 `~/.hermes/cache/google_meet/`，直到你手动删除。
+**禁用：** `seraph plugins disable google_meet`。已缓存的转录和录音保留在 `~/.hermes/cache/google_meet/`，直到你手动删除。
 
 ### hermes-achievements
 
@@ -202,7 +202,7 @@ agent 会启动会议加入流程，在通话进行时将转录内容流式传�
 - 热重扫描对每个 `started_at` + `last_active` 指纹与检查点匹配的会话复用每会话统计——即使在大型历史记录上也能在几秒内完成。
 - 内存快照 TTL 为 120 秒；过期请求立即提供旧快照并触发后台刷新。不会因为 TTL 过期就让你等待加载动画。
 
-**启用：** 无需启用——`hermes-achievements` 是一个仅限仪表盘的插件（无生命周期 hook，无模型可见工具）。它在 `hermes dashboard` 首次启动时自动注册为标签页。`plugins.enabled` 配置仅控制生命周期/工具插件；仪表盘插件完全通过其 `dashboard/manifest.json` 发现。
+**启用：** 无需启用——`hermes-achievements` 是一个仅限仪表盘的插件（无生命周期 hook，无模型可见工具）。它在 `seraph dashboard` 首次启动时自动注册为标签页。`plugins.enabled` 配置仅控制生命周期/工具插件；仪表盘插件完全通过其 `dashboard/manifest.json` 发现。
 
 **退出：** 删除或重命名 `plugins/hermes-achievements/dashboard/manifest.json`，或在 `~/.hermes/plugins/hermes-achievements/` 中用同名用户插件覆盖它（该插件不包含仪表盘）。`$HERMES_HOME/plugins/hermes-achievements/` 下的插件状态文件会保留——重新安装后你的解锁历史依然存在。
 
@@ -211,7 +211,7 @@ agent 会启动会议加入流程，在通话进行时将转录内容流式传�
 内置插件的编写方式与其他 Hermes 插件完全相同——参见 [构建 Hermes 插件](../../developer-guide/plugins/index.md)。唯一的区别是：
 
 - 目录位于 `<repo>/plugins/<name>/`，而非 `~/.hermes/plugins/<name>/`
-- 在 `hermes plugins list` 中，manifest 来源显示为 `bundled`
+- 在 `seraph plugins list` 中，manifest 来源显示为 `bundled`
 - 同名用户插件会覆盖内置版本
 
 以下情况适合将插件纳入内置：

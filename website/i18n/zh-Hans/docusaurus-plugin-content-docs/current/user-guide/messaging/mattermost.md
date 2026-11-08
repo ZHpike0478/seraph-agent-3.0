@@ -1,12 +1,12 @@
 ---
 sidebar_position: 8
 title: "Mattermost"
-description: "将 Hermes Agent 配置为 Mattermost 机器人"
+description: "将 Seraph Agent 3.0 配置为 Mattermost 机器人"
 ---
 
 # Mattermost 配置
 
-Hermes Agent 以机器人身份集成到 Mattermost，让你可以通过私信或团队频道与 AI 助手对话。Mattermost 是一个自托管的开源 Slack 替代品——运行在你自己的基础设施上，完全掌控数据。机器人通过 Mattermost 的 REST API（v4）和 WebSocket 连接以接收实时事件，将消息通过 Hermes Agent 管道（包括工具调用、记忆和推理）处理后实时响应。支持文本、文件附件、图片和斜杠命令。
+Seraph Agent 3.0 以机器人身份集成到 Mattermost，让你可以通过私信或团队频道与 AI 助手对话。Mattermost 是一个自托管的开源 Slack 替代品——运行在你自己的基础设施上，完全掌控数据。机器人通过 Mattermost 的 REST API（v4）和 WebSocket 连接以接收实时事件，将消息通过 Seraph Agent 3.0 管道（包括工具调用、记忆和推理）处理后实时响应。支持文本、文件附件、图片和斜杠命令。
 
 无需额外的 Mattermost 库——适配器使用 `aiohttp`，该库已作为 Hermes 的依赖项包含在内。
 
@@ -72,7 +72,7 @@ group_sessions_per_user: false
 2. 点击**添加机器人账户**。
 3. 填写详细信息：
    - **用户名**：例如 `hermes`
-   - **显示名称**：例如 `Hermes Agent`
+   - **显示名称**：例如 `Seraph Agent 3.0`
    - **描述**：可选
    - **角色**：`Member` 即可
 4. 点击**创建机器人账户**。
@@ -100,7 +100,7 @@ group_sessions_per_user: false
 
 ## 第四步：查找你的 Mattermost 用户 ID
 
-Hermes Agent 使用你的 Mattermost 用户 ID 来控制谁可以与机器人交互。个人资料对话框（头像 → 个人资料）里没有这个 ID。
+Seraph Agent 3.0 使用你的 Mattermost 用户 ID 来控制谁可以与机器人交互。个人资料对话框（头像 → 个人资料）里没有这个 ID。
 
 可以用以下任一方式查找（见 Mattermost 文档 [Identify a user's ID](https://docs.mattermost.com/administration-guide/configure/user-management-configuration-settings#identify-a-users-id)）：
 
@@ -126,14 +126,14 @@ Hermes Agent 使用你的 Mattermost 用户 ID 来控制谁可以与机器人交
 要获取**频道 ID**：点击频道名称 → **查看信息**。频道 ID 显示在信息面板中。如果你想手动设置主频道，需要用到它。
 :::
 
-## 第五步：配置 Hermes Agent
+## 第五步：配置 Seraph Agent 3.0
 
 ### 方式 A：交互式配置（推荐）
 
 运行引导式配置命令：
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 在提示时选择 **Mattermost**，然后按提示粘贴你的服务器 URL、机器人 token 和用户 ID。
@@ -174,13 +174,13 @@ group_sessions_per_user: true
 配置完成后，启动 Mattermost gateway：
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 机器人应在几秒内连接到你的 Mattermost 服务器。发送一条消息——私信或在已添加机器人的频道中——进行测试。
 
 :::tip
-你可以在后台运行 `hermes gateway`，或将其配置为 systemd 服务以持续运行。详情参见部署文档。
+你可以在后台运行 `seraph gateway`，或将其配置为 systemd 服务以持续运行。详情参见部署文档。
 :::
 
 ## 主频道
@@ -304,7 +304,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 
 **原因**：Hermes gateway 未运行，或连接失败。
 
-**解决方法**：检查 `hermes gateway` 是否正在运行。查看终端输出中的错误信息。常见问题：URL 错误、token 过期、Mattermost 服务器无法访问。
+**解决方法**：检查 `seraph gateway` 是否正在运行。查看终端输出中的错误信息。常见问题：URL 错误、token 过期、Mattermost 服务器无法访问。
 
 ### "User not allowed"/机器人忽略你
 
@@ -335,10 +335,10 @@ mattermost:
 务必设置 `MATTERMOST_ALLOWED_USERS` 以限制谁可以与机器人交互。若未设置，gateway 默认拒绝所有用户作为安全措施。仅添加你信任的人的用户 ID——授权用户对 agent 的所有功能拥有完整访问权限，包括工具调用和系统访问。
 :::
 
-有关保护 Hermes Agent 部署的更多信息，请参阅[安全指南](../security.md)。
+有关保护 Seraph Agent 3.0 部署的更多信息，请参阅[安全指南](../security.md)。
 
 ## 说明
 
 - **自托管友好**：适用于任何自托管的 Mattermost 实例。无需 Mattermost Cloud 账户或订阅。
-- **无额外依赖**：适配器使用 `aiohttp` 处理 HTTP 和 WebSocket，该库已包含在 Hermes Agent 中。
+- **无额外依赖**：适配器使用 `aiohttp` 处理 HTTP 和 WebSocket，该库已包含在 Seraph Agent 3.0 中。
 - **兼容团队版**：同时支持 Mattermost 团队版（免费）和企业版。

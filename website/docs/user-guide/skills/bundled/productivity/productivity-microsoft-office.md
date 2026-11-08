@@ -97,7 +97,7 @@ Deeper notes: `references/revisions-and-comments.md` (Word review markup) and
   it is on PATH):
   `$env:PY = hermes pm environment documents --extra documents --extra documents-pdf`.
   Never `pip install` into the interpreter that runs Hermes or into the
-  `hermes pm environment` one; Hermes owns both.
+  `seraph pm environment` one; Hermes owns both.
 - Optional: LibreOffice (`soffice`) for PDF export, Excel recalculation, and
   slide rendering, plus poppler (`pdftoppm` or `pdftocairo`) for slide PNGs.
   The helpers that need them report what is missing and exit 0.

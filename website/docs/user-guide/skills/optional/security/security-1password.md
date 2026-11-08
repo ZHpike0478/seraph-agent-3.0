@@ -14,10 +14,10 @@ Set up op CLI, sign in, and read or inject secrets.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/security/1password` |
+| Source | Optional — install with `seraph skills install official/security/1password` |
 | Path | `optional-skills/security/1password` |
 | Version | `1.0.0` |
-| Author | arceus77-7, enhanced by Hermes Agent |
+| Author | arceus77-7, enhanced by Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `security`, `secrets`, `1password`, `op`, `cli` |

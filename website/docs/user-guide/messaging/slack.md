@@ -1,12 +1,12 @@
 ---
 sidebar_position: 4
 title: "Slack"
-description: "Set up Hermes Agent as a Slack bot using Socket Mode"
+description: "Set up Seraph Agent 3.0 as a Slack bot using Socket Mode"
 ---
 
 # Slack Setup
 
-Connect Hermes Agent to Slack as a bot using Socket Mode. Socket Mode uses WebSockets instead of
+Connect Seraph Agent 3.0 to Slack as a bot using Socket Mode. Socket Mode uses WebSockets instead of
 public HTTP endpoints, so your Hermes instance doesn't need to be publicly accessible — it works
 behind firewalls, on your laptop, or on a private server.
 
@@ -38,7 +38,7 @@ Mode — all at once.
 
 1. Generate the manifest. New Slack apps must use Agent view:
    ```bash
-   hermes slack manifest --agent-view --write
+   seraph slack manifest --agent-view --write
    ```
    This writes `~/.hermes/slack-manifest.json` and prints paste-in
    instructions. Existing apps that still use Slack's legacy Assistant view
@@ -48,7 +48,7 @@ Mode — all at once.
    Markdown file, add `--long-description-file`:
 
    ```bash
-   hermes slack manifest --agent-view \
+   seraph slack manifest --agent-view \
      --long-description-file AGENTS.md --write
    ```
 
@@ -68,7 +68,7 @@ Mode — all at once.
 1. Go to [https://api.slack.com/apps](https://api.slack.com/apps)
 2. Click **Create New App**
 3. Choose **From scratch**
-4. Enter an app name (e.g., "Hermes Agent") and select your workspace
+4. Enter an app name (e.g., "Seraph Agent 3.0") and select your workspace
 5. Click **Create App**
 
 You'll land on the app's **Basic Information** page. Continue with
@@ -220,14 +220,14 @@ SLACK_HOME_CHANNEL_NAME=general              # Human-readable name for the home 
 Or run the interactive setup:
 
 ```bash
-hermes gateway setup    # Select Slack when prompted
+seraph gateway setup    # Select Slack when prompted
 ```
 
 Then start the gateway:
 
 ```bash
-hermes gateway              # Foreground
-hermes gateway install      # Install as a user service
+seraph gateway              # Foreground
+seraph gateway install      # Install as a user service
 sudo hermes gateway install --system   # Linux only: boot-time system service
 ```
 
@@ -244,7 +244,7 @@ suppresses those incomplete-turn warnings from the thread and keeps the diagnost
 After starting the gateway, you need to **invite the bot** to any channel where you want it to respond:
 
 ```
-/invite @Hermes Agent
+/invite @Seraph Agent 3.0
 ```
 
 The bot will **not** automatically join channels. You must invite it to each channel individually.
@@ -270,7 +270,7 @@ New Slack apps use Slack's **Agent** messaging experience. Existing Hermes
 Assistant apps can migrate by regenerating the manifest with `--agent-view`:
 
 ```bash
-hermes slack manifest --agent-view --write
+seraph slack manifest --agent-view --write
 ```
 
 Update the manifest in **Features → App Manifest**, then reinstall the app if
@@ -283,11 +283,11 @@ channel's history.
 
 ### Refreshing slash commands after updates
 
-When Hermes adds new commands (e.g. after `hermes update`), regenerate
+When Hermes adds new commands (e.g. after `seraph update`), regenerate
 the manifest and update your Slack app:
 
 ```bash
-hermes slack manifest --write
+seraph slack manifest --write
 ```
 
 Then in Slack:
@@ -363,7 +363,7 @@ If you maintain your Slack manifest by hand and just want the slash
 command list:
 
 ```bash
-hermes slack manifest --slashes-only > ~/.hermes/cache/scratch/slashes.json
+seraph slack manifest --slashes-only > ~/.hermes/cache/scratch/slashes.json
 ```
 
 Paste that array into the `features.slash_commands` key of your
@@ -378,7 +378,7 @@ Understanding how Hermes behaves in different contexts:
 | Context | Behavior |
 |---------|----------|
 | **DMs** | Bot responds to every message — no @mention needed |
-| **Channels** | Bot **only responds when @mentioned** (e.g., `@Hermes Agent what time is it?`). In channels, Hermes replies in a thread attached to that message. |
+| **Channels** | Bot **only responds when @mentioned** (e.g., `@Seraph Agent 3.0 what time is it?`). In channels, Hermes replies in a thread attached to that message. |
 | **Threads** | If you @mention Hermes inside an existing thread, it replies in that same thread. Once the bot has an active session in a thread, **subsequent replies in that thread do not require @mention** — the bot follows the conversation naturally. |
 
 :::tip
@@ -776,7 +776,7 @@ By default, emoji reactions are acknowledged and dropped — a 👍 on a bot
 message does nothing. Set `slack.reaction_triggers` to route reactions into
 the agent loop (requires the `reactions:read` scope plus the
 `reaction_added`/`reaction_removed` bot event subscriptions in your Slack app
-manifest — regenerate with `hermes slack manifest`):
+manifest — regenerate with `seraph slack manifest`):
 
 ```yaml
 slack:
@@ -935,7 +935,7 @@ cron job results, and other proactive notifications. To find a channel ID:
 SLACK_HOME_CHANNEL=C01234567890
 ```
 
-Make sure the bot has been **invited to the channel** (`/invite @Hermes Agent`).
+Make sure the bot has been **invited to the channel** (`/invite @Seraph Agent 3.0`).
 
 ### Cron delivery targeting
 
@@ -1068,13 +1068,13 @@ Notes:
 | Problem | Solution |
 |---------|----------|
 | Bot doesn't respond to DMs | Verify `message.im` is in your event subscriptions and the app is reinstalled |
-| Bot works in DMs but not in channels | **Most common issue.** Add `message.channels` and `message.groups` to event subscriptions, reinstall the app, and invite the bot to the channel with `/invite @Hermes Agent` |
+| Bot works in DMs but not in channels | **Most common issue.** Add `message.channels` and `message.groups` to event subscriptions, reinstall the app, and invite the bot to the channel with `/invite @Seraph Agent 3.0` |
 | Bot doesn't respond to @mentions in channels | 1) Check `message.channels` event is subscribed. 2) Bot must be invited to the channel. 3) Ensure `channels:history` scope is added. 4) Reinstall the app after scope/event changes |
 | Bot ignores messages in private channels | Add both the `message.groups` event subscription and `groups:history` scope, then reinstall the app and `/invite` the bot |
 | Bot doesn't respond in group DMs (multi-person DMs) | Add the `message.mpim` event subscription and the `mpim:history` scope (plus `mpim:read`), then **reinstall** the app. Without `message.mpim`, Slack never delivers group-DM messages to the bot — even though 1:1 DMs work. |
 | "Sending messages to this app has been turned off" in DMs | Enable the **Messages Tab** in App Home settings (see Step 5) |
 | "not_authed" or "invalid_auth" errors | Regenerate your Bot Token and App Token, update `.env` |
-| Bot responds but can't post in a channel | Invite the bot to the channel with `/invite @Hermes Agent` |
+| Bot responds but can't post in a channel | Invite the bot to the channel with `/invite @Seraph Agent 3.0` |
 | Bot can chat but can't read uploaded images/files | Add `files:read`, then **reinstall** the app. Hermes now surfaces attachment access diagnostics in-chat when Slack returns scope/auth/permission failures. |
 | `missing_scope` error | Add the required scope in OAuth & Permissions, then **reinstall** the app |
 | Socket disconnects frequently | Check your network; Bolt auto-reconnects but unstable connections cause lag |
@@ -1090,7 +1090,7 @@ If the bot isn't working in channels, verify **all** of the following:
 4. ✅ `channels:history` scope is added (for public channels)
 5. ✅ `groups:history` scope is added (for private channels)
 6. ✅ App was **reinstalled** after adding scopes/events
-7. ✅ Bot was **invited** to the channel (`/invite @Hermes Agent`)
+7. ✅ Bot was **invited** to the channel (`/invite @Seraph Agent 3.0`)
 8. ✅ You are **@mentioning** the bot in your message
 
 ---

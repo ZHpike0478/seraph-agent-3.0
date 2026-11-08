@@ -6,17 +6,17 @@ description: "External memory provider plugins — Honcho, OpenViking, Mem0, Hin
 
 # Memory Providers
 
-Hermes Agent ships with 2 external memory provider plugins (RetainDB and ByteRover) that give the agent persistent, cross-session knowledge beyond the built-in MEMORY.md and USER.md, and more (such as Honcho, Hindsight, Supermemory and Holographic) are available from the [plugin catalog](./plugins.md). Only **one** external provider can be active at a time — the built-in memory is always active alongside it.
+Seraph Agent 3.0 ships with 2 external memory provider plugins (RetainDB and ByteRover) that give the agent persistent, cross-session knowledge beyond the built-in MEMORY.md and USER.md, and more (such as Honcho, Hindsight, Supermemory and Holographic) are available from the [plugin catalog](./plugins.md). Only **one** external provider can be active at a time — the built-in memory is always active alongside it.
 
 ## Quick Start
 
 ```bash
-hermes memory setup      # interactive picker + configuration
-hermes memory status     # check what's active
-hermes memory off        # disable external provider
+seraph memory setup      # interactive picker + configuration
+seraph memory status     # check what's active
+seraph memory off        # disable external provider
 ```
 
-You can also select the active memory provider via `hermes plugins` → Provider Plugins → Memory Provider.
+You can also select the active memory provider via `seraph plugins` → Provider Plugins → Memory Provider.
 
 Or set manually in `~/.hermes/config.yaml`:
 
@@ -24,7 +24,7 @@ Or set manually in `~/.hermes/config.yaml`:
 memory:
   provider: retaindb  # or byterover,
                       # or honcho / hindsight / supermemory / mem0 / openviking / holographic
-                      # (plugin catalog — run `hermes plugins install <name>` first)
+                      # (plugin catalog — run `seraph plugins install <name>` first)
 ```
 
 ## How It Works
@@ -47,7 +47,7 @@ Everything Hermes hands a provider (turns, the transcript including tool output,
 ### Honcho
 
 :::info Plugin catalog
-Honcho is maintained by [Plastic Labs](https://github.com/plastic-labs/honcho/tree/main/hermes-plugin-honcho) and installed from the [plugin catalog](./plugins.md) rather than bundled with Hermes. It is the same provider that used to ship in-tree: tools, config files and the `hermes honcho` commands are unchanged.
+Honcho is maintained by [Plastic Labs](https://github.com/plastic-labs/honcho/tree/main/hermes-plugin-honcho) and installed from the [plugin catalog](./plugins.md) rather than bundled with Hermes. It is the same provider that used to ship in-tree: tools, config files and the `seraph honcho` commands are unchanged.
 :::
 
 AI-native cross-session user modeling with dialectic reasoning, session-scoped context injection, semantic search, and persistent conclusions. Base context now includes the session summary alongside user representation and peer cards, giving the agent awareness of what has already been discussed.
@@ -55,7 +55,7 @@ AI-native cross-session user modeling with dialectic reasoning, session-scoped c
 | | |
 |---|---|
 | **Best for** | Multi-agent systems with cross-session context, user-agent alignment |
-| **Requires** | `hermes plugins install honcho` (installs the `honcho-ai` SDK with it); [API key](https://app.honcho.dev) or self-hosted instance |
+| **Requires** | `seraph plugins install honcho` (installs the `honcho-ai` SDK with it); [API key](https://app.honcho.dev) or self-hosted instance |
 | **Data storage** | Honcho Cloud or self-hosted |
 | **Cost** | Honcho pricing (cloud) / free (self-hosted) |
 
@@ -73,11 +73,11 @@ The auto-injected dialectic also scales its reasoning level by query length (lon
 
 **Setup Wizard:**
 ```bash
-hermes plugins install honcho   # from the plugin catalog
-hermes memory setup             # select "honcho" — runs the Honcho-specific post-setup
+seraph plugins install honcho   # from the plugin catalog
+seraph memory setup             # select "honcho" — runs the Honcho-specific post-setup
 ```
 
-The legacy `hermes honcho setup` command still works (it now redirects to `hermes memory setup`), but is only registered after Honcho is selected as the active memory provider.
+The legacy `seraph honcho setup` command still works (it now redirects to `seraph memory setup`), but is only registered after Honcho is selected as the active memory provider.
 
 **Headless / remote machines:** for cloud auth on a box without a browser (SSH, remote VM), pick **device** at the wizard's auth-method prompt. The CLI prints a short code and a verification link; open the link in a browser on any other machine, approve, and setup completes — no API key copy-paste. The wizard defaults to this option automatically when it detects no usable local browser.
 
@@ -152,8 +152,8 @@ The legacy `hermes honcho setup` command still works (it now redirects to `herme
 
 </details>
 
-:::tip Migrating from `hermes honcho`
-If you previously used `hermes honcho setup`, your config and all server-side data are intact. Just re-enable through the setup wizard again or manually set `memory.provider: honcho` to reactivate via the new system.
+:::tip Migrating from `seraph honcho`
+If you previously used `seraph honcho setup`, your config and all server-side data are intact. Just re-enable through the setup wizard again or manually set `memory.provider: honcho` to reactivate via the new system.
 :::
 
 **Multi-peer setup:**
@@ -172,7 +172,7 @@ The mapping:
 ### New profile, fresh Honcho peer
 
 ```bash
-hermes profile create coder --clone
+seraph profile create coder --clone
 ```
 
 `--clone` creates a `hermes.coder` host block in `honcho.json` with `aiPeer: "coder"`, shared `workspace`, inherited `peerName`, `recallMode`, `writeFrequency`, `observation`, etc. The AI peer is eagerly created in Honcho so it exists before the first message.
@@ -180,7 +180,7 @@ hermes profile create coder --clone
 ### Existing profiles, backfill Honcho peers
 
 ```bash
-hermes honcho sync
+seraph honcho sync
 ```
 
 Scans every Hermes profile, creates host blocks for any profile without one, inherits settings from the default `hermes` block, and creates the new AI peers eagerly. Idempotent — skips profiles that already have a host block.
@@ -225,7 +225,7 @@ The peer model above covers CLI, TUI, and desktop sessions, where every conversa
 | `userPeerAliases` | Maps specific runtime IDs to peers (`{"7654321": "alice"}`). The home for routing distinct identities — including agents that each carry their own peer |
 | `runtimePeerPrefix` | Namespaces any unmapped runtime ID (`telegram_7654321`) so platforms with same-shaped IDs don't collide |
 
-Off-gateway these keys do nothing. `hermes memory setup` only prompts for them when it detects a connected gateway platform. See the [Honcho page](./honcho.md#gateway-identity-mapping) for the resolver ladder and the setup flow.
+Off-gateway these keys do nothing. `seraph memory setup` only prompts for them when it detects a connected gateway platform. See the [Honcho page](./honcho.md#gateway-identity-mapping) for the resolver ladder and the setup flow.
 
 <details>
 <summary>Full honcho.json example (multi-profile)</summary>
@@ -287,7 +287,7 @@ See the [plugin README](https://github.com/plastic-labs/honcho/tree/main/hermes-
 
 #### Upgrading from the bundled Honcho
 
-Earlier Hermes releases shipped Honcho in-tree. If a profile still has `memory.provider: honcho`, Hermes installs the catalog plugin automatically the next time it starts or runs `hermes update` — your `~/.honcho/config.json` (or `$HERMES_HOME/honcho.json`), host blocks, peers and session mappings are read exactly as before, so no memory is lost. To do it by hand, or on a machine without network access at startup, run `hermes plugins install honcho`.
+Earlier Hermes releases shipped Honcho in-tree. If a profile still has `memory.provider: honcho`, Hermes installs the catalog plugin automatically the next time it starts or runs `seraph update` — your `~/.honcho/config.json` (or `$HERMES_HOME/honcho.json`), host blocks, peers and session mappings are read exactly as before, so no memory is lost. To do it by hand, or on a machine without network access at startup, run `seraph plugins install honcho`.
 
 
 ---
@@ -303,7 +303,7 @@ Context database by Volcengine (ByteDance) with filesystem-style knowledge hiera
 | | |
 |---|---|
 | **Best for** | Self-hosted knowledge management with structured browsing |
-| **Requires** | `hermes plugins install openviking`; OpenViking initialized, validated, and running |
+| **Requires** | `seraph plugins install openviking`; OpenViking initialized, validated, and running |
 | **Data storage** | Self-hosted (local or cloud) |
 | **Cost** | Free (open-source, AGPL-3.0) |
 
@@ -317,13 +317,13 @@ openviking-server doctor
 openviking-server
 
 # Then install and configure the Hermes plugin
-hermes plugins install openviking
-hermes memory setup    # select "openviking"
+seraph plugins install openviking
+seraph memory setup    # select "openviking"
 # Or manually:
-hermes config set memory.provider openviking
+seraph config set memory.provider openviking
 ```
 
-`hermes memory setup` can reuse or copy connection values from
+`seraph memory setup` can reuse or copy connection values from
 `~/.openviking/ovcli.conf`. Manual setup uses the active profile's `.env` file;
 for the default profile that is `~/.hermes/.env`, and for named profiles use
 `~/.hermes/profiles/<profile>/.env`.
@@ -377,11 +377,11 @@ does not add a separate request.
 
 OpenViking used to ship inside the Hermes tree. If your `config.yaml` already has `memory.provider: openviking`, there is nothing to do for most users:
 
-- `hermes update` installs the catalog plugin into every profile home that names the provider.
-- If the plugin is still missing on the first agent start (`hermes chat`, the gateway, Desktop), Hermes installs it and tells you it did.
-- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `hermes plugins install openviking` command instead.
+- `seraph update` installs the catalog plugin into every profile home that names the provider.
+- If the plugin is still missing on the first agent start (`seraph chat`, the gateway, Desktop), Hermes installs it and tells you it did.
+- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `seraph plugins install openviking` command instead.
 
-`memory.provider`, `memory.openviking.*`, the `OPENVIKING_*` keys in `.env`, `~/.openviking/` and the memories on your OpenViking server are untouched. Verify with `hermes memory status` and `hermes plugins list`.
+`memory.provider`, `memory.openviking.*`, the `OPENVIKING_*` keys in `.env`, `~/.openviking/` and the memories on your OpenViking server are untouched. Verify with `seraph memory status` and `seraph plugins list`.
 
 ---
 
@@ -396,7 +396,7 @@ Server-side LLM fact extraction with semantic search, reranking, and automatic d
 | | |
 |---|---|
 | **Best for** | Hands-off memory management — Mem0 handles extraction automatically |
-| **Requires** | `hermes plugins install mem0` (installs the Mem0 SDK with the plugin); API key (platform), a running Mem0 server (self-hosted dashboard), or an LLM + vector store (OSS) |
+| **Requires** | `seraph plugins install mem0` (installs the Mem0 SDK with the plugin); API key (platform), a running Mem0 server (self-hosted dashboard), or an LLM + vector store (OSS) |
 | **Data storage** | Mem0 Cloud (platform), your own Mem0 server (self-hosted dashboard), or in-process (OSS) |
 | **Cost** | Mem0 pricing (platform) / free (self-hosted or OSS) |
 
@@ -407,31 +407,31 @@ your shell or `~/.hermes/.env`.
 
 **Setup (Platform):**
 ```bash
-hermes plugins install mem0   # from the plugin catalog
-hermes memory setup    # select "mem0" → "Platform"
+seraph plugins install mem0   # from the plugin catalog
+seraph memory setup    # select "mem0" → "Platform"
 # Or manually:
-hermes config set memory.provider mem0
+seraph config set memory.provider mem0
 echo "MEM0_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
 **Setup (OSS):**
 ```bash
-hermes memory setup    # select "mem0" → "Open Source (self-hosted)"
+seraph memory setup    # select "mem0" → "Open Source (self-hosted)"
 # Or via flags:
-hermes memory setup mem0 --mode oss --oss-llm openai --oss-llm-key sk-... --oss-vector qdrant
+seraph memory setup mem0 --mode oss --oss-llm openai --oss-llm-key sk-... --oss-vector qdrant
 ```
 
 Preview without writing files:
 ```bash
-hermes memory setup mem0 --mode oss --oss-llm-key sk-... --dry-run
+seraph memory setup mem0 --mode oss --oss-llm-key sk-... --dry-run
 ```
 
 **Setup (Self-Hosted Dashboard):** connect to a Mem0 server you run via Docker (the dashboard's REST API):
 
 ```bash
-hermes memory setup    # select "mem0" → "Self-hosted server"
+seraph memory setup    # select "mem0" → "Self-hosted server"
 # Or via flags:
-hermes memory setup mem0 --mode selfhosted --host http://localhost:8888 --api-key your-admin-api-key
+seraph memory setup mem0 --mode selfhosted --host http://localhost:8888 --api-key your-admin-api-key
 ```
 
 Or configure manually — either as env vars:
@@ -468,17 +468,17 @@ The plugin authenticates with `X-API-Key` and uses the server's `/search` / `/me
 | Embedder | openai, ollama |
 | Vector Store | qdrant (local/server), pgvector |
 
-**Switching modes:** Re-run `hermes memory setup mem0 --mode <platform|selfhosted|oss>` or edit `mem0.json` directly.
+**Switching modes:** Re-run `seraph memory setup mem0 --mode <platform|selfhosted|oss>` or edit `mem0.json` directly.
 
 ### Migrating from bundled Mem0
 
 Mem0 used to ship inside the Hermes tree (and as the `hermes-agent[mem0]` pip extra). If your `config.yaml` already has `memory.provider: mem0`, there is nothing to do for most users:
 
-- `hermes update` installs the catalog plugin into every profile home that names the provider.
-- If the plugin is still missing on the first agent start (`hermes chat`, the gateway, Desktop), Hermes installs it and tells you it did.
-- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `hermes plugins install mem0` command instead.
+- `seraph update` installs the catalog plugin into every profile home that names the provider.
+- If the plugin is still missing on the first agent start (`seraph chat`, the gateway, Desktop), Hermes installs it and tells you it did.
+- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `seraph plugins install mem0` command instead.
 
-`memory.provider`, `$HERMES_HOME/mem0.json`, the `MEM0_*` keys in `.env` and the memories stored in Mem0 Cloud, your Mem0 server or the local OSS store are untouched. Verify with `hermes memory status` and `hermes plugins list`.
+`memory.provider`, `$HERMES_HOME/mem0.json`, the `MEM0_*` keys in `.env` and the memories stored in Mem0 Cloud, your Mem0 server or the local OSS store are untouched. Verify with `seraph memory status` and `seraph plugins list`.
 
 ---
 
@@ -493,7 +493,7 @@ Long-term memory with knowledge graph, entity resolution, and multi-strategy ret
 | | |
 |---|---|
 | **Best for** | Knowledge graph-based recall with entity relationships |
-| **Requires** | `hermes plugins install hindsight`. Cloud: API key from [ui.hindsight.vectorize.io](https://ui.hindsight.vectorize.io). Local: LLM API key (OpenAI, Groq, OpenRouter, etc.) |
+| **Requires** | `seraph plugins install hindsight`. Cloud: API key from [ui.hindsight.vectorize.io](https://ui.hindsight.vectorize.io). Local: LLM API key (OpenAI, Groq, OpenRouter, etc.) |
 | **Data storage** | Hindsight Cloud, local embedded PostgreSQL, or an external local Hindsight server |
 | **Cost** | Hindsight pricing (cloud) or free (local) |
 
@@ -501,14 +501,14 @@ Long-term memory with knowledge graph, entity resolution, and multi-strategy ret
 
 **Setup:**
 ```bash
-hermes plugins install hindsight   # from the plugin catalog; answer "Use 'hindsight' as the memory provider now?"
-hermes memory setup                # select "hindsight"
+seraph plugins install hindsight   # from the plugin catalog; answer "Use 'hindsight' as the memory provider now?"
+seraph memory setup                # select "hindsight"
 # Or manually:
-hermes config set memory.provider hindsight
+seraph config set memory.provider hindsight
 echo "HINDSIGHT_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
-The plugin lands in `~/.hermes/plugins/hindsight/` (per profile home). A memory provider is activated by `memory.provider` in `config.yaml`, not `plugins.enabled`: accepting the install prompt (or passing `--enable`) sets it, and declining leaves it unchanged so `hermes memory setup` can pick it later. `hermes plugins enable hindsight` does not activate a memory provider. `hermes memory setup`, `hermes memory status`, `hermes plugins list` and the dashboard Memory settings all work with the catalog-installed plugin. In local embedded mode the plugin installs `hindsight-all` on first use through Hermes' lazy-install path, which honours `security.allow_lazy_installs`.
+The plugin lands in `~/.hermes/plugins/hindsight/` (per profile home). A memory provider is activated by `memory.provider` in `config.yaml`, not `plugins.enabled`: accepting the install prompt (or passing `--enable`) sets it, and declining leaves it unchanged so `seraph memory setup` can pick it later. `seraph plugins enable hindsight` does not activate a memory provider. `seraph memory setup`, `seraph memory status`, `seraph plugins list` and the dashboard Memory settings all work with the catalog-installed plugin. In local embedded mode the plugin installs `hindsight-all` on first use through Hermes' lazy-install path, which honours `security.allow_lazy_installs`.
 
 **Local mode UI:** `hindsight-embed -p hermes ui start`
 
@@ -523,7 +523,7 @@ The plugin lands in `~/.hermes/plugins/hindsight/` (per profile home). A memory 
 | `auto_retain` | `true` | Automatically retain conversation turns |
 | `auto_recall` | `true` | Automatically recall memories before each turn |
 | `retain_async` | `true` | Process retain asynchronously on the server |
-| `retain_context` | `conversation between Hermes Agent and the User` | Context label for retained memories |
+| `retain_context` | `conversation between Seraph Agent 3.0 and the User` | Context label for retained memories |
 | `retain_tags` | — | Default tags applied to retained memories; merged with per-call tool tags |
 | `retain_source` | — | Optional `metadata.source` attached to retained memories |
 | `retain_user_prefix` | `User` | Label used before user turns in auto-retained transcripts |
@@ -536,15 +536,15 @@ See the [upstream Hermes integration docs](https://hindsight.vectorize.io/sdks/i
 
 Hindsight used to ship inside the Hermes tree (and as the `hermes-agent[hindsight]` pip extra). If your `config.yaml` already has `memory.provider: hindsight`, there is nothing to do for most users:
 
-- `hermes update` installs the catalog plugin into every profile home that names the provider. Each line names the profile it is about. In a terminal it asks before preparing the plugin's Python dependencies; when several profiles use the provider, the questions are asked once and the answers apply to all of them. Without a terminal (the Desktop app, a script, a service) nobody can answer, so each profile prepares them unattended when its `security.allow_lazy_installs` is on (the default); a profile with it off gets the exact `hermes -p <profile> plugins install hindsight` command instead, and the other profiles still migrate.
-- If the plugin is still missing on the first agent start (`hermes chat`, Desktop, the gateway, …), Hermes installs it, dependencies included, and shows ``✓ Memory provider 'hindsight' moved out of core — installed its plugin from the catalog (memory.provider and your stored memories are unchanged; check its settings with `hermes memory status`).`` Messaging platforms get the line with the first reply.
-- When the agent-start install cannot happen, you see why instead of silently running without external memory: with `security.allow_lazy_installs: false` the warning names the install command for that profile; offline or declined installs show the error and the same command. After a failed attempt, agent starts in the next hour skip the install and only repeat the command; `hermes update` always retries.
-- Agent start never asks a question (the chat prompt owns the terminal). A catalog provider that never shipped with Hermes (for example `mnemosyne`) is therefore not installed on agent start: the warning names `hermes plugins install <name>` for that profile, or install it from the dashboard/Desktop Plugins page.
+- `seraph update` installs the catalog plugin into every profile home that names the provider. Each line names the profile it is about. In a terminal it asks before preparing the plugin's Python dependencies; when several profiles use the provider, the questions are asked once and the answers apply to all of them. Without a terminal (the Desktop app, a script, a service) nobody can answer, so each profile prepares them unattended when its `security.allow_lazy_installs` is on (the default); a profile with it off gets the exact `seraph -p <profile> plugins install hindsight` command instead, and the other profiles still migrate.
+- If the plugin is still missing on the first agent start (`seraph chat`, Desktop, the gateway, …), Hermes installs it, dependencies included, and shows ``✓ Memory provider 'hindsight' moved out of core — installed its plugin from the catalog (memory.provider and your stored memories are unchanged; check its settings with `seraph memory status`).`` Messaging platforms get the line with the first reply.
+- When the agent-start install cannot happen, you see why instead of silently running without external memory: with `security.allow_lazy_installs: false` the warning names the install command for that profile; offline or declined installs show the error and the same command. After a failed attempt, agent starts in the next hour skip the install and only repeat the command; `seraph update` always retries.
+- Agent start never asks a question (the chat prompt owns the terminal). A catalog provider that never shipped with Hermes (for example `mnemosyne`) is therefore not installed on agent start: the warning names `seraph plugins install <name>` for that profile, or install it from the dashboard/Desktop Plugins page.
 
-What changes on disk: the plugin appears in `~/.hermes/plugins/hindsight/` and `config.yaml` gains `plugins.enabled: [hindsight]`. `memory.provider`, `$HERMES_HOME/hindsight/config.json`, `HINDSIGHT_API_KEY` in `.env` and your memory bank data are untouched. Verify with `hermes memory status` (provider active) and `hermes plugins list` (plugin installed and enabled).
+What changes on disk: the plugin appears in `~/.hermes/plugins/hindsight/` and `config.yaml` gains `plugins.enabled: [hindsight]`. `memory.provider`, `$HERMES_HOME/hindsight/config.json`, `HINDSIGHT_API_KEY` in `.env` and your memory bank data are untouched. Verify with `seraph memory status` (provider active) and `seraph plugins list` (plugin installed and enabled).
 
 :::warning Where the plugin reads its config
-Hindsight reads `$HERMES_HOME/hindsight/config.json` (per profile home), `~/.hindsight/config.json` (legacy shared), and the `HINDSIGHT_*` variables in `.env`. It does not read a `memory.hindsight` section of `config.yaml`: a `memory.hindsight.*` key there is ignored. Edit the plugin's own `config.json` (key table above) or use `hermes memory setup`.
+Hindsight reads `$HERMES_HOME/hindsight/config.json` (per profile home), `~/.hindsight/config.json` (legacy shared), and the `HINDSIGHT_*` variables in `.env`. It does not read a `memory.hindsight` section of `config.yaml`: a `memory.hindsight.*` key there is ignored. Edit the plugin's own `config.json` (key table above) or use `seraph memory setup`.
 :::
 
 ---
@@ -568,10 +568,10 @@ Local SQLite fact store with FTS5 full-text search, trust scoring, and HRR (Holo
 
 **Setup:**
 ```bash
-hermes plugins install holographic   # from the plugin catalog
-hermes memory setup                  # select "holographic"
+seraph plugins install holographic   # from the plugin catalog
+seraph memory setup                  # select "holographic"
 # Or manually:
-hermes config set memory.provider holographic
+seraph config set memory.provider holographic
 ```
 
 **Config:** `config.yaml` under `plugins.hermes-memory-store`
@@ -594,13 +594,13 @@ The catalog plugin has its own release notes and options beyond this list; see i
 
 Holographic used to ship inside the Hermes tree. If your `config.yaml` already has `memory.provider: holographic`, there is nothing to do:
 
-- `hermes update` installs the catalog plugin into every profile home that names the provider.
-- If the plugin is still missing on the first agent start (`hermes chat`, the gateway, Desktop), Hermes installs it and tells you it did.
-- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `hermes plugins install holographic` command instead.
+- `seraph update` installs the catalog plugin into every profile home that names the provider.
+- If the plugin is still missing on the first agent start (`seraph chat`, the gateway, Desktop), Hermes installs it and tells you it did.
+- With `security.allow_lazy_installs: false` the agent-start path does not install anything; it prints the exact `seraph plugins install holographic` command instead.
 
-Your facts (`$HERMES_HOME/memory_store.db`, or the `db_path` you set) and your `plugins.hermes-memory-store` settings are read exactly as before, so no memory is lost. Verify with `hermes memory status` and `hermes plugins list`.
+Your facts (`$HERMES_HOME/memory_store.db`, or the `db_path` you set) and your `plugins.hermes-memory-store` settings are read exactly as before, so no memory is lost. Verify with `seraph memory status` and `seraph plugins list`.
 
-If you installed Nous Research's interim copy by URL (`NousResearch/hermes-plugin-holographic`, now archived), `hermes plugins update holographic` moves it onto the catalog entry; your data stays where it is.
+If you installed Nous Research's interim copy by URL (`NousResearch/hermes-plugin-holographic`, now archived), `seraph plugins update holographic` moves it onto the catalog entry; your data stays where it is.
 
 ---
 
@@ -619,9 +619,9 @@ Cloud memory API with hybrid search (Vector + BM25 + Reranking), 7 memory types,
 
 **Setup:**
 ```bash
-hermes memory setup    # select "retaindb"
+seraph memory setup    # select "retaindb"
 # Or manually:
-hermes config set memory.provider retaindb
+seraph config set memory.provider retaindb
 echo "RETAINDB_API_KEY=your-key" >> ~/.hermes/.env
 ```
 
@@ -646,9 +646,9 @@ Persistent memory via the `brv` CLI — hierarchical knowledge tree with tiered 
 curl -fsSL https://byterover.dev/install.sh | sh
 
 # Then configure Hermes
-hermes memory setup    # select "byterover"
+seraph memory setup    # select "byterover"
 # Or manually:
-hermes config set memory.provider byterover
+seraph config set memory.provider byterover
 ```
 
 **Key features:**
@@ -669,7 +669,7 @@ Semantic long-term memory with profile recall, semantic search, explicit memory 
 | | |
 |---|---|
 | **Best for** | Semantic recall with user profiling and session-level graph building |
-| **Requires** | `hermes plugins install supermemory` (installs the Supermemory SDK with the plugin); [cloud API key](http://app.supermemory.ai/integrations?connect=hermes), or a [self-hosted server](https://supermemory.ai/docs/self-hosting/overview) |
+| **Requires** | `seraph plugins install supermemory` (installs the Supermemory SDK with the plugin); [cloud API key](http://app.supermemory.ai/integrations?connect=hermes), or a [self-hosted server](https://supermemory.ai/docs/self-hosting/overview) |
 | **Data storage** | Supermemory Cloud or self-hosted |
 | **Cost** | Supermemory pricing (cloud) / free (self-hosted) |
 
@@ -677,10 +677,10 @@ Semantic long-term memory with profile recall, semantic search, explicit memory 
 
 **Setup:**
 ```bash
-hermes plugins install supermemory   # from the plugin catalog
-hermes memory setup                  # select "supermemory"
+seraph plugins install supermemory   # from the plugin catalog
+seraph memory setup                  # select "supermemory"
 # Or manually:
-hermes config set memory.provider supermemory
+seraph config set memory.provider supermemory
 echo 'SUPERMEMORY_API_KEY=***' >> ~/.hermes/.env
 ```
 
@@ -690,7 +690,7 @@ Self-hosted setup:
 npx supermemory local
 ```
 
-After `hermes plugins install supermemory` and before running `hermes memory setup`, set `base_url` in
+After `seraph plugins install supermemory` and before running `seraph memory setup`, set `base_url` in
 `$HERMES_HOME/supermemory.json`:
 
 ```json
@@ -699,7 +699,7 @@ After `hermes plugins install supermemory` and before running `hermes memory set
 }
 ```
 
-Then run `hermes memory setup` and enter the API key printed by the local
+Then run `seraph memory setup` and enter the API key printed by the local
 server. Configuring the endpoint first ensures the setup connection probe also
 stays local.
 
@@ -750,11 +750,11 @@ Base URL precedence is `supermemory.json` → `SUPERMEMORY_BASE_URL` → `https:
 
 Supermemory used to ship inside the Hermes tree (and as the `hermes-agent[supermemory]` pip extra). If your `config.yaml` already has `memory.provider: supermemory`, there is nothing to do for most users:
 
-- `hermes update` installs the catalog plugin into every profile home that names the provider (this runs even when `security.allow_lazy_installs` is `false`).
-- If the plugin is still missing on the first agent start (`hermes chat`, the gateway, …), Hermes installs it and prints `✓ Memory provider 'supermemory' moved out of core — installed its plugin from the catalog (your memory.supermemory settings and data are unchanged).`
-- With `security.allow_lazy_installs: false`, the agent-start path instead logs one line — ``Memory provider 'supermemory' is not installed; security.allow_lazy_installs is off — run `hermes plugins install supermemory`.`` — and you run `hermes plugins install supermemory` yourself.
+- `seraph update` installs the catalog plugin into every profile home that names the provider (this runs even when `security.allow_lazy_installs` is `false`).
+- If the plugin is still missing on the first agent start (`seraph chat`, the gateway, …), Hermes installs it and prints `✓ Memory provider 'supermemory' moved out of core — installed its plugin from the catalog (your memory.supermemory settings and data are unchanged).`
+- With `security.allow_lazy_installs: false`, the agent-start path instead logs one line — ``Memory provider 'supermemory' is not installed; security.allow_lazy_installs is off — run `seraph plugins install supermemory`.`` — and you run `seraph plugins install supermemory` yourself.
 
-What changes on disk: the plugin appears in `~/.hermes/plugins/supermemory/` and `config.yaml` gains `plugins.enabled: [supermemory]`. The Supermemory SDK is installed from the plugin's own package metadata, so the `hermes-agent[supermemory]` extra is no longer needed. `memory.provider`, `$HERMES_HOME/supermemory.json`, the `SUPERMEMORY_*` keys in `.env` and the memories stored in your Supermemory account are untouched. Verify with `hermes memory status` (provider active) and `hermes plugins list` (plugin installed and enabled).
+What changes on disk: the plugin appears in `~/.hermes/plugins/supermemory/` and `config.yaml` gains `plugins.enabled: [supermemory]`. The Supermemory SDK is installed from the plugin's own package metadata, so the `hermes-agent[supermemory]` extra is no longer needed. `memory.provider`, `$HERMES_HOME/supermemory.json`, the `SUPERMEMORY_*` keys in `.env` and the memories stored in your Supermemory account are untouched. Verify with `seraph memory status` (provider active) and `seraph plugins list` (plugin installed and enabled).
 
 ### Memori
 
@@ -782,12 +782,12 @@ distribution needs an owner-managed build that includes it.
 ```bash
 # Run only after confirming the external installer's integration contract above.
 hermes-memori install
-hermes config set memory.provider memori
-hermes memory setup
+seraph config set memory.provider memori
+seraph memory setup
 ```
 
 If the installer does not support PM-managed directory-provider admission, ask
-the publisher for that integration rather than inventing a `hermes pm install`
+the publisher for that integration rather than inventing a `seraph pm install`
 package command. Restart Hermes after successful dependency preparation.
 
 ---
@@ -796,14 +796,14 @@ package command. Restart Hermes after successful dependency preparation.
 
 | Provider | Storage | Cost | Tools | Dependencies | Unique Feature |
 |----------|---------|------|-------|-------------|----------------|
-| **Honcho** (plugin catalog) | Cloud/Self-hosted | Paid/Free | 5 | `hermes plugins install honcho` | Dialectic user modeling + session-scoped context |
-| **OpenViking** (plugin catalog) | Self-hosted | Free | 6 | `hermes plugins install openviking` + server | Filesystem hierarchy + tiered loading |
-| **Mem0** (plugin catalog) | Cloud/Self-hosted | Free/Paid | 4 | `hermes plugins install mem0` | Server-side LLM extraction + self-hosted/OSS modes |
-| **Hindsight** (plugin catalog) | Cloud/Local | Free/Paid | 3 | `hermes plugins install hindsight` | Knowledge graph + reflect synthesis |
-| **Holographic** (plugin catalog) | Local | Free | 2 | `hermes plugins install holographic` | HRR algebra + trust scoring |
+| **Honcho** (plugin catalog) | Cloud/Self-hosted | Paid/Free | 5 | `seraph plugins install honcho` | Dialectic user modeling + session-scoped context |
+| **OpenViking** (plugin catalog) | Self-hosted | Free | 6 | `seraph plugins install openviking` + server | Filesystem hierarchy + tiered loading |
+| **Mem0** (plugin catalog) | Cloud/Self-hosted | Free/Paid | 4 | `seraph plugins install mem0` | Server-side LLM extraction + self-hosted/OSS modes |
+| **Hindsight** (plugin catalog) | Cloud/Local | Free/Paid | 3 | `seraph plugins install hindsight` | Knowledge graph + reflect synthesis |
+| **Holographic** (plugin catalog) | Local | Free | 2 | `seraph plugins install holographic` | HRR algebra + trust scoring |
 | **RetainDB** | Cloud | $20/mo | 10 | `requests` | Delta compression |
 | **ByteRover** | Local/Cloud | Free/Paid | 3 | `brv` CLI | Pre-compression extraction |
-| **Supermemory** (plugin catalog) | Cloud/Self-hosted | Free/Paid | 4 | `hermes plugins install supermemory` | Context fencing + session graph ingest + multi-container |
+| **Supermemory** (plugin catalog) | Cloud/Self-hosted | Free/Paid | 4 | `seraph plugins install supermemory` | Context fencing + session graph ingest + multi-container |
 | **Memori** | Cloud | Free/Paid | 5 | `hermes-memori` | Tool-aware memory + structured recall |
 
 ## Profile Isolation
@@ -829,12 +829,12 @@ maintained by itpartypattaya, see
 ByteRover leave core on October 15, 2026; their standalone repositories are unmaintained and
 open for a new maintainer. Nothing changes for you: the
 provider name, the settings it reads, its data directory and its tools stay the same.
-When a provider you have configured stops shipping with Hermes, `hermes update` installs its
+When a provider you have configured stops shipping with Hermes, `seraph update` installs its
 catalog plugin for every profile that names it; if you update through the Desktop app, the
 agent does the same the first time it starts. Every outcome is shown to you — in the terminal,
 in Desktop, or with the first reply on a messaging platform. If the install cannot happen
 (`security.allow_lazy_installs: false`, offline, declined), the warning includes the exact
-`hermes plugins install <name>` command.
+`seraph plugins install <name>` command.
 
 ## Building a Memory Provider
 

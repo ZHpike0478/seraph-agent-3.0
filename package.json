@@ -1,7 +1,7 @@
 {
   "name": "hermes-agent",
   "version": "1.0.0",
-  "description": "An AI agent with advanced tool-calling capabilities, featuring a flexible toolsets system for organizing and managing tools.",
+  "description": "Seraph Agent 3.0 — a community fork of Nous Research's Hermes Agent.",
   "private": true,
   "scripts": {
     "preinstall": "node -e \"const ua=(process.env.npm_config_user_agent||'').split(' ')[0];let pin,why;try{pin=require('./pm/lock.json').packages.pnpm.version}catch(e){why=e.code||e.message}if(typeof pin==='string'&&ua==='pnpm/'+pin)process.exit(0);console.error(typeof pin==='string'?'This repository installs with pnpm '+pin+' (pm/lock.json), found '+(ua||'no user agent')+': source ./activate (PowerShell: . ./activate.ps1) provides it, then run pnpm install --frozen-lockfile':'pm/lock.json pins no pnpm'+(why?' ('+why+')':'')+': restore it from git');process.exit(1)\"",
@@ -22,13 +22,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NousResearch/Hermes-Agent.git"
+    "url": "git+https://github.com/ZHpike0478/seraph-agent-3.0.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NousResearch/Hermes-Agent/issues"
+    "url": "https://github.com/ZHpike0478/seraph-agent-3.0/issues"
   },
-  "homepage": "https://github.com/NousResearch/Hermes-Agent#readme",
+  "homepage": "https://github.com/ZHpike0478/seraph-agent-3.0#readme",
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint": "10.12.0",

@@ -7,7 +7,7 @@ description: "Run multiple Hermes agents safely on the same repository using git
 
 # Git Worktrees
 
-Hermes Agent is often used on large, long‑lived repositories. When you want to:
+Seraph Agent 3.0 is often used on large, long‑lived repositories. When you want to:
 
 - Run **multiple agents in parallel** on the same project, or
 - Keep experimental refactors isolated from your main branch,
@@ -20,7 +20,7 @@ This page shows how to combine worktrees with Hermes so each session has a clean
 
 Hermes treats the **current working directory** as the project root:
 
-- CLI: the directory where you run `hermes` or `hermes chat`
+- CLI: the directory where you run `hermes` or `seraph chat`
 - Messaging gateways: the directory set by `terminal.cwd` in `~/.hermes/config.yaml`
 
 If you run multiple agents in the **same checkout**, their changes can interfere with each other:
@@ -53,7 +53,7 @@ into it — no restart needed. Omit the name to get a random `hermes-<id>`
 tree. `/worktree` alone shows the active tree; `/worktree list` lists all of
 them. On exit a clean, pushed tree is removed; a tree with uncommitted changes
 or unpushed commits triggers the same keep / archive / remove question as
-`hermes -w`.
+`seraph -w`.
 
 ### Manually with git
 
@@ -157,13 +157,13 @@ Notes:
 - **Avoid running Hermes from the bare repo root when using worktrees**
   - Prefer the worktree directories instead, so each agent has a clear scope.
 
-## Using `hermes -w` (Automatic Worktree Mode)
+## Using `seraph -w` (Automatic Worktree Mode)
 
 Hermes has a built‑in `-w` flag that **automatically creates a disposable git worktree** with its own branch. You don't need to set up worktrees manually — just `cd` into your repo and run:
 
 ```bash
 cd /path/to/your/repo
-hermes -w
+seraph -w
 ```
 
 Hermes will:
@@ -177,20 +177,20 @@ Hermes checks the worktree out without running the repository's own git configur
 This is the easiest way to get worktree isolation. You can also combine it with a single query:
 
 ```bash
-hermes -w -z "Fix issue #123"
+seraph -w -z "Fix issue #123"
 ```
 
-For parallel agents, open multiple terminals and run `hermes -w` in each — every invocation gets its own worktree and branch automatically.
+For parallel agents, open multiple terminals and run `seraph -w` in each — every invocation gets its own worktree and branch automatically.
 
 ### Leaving a session with unfinished work
 
-When an interactive `hermes -w` session (classic CLI or `--tui`) exits and its
+When an interactive `seraph -w` session (classic CLI or `--tui`) exits and its
 worktree has uncommitted changes or unpushed commits, Hermes asks:
 
 - **Keep the worktree** (default, also what Enter/Esc picks) — nothing changes.
 - **Archive and remove it** — the full working state is archived (see below)
   and the tree is removed before the session finishes exiting, so a large tree
-  is never cut short; Hermes prints the `hermes worktree restore` command. If
+  is never cut short; Hermes prints the `seraph worktree restore` command. If
   the archive fails, the tree is kept.
 - **Remove it and discard the changes** — only when you pick it explicitly.
 
@@ -200,9 +200,9 @@ later. A clean tree whose commits are pushed is removed without asking.
 
 ## Stale worktree sweep and restore
 
-Every repository Hermes creates a worktree in (`hermes -w`, `/worktree new`,
+Every repository Hermes creates a worktree in (`seraph -w`, `/worktree new`,
 subagent worktree isolation, the desktop app's git pane) is recorded in
-`<HERMES_HOME>/worktree_repos.json` for the active profile. At `hermes -w`
+`<HERMES_HOME>/worktree_repos.json` for the active profile. At `seraph -w`
 startup and every 6 hours from the cron ticker, Hermes sweeps each of those
 repositories' `.worktrees/`:
 
@@ -241,10 +241,10 @@ branch that exists on a remote (an open PR) is kept; otherwise the archive
 holds its commits and the local branch is deleted.
 
 ```bash
-hermes worktree list                 # trees plus archives (name, age, branch, reason)
-hermes worktree prune --dry-run      # every archive/remove/skip decision and why; changes nothing
-hermes worktree restore lane-x       # recreate .worktrees/lane-x with its branch, staged and untracked files
-hermes worktree restore lane-x --path ../lane-x-review
+seraph worktree list                 # trees plus archives (name, age, branch, reason)
+seraph worktree prune --dry-run      # every archive/remove/skip decision and why; changes nothing
+seraph worktree restore lane-x       # recreate .worktrees/lane-x with its branch, staged and untracked files
+seraph worktree restore lane-x --path ../lane-x-review
 ```
 
 Restore puts the branch back when it is missing or still points at the

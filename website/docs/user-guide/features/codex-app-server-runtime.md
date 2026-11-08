@@ -10,7 +10,7 @@ Hermes can optionally hand `openai/*`, `openai-codex/*` and [named custom provid
 This is **opt-in only**. Default Hermes behavior is unchanged unless you flip the flag. Hermes never auto-routes you onto this runtime.
 
 :::tip
-Not using OpenAI Codex? `hermes setup --portal` configures a non-Codex backend with Claude/Gemini/etc. in one step. See [Nous Portal](../../integrations/nous-portal.md).
+Not using OpenAI Codex? `seraph setup --portal` configures a non-Codex backend with Claude/Gemini/etc. in one step. See [Nous Portal](../../integrations/nous-portal.md).
 :::
 
 ## Why
@@ -87,7 +87,7 @@ These four Hermes tools require the running AIAgent context (mid-loop state) to 
 
 ### Kanban (multi-agent worktree dispatch)
 
-**Works on this runtime, with one subtle dependency.** The kanban dispatcher spawns each worker as a separate `hermes chat -q` subprocess that reads the user's config — which means if `model.openai_runtime: codex_app_server` is set globally, workers also come up on the codex runtime.
+**Works on this runtime, with one subtle dependency.** The kanban dispatcher spawns each worker as a separate `seraph chat -q` subprocess that reads the user's config — which means if `model.openai_runtime: codex_app_server` is set globally, workers also come up on the codex runtime.
 
 What works inside a codex-runtime worker:
 - Codex's full toolset (shell, apply_patch, update_plan, view_image, web_search) — the worker does its actual task work natively
@@ -163,7 +163,7 @@ uses:
    ```bash
    codex login                  # writes tokens to ~/.codex/auth.json
    ```
-   Hermes' own `hermes auth add openai-codex` writes to `~/.hermes/auth.json` — that's a separate session. **Run `codex login` separately** if you haven't.
+   Hermes' own `seraph auth add openai-codex` writes to `~/.hermes/auth.json` — that's a separate session. **Run `codex login` separately** if you haven't.
 
    <a id="named-custom-providers"></a>**Or: a named custom provider.** A `providers.<name>` entry in Hermes config can use this runtime when the **same name** is defined as a Codex provider. Hermes config:
 
@@ -338,7 +338,7 @@ The self-improvement review fork inherits the main runtime via `_current_main_ru
 Hermes wraps everything it manages between two marker comments:
 
 ```toml
-# managed by hermes-agent — `hermes codex-runtime migrate` regenerates this section
+# managed by hermes-agent — `seraph codex-runtime migrate` regenerates this section
 default_permissions = ":workspace"
 [mcp_servers.filesystem]
 ...
@@ -347,7 +347,7 @@ default_permissions = ":workspace"
 # end hermes-agent managed section
 ```
 
-Anything **outside** that block is yours. Re-running migration (via `/codex-runtime codex_app_server`, whenever you toggle the runtime on, or `hermes codex-runtime migrate`) replaces the managed block in place but preserves user content above and below it verbatim. This means you can:
+Anything **outside** that block is yours. Re-running migration (via `/codex-runtime codex_app_server`, whenever you toggle the runtime on, or `seraph codex-runtime migrate`) replaces the managed block in place but preserves user content above and below it verbatim. This means you can:
 
 - Add your own MCP servers Hermes doesn't know about
 - Override `default_permissions` to `:read-only` if you prefer to be prompted
@@ -361,17 +361,17 @@ Anything you add **inside** the managed block will get clobbered on the next mig
 ### Running the migration from a script
 
 ```bash
-hermes codex-runtime migrate            # rewrite the managed block for the active profile
-hermes codex-runtime migrate --dry-run  # report only, no write
-hermes codex-runtime migrate --json     # machine-readable report (migrated, preserved_user_servers, errors, …)
-hermes -p work codex-runtime migrate    # a named profile's mcp_servers
+seraph codex-runtime migrate            # rewrite the managed block for the active profile
+seraph codex-runtime migrate --dry-run  # report only, no write
+seraph codex-runtime migrate --json     # machine-readable report (migrated, preserved_user_servers, errors, …)
+seraph -p work codex-runtime migrate    # a named profile's mcp_servers
 ```
 
 This is the same migration `/codex-runtime codex_app_server` runs; it is idempotent, writes atomically, and exits non-zero when the report contains errors. It writes `$CODEX_HOME/config.toml` when `CODEX_HOME` is set (see below), otherwise `~/.codex/config.toml`.
 
 ## Multi-profile / multi-tenant setups
 
-By default, Hermes points the codex subprocess at `~/.codex/` regardless of which Hermes profile is active. This means `hermes -p work` and `hermes -p personal` share the same Codex auth, plugins, and config. For most users this is the right behavior — it matches what running `codex` CLI directly would do.
+By default, Hermes points the codex subprocess at `~/.codex/` regardless of which Hermes profile is active. This means `seraph -p work` and `seraph -p personal` share the same Codex auth, plugins, and config. For most users this is the right behavior — it matches what running `codex` CLI directly would do.
 
 If you want per-profile Codex isolation (separate auth, separate installed plugins, separate config), set `CODEX_HOME` explicitly per profile. The cleanest way is to point at a directory under your `HERMES_HOME`:
 
@@ -380,7 +380,7 @@ If you want per-profile Codex isolation (separate auth, separate installed plugi
 CODEX_HOME=~/.hermes/profiles/work/codex hermes chat
 ```
 
-You'll need to re-run `codex login` once with that `CODEX_HOME` set so the OAuth tokens land in the profile-scoped location. After that, `hermes -p work` will operate on isolated Codex state.
+You'll need to re-run `codex login` once with that `CODEX_HOME` set so the OAuth tokens land in the profile-scoped location. After that, `seraph -p work` will operate on isolated Codex state.
 
 We don't auto-scope this because moving an existing user's `~/.codex/` would silently invalidate their Codex CLI auth — anyone who already ran `codex login` would have to re-authenticate. Opt-in feels safer than surprising users.
 
@@ -453,7 +453,7 @@ Effective on the next session. The Codex managed block stays in `~/.codex/config
 
 ## Limitations
 
-This runtime is **opt-in beta**. Working as of Hermes Agent 2026.5 + Codex CLI 0.130.0:
+This runtime is **opt-in beta**. Working as of Seraph Agent 3.0 2026.5 + Codex CLI 0.130.0:
 
 - Multi-turn conversations
 - `commandExecution` and `fileChange` (apply_patch) approvals via Hermes UI
@@ -466,15 +466,15 @@ This runtime is **opt-in beta**. Working as of Hermes Agent 2026.5 + Codex CLI 0
 
 Known limitations:
 
-- **Hermes auth and codex auth are separate sessions.** You need both `codex login` AND `hermes auth add openai-codex` for the cleanest UX (the runtime uses codex's session for the LLM call). This is a deliberate design choice in Hermes' `_import_codex_cli_tokens` — Hermes won't share OAuth state with codex CLI to avoid clobbering each other on token refresh.
+- **Hermes auth and codex auth are separate sessions.** You need both `codex login` AND `seraph auth add openai-codex` for the cleanest UX (the runtime uses codex's session for the LLM call). This is a deliberate design choice in Hermes' `_import_codex_cli_tokens` — Hermes won't share OAuth state with codex CLI to avoid clobbering each other on token refresh.
 - **`delegate_task`, `memory`, `session_search`, `todo` are unavailable on this runtime.** They need the running AIAgent context which a stateless MCP callback can't provide. Use `/codex-runtime auto` when you need these.
 - **No inline patch preview in approval prompts when codex doesn't track the changeset.** Codex's `fileChange` approval params don't always carry the changeset. Hermes caches the data from the corresponding `item/started` notification when possible, but if approval arrives before the item has streamed, the prompt falls back to whatever `reason` codex provides.
 - **`fallback_providers` fail over only on quota and rate-limit failures.** When a codex app-server turn fails with a billing / usage-limit / rate-limit error, Hermes switches to the configured [fallback provider](./fallback-providers.md) and retries the same turn on it; auth failures (`codex login` expired), turn timeouts and unknown-model errors do not fail over on this runtime and surface as the turn's error instead.
 - **Prior Hermes history is seeded only into a thread codex starts from scratch.** A codex thread that codex hands back via `thread/resume` already holds the conversation. When no resumable thread exists — the session ran on another provider before `/model` switched to openai-codex, codex could not resume the stored thread, or the running thread was retired — the new thread's `developerInstructions` carry Hermes' system prompt followed by the session's prior turns (user and assistant text, tool names, tool-result previews; the most recent ~32K characters). When the composed prompt changes mid-session (for example `/personality` in the TUI or Desktop), the next turn retires the running thread and starts a new one carrying the updated prompt plus that same history seed.
-- **The codex thread itself does survive a restart.** After each committed turn Hermes stores the codex thread id on the session row (`codex_thread_id` in the session's `model_config`, `hermes sessions` / `state.db`). The next agent built for that same Hermes session — a later `/api/sessions/{id}/chat` request, or the first turn after the API server or gateway restarts — issues `thread/resume` for the stored id before `turn/start`, so the model keeps its own memory of the earlier turns (that is why no history seed is sent on resume). When codex cannot hand the thread back (its rollout was deleted, `CODEX_HOME` changed, the previous app-server was killed while still writing it), Hermes fails closed: it drops the stored id, starts a fresh thread and shows one line — `Codex thread could not be resumed; starting a new one.` — on the status rail of the surface you are on (CLI, TUI/Desktop, messaging gateway). A `/new` session never resumes an older thread.
+- **The codex thread itself does survive a restart.** After each committed turn Hermes stores the codex thread id on the session row (`codex_thread_id` in the session's `model_config`, `seraph sessions` / `state.db`). The next agent built for that same Hermes session — a later `/api/sessions/{id}/chat` request, or the first turn after the API server or gateway restarts — issues `thread/resume` for the stored id before `turn/start`, so the model keeps its own memory of the earlier turns (that is why no history seed is sent on resume). When codex cannot hand the thread back (its rollout was deleted, `CODEX_HOME` changed, the previous app-server was killed while still writing it), Hermes fails closed: it drops the stored id, starts a fresh thread and shows one line — `Codex thread could not be resumed; starting a new one.` — on the status rail of the surface you are on (CLI, TUI/Desktop, messaging gateway). A `/new` session never resumes an older thread.
 - **Sub-second cancellation isn't guaranteed.** Mid-stream interrupts (Ctrl+C while codex is responding) are sent via `turn/interrupt`, but if codex has already flushed the final message, you get the response anyway.
 
-If you find a bug, [open an issue](https://github.com/NousResearch/hermes-agent/issues) with the output of `hermes logs --since 5m`. Mention `codex-runtime` in the title so it's easy to triage.
+If you find a bug, [open an issue](https://github.com/NousResearch/hermes-agent/issues) with the output of `seraph logs --since 5m`. Mention `codex-runtime` in the title so it's easy to triage.
 
 ## Architecture
 

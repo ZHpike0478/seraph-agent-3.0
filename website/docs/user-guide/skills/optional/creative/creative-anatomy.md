@@ -14,7 +14,7 @@ Explain an idea as an interactive isometric machine figure.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/creative/anatomy` |
+| Source | Optional — install with `seraph skills install official/creative/anatomy` |
 | Path | `optional-skills/creative/anatomy` |
 | Version | `1.0.0` |
 | Author | Ryan (wheresryan22), ported to Hermes by Nous Research |
@@ -54,7 +54,7 @@ cp -r "$SKILL_DIR/examples/dial-indicator" "$WORK/figures/"
 cd "$WORK/figures/dial-indicator" && node build.mjs && node build.mjs --light
 ```
 
-Start a new figure by copying the closest example into `$WORK/figures/<name>/` and renaming it. Leaving the installed skill untouched keeps `hermes skills update` from flagging it as locally modified.
+Start a new figure by copying the closest example into `$WORK/figures/<name>/` and renaming it. Leaving the installed skill untouched keeps `seraph skills update` from flagging it as locally modified.
 
 **The examples ship as source only.** Upstream's built pages are 9 MB of generated HTML. Build an example (as above) to open or capture it, since it takes a few seconds.
 

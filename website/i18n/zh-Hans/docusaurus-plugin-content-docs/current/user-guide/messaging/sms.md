@@ -2,7 +2,7 @@
 sidebar_position: 8
 sidebar_label: "SMS (Twilio)"
 title: "SMS (Twilio)"
-description: "通过 Twilio 将 Hermes Agent 设置为 SMS 聊天机器人"
+description: "通过 Twilio 将 Seraph Agent 3.0 设置为 SMS 聊天机器人"
 ---
 
 # SMS 设置（Twilio）
@@ -40,7 +40,7 @@ SMS gateway（网关）与可选的 [telephony skill](../../reference/skills-cat
 ### 交互式设置（推荐）
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 从平台列表中选择 **SMS (Twilio)**，向导将提示你输入凭据。
@@ -105,7 +105,7 @@ SMS_WEBHOOK_PORT=3000
 ## 第四步：启动 Gateway
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 你应该看到：

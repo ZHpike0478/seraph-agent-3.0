@@ -14,10 +14,10 @@ Build creative browser demos with DOM-free text layout.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/creative/pretext` |
+| Source | Optional — install with `seraph skills install official/creative/pretext` |
 | Path | `optional-skills/creative/pretext` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `creative-coding`, `typography`, `pretext`, `ascii-art`, `canvas`, `generative`, `text-layout`, `kinetic-typography` |

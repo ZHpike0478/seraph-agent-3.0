@@ -35,7 +35,7 @@ for word, and a test fails the build if the two drift apart.
   checkout at the commit you are about to pin:
 
   ```bash
-  hermes plugins validate /path/to/your-plugin --install-deps
+  seraph plugins validate /path/to/your-plugin --install-deps
   ```
 
   It checks the manifest and `requires_hermes`, that the plugin loads, that the
@@ -57,7 +57,7 @@ for word, and a test fails the build if the two drift apart.
    uses, and everything rule 13 asks you to disclose. Add screenshots for
    anything with a UI.
 3. Wait for the catalog CI job to go green. It clones your repo at the pinned
-   commit and runs `hermes plugins validate`.
+   commit and runs `seraph plugins validate`.
 4. A maintainer reviews the pinned tree and merges, asks for changes, or
    declines. Rule 3 and rule 9 problems are declines rather than bug-fix
    requests: the plugin has to change its design before it can be listed.
@@ -80,7 +80,7 @@ the gallery. There is no separate listing to maintain.
    remote `plugin.js` loaders). The exact SHA pin *is* the trust model; a
    self-updater lets an installed copy move to a commit nobody reviewed.
    Updates reach users only through a SHA-bump PR here plus
-   `hermes plugins update <name>`. Keep the updater in the standalone
+   `seraph plugins update <name>`. Keep the updater in the standalone
    distribution if you want one; strip it from the catalog build.
 4. **SHA bumps are new PRs.** Updating an entry's pin is a new PR whose diff
    (old SHA → new SHA) is re-reviewed like any other change — reviewers are
@@ -98,7 +98,7 @@ the gallery. There is no separate listing to maintain.
    (tools, hooks, middleware, env vars) must match what the plugin actually
    registers at the pinned commit. Validation fails the entry otherwise —
    undeclared capability creep is treated as a security issue.
-7. **The install scanner runs at admission.** `hermes plugins validate` includes
+7. **The install scanner runs at admission.** `seraph plugins validate` includes
    the `security scan` check: `dangerous` fails the entry; `caution` findings
    appear as warnings in the CI log and the reviewer reads them before merging.
    In exchange, installs at the pinned SHA accept `caution` without a prompt
@@ -115,7 +115,7 @@ the gallery. There is no separate listing to maintain.
    injection, no reaching into the app's internal stores or its own markup
    (querying `data-slot` / `data-tour` / `data-sidebar` / `data-testid`
    elements from `document`, or a `document.body` MutationObserver, to restyle,
-   hide, click or rewrite core UI). `hermes plugins validate` refuses these at
+   hide, click or rewrite core UI). `seraph plugins validate` refuses these at
    admission (`desktop surface` check) and warns, for the reviewer, on raw
    `window.hermesDesktop` bridge calls and on the app's markup selected any
    other way (`[data-slot]`, `[data-tree-*]` in CSS text or `closest()`); a
@@ -128,7 +128,7 @@ the gallery. There is no separate listing to maintain.
    private dicts in place (`AIAgent.<method> = ...`, `setattr(server, ...)`,
    `sys.modules[...]`, writes into a core module's tables). Two plugins
    patching the same seam silently break each other, and every core release
-   can break both. `hermes plugins validate` refuses these at admission (`no
+   can break both. `seraph plugins validate` refuses these at admission (`no
    core override` check), and warns (without failing) on each import of an
    undocumented core module and each call to a private method of a core
    object it is handed (`db._execute_write(...)`), by file and line. If the hook you need does not
@@ -155,7 +155,7 @@ the gallery. There is no separate listing to maintain.
    `requires_auth`, so Hermes attaches the token and the plugin never holds it. An
    OAuth client for a third-party API (the user's own Google Cloud client, for
    example) is declared under `oauth:` in `plugin.yaml`, signed in with
-   `hermes auth add <plugin>:<id>` and used through the same helper; Hermes
+   `seraph auth add <plugin>:<id>` and used through the same helper; Hermes
    stores and refreshes that token too. Its `authorize_url`, `token_url` and
    `hosts` are `https` only, and its `hosts` belong to the API the scopes are for. A plugin never reads `.env` files, Hermes's `auth.json`, another tool's login (a
    vendor CLI's token file, a browser profile, a keychain) or any other
@@ -178,7 +178,7 @@ the gallery. There is no separate listing to maintain.
 14. **Compatibility metadata is truthful.** `requires_hermes` is a SemVer floor
    (`">=0.21.5"`), never a CalVer date, and never newer than the current release.
    The entry's `requires_hermes` is enforced: an install by catalog name refuses
-   on a Hermes it rejects, and `hermes plugins update` keeps an installed plugin
+   on a Hermes it rejects, and `seraph plugins update` keeps an installed plugin
    at its current pin until Hermes is updated. Declare the same floor in
    `plugin.yaml` as well, because older Hermes versions enforce only that one
    (the loader skips the plugin when it does not match). A portable package
@@ -186,7 +186,7 @@ the gallery. There is no separate listing to maintain.
    `requires_hermes` is its only floor: set one when the package needs a recent
    Hermes (a server declaration key an older release ignores). `version` matches the
    pinned code, and Python dependencies resolve under Hermes's core constraints
-   (`hermes plugins validate --install-deps` is what CI runs).
+   (`seraph plugins validate --install-deps` is what CI runs).
 15. **No skins or forks of bundled plugins.** A change to a bundled plugin is a
    PR against `hermes-agent`, not a competing listing, and vendor-lookalike skins
    are not listed under Nous branding.
@@ -237,8 +237,8 @@ the same PR so the label users see matches the code, and re-pin any `image` /
 `screenshots` URLs that embed the old sha.
 
 Installed plugins compare their recorded sha against the live pin:
-`hermes plugins list --json` reports `update_available`, the Desktop Plugins tab
-shows an **Update to 1.4.0** button, and `hermes plugins update <name>` checks
+`seraph plugins list --json` reports `update_available`, the Desktop Plugins tab
+shows an **Update to 1.4.0** button, and `seraph plugins update <name>` checks
 out exactly the new pin.
 
 If a maintainer swept your plugin into the catalog and you want the entry

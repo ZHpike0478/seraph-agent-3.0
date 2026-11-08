@@ -5,7 +5,7 @@
 [project]
 name = "hermes-agent"
 version = "0.0.0"
-description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
+description = "Seraph Agent 3.0, a community fork of Nous Research's self-improving Hermes Agent"
 readme = "README.md"
 # 3.14 is the newest python we know we have wheels for.
 # we *only* support 3.14, BUT we need to allow old hermes installs on <3.14
@@ -590,6 +590,7 @@ requires = ["setuptools==84.1.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
+seraph = "hermes_cli.main:main"
 hermes = "hermes_cli.main:main"
 hermes-agent = "agent.legacy_cli:main"
 hermes-acp = "acp_adapter.entry:main"

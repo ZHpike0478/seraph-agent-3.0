@@ -14,10 +14,10 @@ Turn a handwriting photo into an installable TTF font.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/creative/draw-your-font` |
+| Source | Optional — install with `seraph skills install official/creative/draw-your-font` |
 | Path | `optional-skills/creative/draw-your-font` |
 | Version | `0.1.0` |
-| Author | Danilo Znamerovszkij (https://github.com/danilo-znamerovszkij/draw-your-font), ported by Hermes Agent |
+| Author | Danilo Znamerovszkij (https://github.com/danilo-znamerovszkij/draw-your-font), ported by Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `font`, `handwriting`, `typography`, `ttf`, `woff`, `vision`, `creative` |

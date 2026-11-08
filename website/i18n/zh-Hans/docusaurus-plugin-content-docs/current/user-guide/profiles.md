@@ -18,7 +18,7 @@ profile 是一个独立的 Hermes 主目录。每个 profile 拥有自己的目�
 
 - **Profile** 是一个助手的配置和数据的持久化主目录。它在多次对话和重启之间保持同一份状态。
 
-- **Agent** 是使用该配置和状态运行中的 Hermes 助手。"Hermes Agent" 同时也是产品的名称。
+- **Agent** 是使用该配置和状态运行中的 Hermes 助手。"Seraph Agent 3.0" 同时也是产品的名称。
 
 - **Bot 模式中的 Bot** 是以具名条目出现在桌面应用 [Bot 模式](./bot-mode)花名册中的 profile，带有头像和一个持久的 Bot Chat。同一个 profile 仍然可以从 CLI 访问。每个 Bot 都是一个 profile，但并非每个 profile 都是 Bot：当 Bot 模式把它的花名册展示信息（标题、头像、分区、隐藏状态）写入该 profile 的元数据并固定其规范 Bot Chat 时，这个 profile 才成为 Bot。一个只在 CLI、Docker 或 gateway 中使用、从未加入花名册的 profile 仍然只是普通 profile。
 
@@ -29,7 +29,7 @@ profile 是一个独立的 Hermes 主目录。每个 profile 拥有自己的目�
 ## 快速开始
 
 ```bash
-hermes profile create coder       # 创建 profile + "coder" 命令别名
+seraph profile create coder       # 创建 profile + "coder" 命令别名
 coder setup                       # 配置 API 密钥和模型
 coder chat                        # 开始对话
 ```
@@ -41,7 +41,7 @@ coder chat                        # 开始对话
 ### 空白 profile
 
 ```bash
-hermes profile create mybot
+seraph profile create mybot
 ```
 
 创建一个预置了内置技能的全新 profile。运行 `mybot setup` 配置 API 密钥、模型和 gateway token。
@@ -49,15 +49,15 @@ hermes profile create mybot
 如果你计划将此 profile 用作 kanban（看板）工作节点（或希望 kanban 编排器将任务路由到它），在创建时传入 `--description "<角色>"` 以便编排器了解其能力：
 
 ```bash
-hermes profile create researcher --description "Reads source code and external docs, writes findings."
+seraph profile create researcher --description "Reads source code and external docs, writes findings."
 ```
 
-你也可以稍后通过 `hermes profile describe` 设置或自动生成描述——完整路由模型请参阅 [Kanban 指南](./features/kanban#auto-vs-manual-orchestration)。
+你也可以稍后通过 `seraph profile describe` 设置或自动生成描述——完整路由模型请参阅 [Kanban 指南](./features/kanban#auto-vs-manual-orchestration)。
 
 ### 仅克隆配置（`--clone`）
 
 ```bash
-hermes profile create work --clone
+seraph profile create work --clone
 ```
 
 将当前 profile 的 `config.yaml`、`.env`、`SOUL.md`、skills 以及精选记忆文件 `memories/MEMORY.md` 和 `memories/USER.md` 复制到新 profile——记忆与 `SOUL.md` 一样被视为 agent 身份的一部分。会话、`state.db`、cron 任务及其他内容均从空白开始。若也想要空白记忆，请不加 `--clone` 创建 profile，或在创建后删除这两个文件；文件不存在时 agent 不会回退读取其他 profile 的记忆。编辑 `~/.hermes/profiles/work/.env` 可使用不同的 API 密钥，编辑 `~/.hermes/profiles/work/SOUL.md` 可设置不同的人格。
@@ -65,25 +65,25 @@ hermes profile create work --clone
 ### 克隆全部内容（`--clone-all`）
 
 ```bash
-hermes profile create backup --clone-all
+seraph profile create backup --clone-all
 ```
 
-复制**所有内容**——配置、API 密钥、人格、记忆、技能、cron 任务、插件。会排除每个 profile 自己的历史数据（会话历史、`state.db`、`backups/`、`state-snapshots/`、`checkpoints/`），这些数据属于源 profile 且可能达到数十 GB。若要包含历史的完整备份，请使用 `hermes profile export` 或 `hermes backup`。
+复制**所有内容**——配置、API 密钥、人格、记忆、技能、cron 任务、插件。会排除每个 profile 自己的历史数据（会话历史、`state.db`、`backups/`、`state-snapshots/`、`checkpoints/`），这些数据属于源 profile 且可能达到数十 GB。若要包含历史的完整备份，请使用 `seraph profile export` 或 `seraph backup`。
 
 :::note OAuth 登录是共享的，而不是复制的
-Anthropic（Claude Pro/Max）、OpenAI Codex 和 xAI 的 OAuth 登录使用**一次性刷新令牌**——复制一份并不会得到第二个凭证，而是同一个凭证有了两个持有者，第一个刷新它的 profile 会让其他所有副本失效。因此 `--clone-all`（以及仪表盘的凭证镜像）不会把这些 OAuth 条目复制到克隆中。新 profile 继续从根目录的 `~/.hermes/auth.json` 读取登录，任何 profile 中执行的令牌刷新都会写回根目录，所有 profile 都保持登录状态。静态 API 密钥照常复制。若要让某个 profile 拥有自己独立的 OAuth 登录，请在其中运行 `hermes -p <name> auth add <provider>`。该登录保存在这个 profile 自己的 `auth.json` 中（即使根目录还没有该提供商的登录也是如此），此后该 profile 使用它而不是根目录的登录；根目录的 `auth.json` 不会被修改。如果登录无法保存，命令会报错，而不会打印 `Added`。
+Anthropic（Claude Pro/Max）、OpenAI Codex 和 xAI 的 OAuth 登录使用**一次性刷新令牌**——复制一份并不会得到第二个凭证，而是同一个凭证有了两个持有者，第一个刷新它的 profile 会让其他所有副本失效。因此 `--clone-all`（以及仪表盘的凭证镜像）不会把这些 OAuth 条目复制到克隆中。新 profile 继续从根目录的 `~/.hermes/auth.json` 读取登录，任何 profile 中执行的令牌刷新都会写回根目录，所有 profile 都保持登录状态。静态 API 密钥照常复制。若要让某个 profile 拥有自己独立的 OAuth 登录，请在其中运行 `seraph -p <name> auth add <provider>`。该登录保存在这个 profile 自己的 `auth.json` 中（即使根目录还没有该提供商的登录也是如此），此后该 profile 使用它而不是根目录的登录；根目录的 `auth.json` 不会被修改。如果登录无法保存，命令会报错，而不会打印 `Added`。
 :::
 
 ### 从指定 profile 克隆
 
 ```bash
-hermes profile create work --clone-from coder
+seraph profile create work --clone-from coder
 ```
 
 `--clone-from <source>` 会直接选择源 profile，并隐含执行 config/skills/SOUL 克隆。若要完整复制该源 profile，请与 `--clone-all` 组合使用：
 
 ```bash
-hermes profile create work-backup --clone-from coder --clone-all
+seraph profile create work-backup --clone-from coder --clone-all
 ```
 
 :::tip Honcho 记忆 + profiles
@@ -105,25 +105,25 @@ coder skills list             # 列出 coder 的技能
 coder config set model.default anthropic/claude-sonnet-4
 ```
 
-别名支持所有 hermes 子命令——底层实际上是 `hermes -p <name>`。
+别名支持所有 hermes 子命令——底层实际上是 `seraph -p <name>`。
 
 ### `-p` 标志
 
 你也可以通过任意命令显式指定 profile：
 
 ```bash
-hermes -p coder chat
-hermes --profile=coder doctor
-hermes chat -p coder -q "hello"    # 可在任意位置使用
+seraph -p coder chat
+seraph --profile=coder doctor
+seraph chat -p coder -q "hello"    # 可在任意位置使用
 ```
 
-### 粘性默认值（`hermes profile use`）
+### 粘性默认值（`seraph profile use`）
 
 ```bash
-hermes profile use coder
-hermes chat                   # 现在指向 coder
-hermes tools                  # 配置 coder 的工具
-hermes profile use default    # 切换回默认
+seraph profile use coder
+seraph chat                   # 现在指向 coder
+seraph tools                  # 配置 coder 的工具
+seraph profile use default    # 切换回默认
 ```
 
 设置默认值后，普通 `hermes` 命令将指向该 profile。类似于 `kubectl config use-context`。
@@ -134,7 +134,7 @@ CLI 始终显示当前活跃的 profile：
 
 - **提示符**：显示 `coder ❯` 而非 `❯`
 - **启动横幅**：启动时显示 `Profile: coder`
-- **`hermes profile`**：显示当前 profile 名称、路径、模型、gateway 状态
+- **`seraph profile`**：显示当前 profile 名称、路径、模型、gateway 状态
 
 ## Profile vs 工作区 vs 沙箱
 
@@ -197,7 +197,7 @@ assistant gateway install     # 创建 hermes-gateway-assistant 服务
 每个 profile 拥有独立的服务名称，各自独立运行。
 
 :::note 在官方 Docker 镜像中
-各 profile 的 gateway 由 [s6-overlay](https://github.com/just-containers/s6-overlay)（容器中的 PID 1）监管，因此 `hermes profile create <name>` 会自动在 `/run/hermes-service/gateway-<name>/` 注册 s6 服务槽。`hermes -p <name> gateway start/stop/restart` 会调度到 `s6-svc` 而非直接启动裸进程——崩溃后自动重启，`docker restart` 会保留之前运行的 gateway 集合。详见 [各 profile gateway 监管](./docker.md#per-profile-gateway-supervision)。
+各 profile 的 gateway 由 [s6-overlay](https://github.com/just-containers/s6-overlay)（容器中的 PID 1）监管，因此 `seraph profile create <name>` 会自动在 `/run/hermes-service/gateway-<name>/` 注册 s6 服务槽。`seraph -p <name> gateway start/stop/restart` 会调度到 `s6-svc` 而非直接启动裸进程——崩溃后自动重启，`docker restart` 会保留之前运行的 gateway 集合。详见 [各 profile gateway 监管](./docker.md#per-profile-gateway-supervision)。
 :::
 
 ## 配置 profile
@@ -221,10 +221,10 @@ coder config set terminal.cwd /absolute/path/to/project
 
 ## 更新
 
-`hermes update` 拉取一次代码（共享），并自动将新的内置技能同步到**所有** profile：
+`seraph update` 拉取一次代码（共享），并自动将新的内置技能同步到**所有** profile：
 
 ```bash
-hermes update
+seraph update
 # → Code updated (12 commits)
 # → Skills synced: default (up to date), coder (+2 new), assistant (+2 new)
 ```
@@ -234,25 +234,25 @@ hermes update
 ## 管理 profile
 
 ```bash
-hermes profile list           # 显示所有 profile 及其状态
-hermes profile show coder     # 显示某个 profile 的详细信息
-hermes profile rename coder dev-bot   # 重命名（更新别名；移除旧名称的网关服务）
-hermes profile export coder   # 导出为 coder.tar.gz
-hermes profile import coder.tar.gz   # 从归档文件导入
+seraph profile list           # 显示所有 profile 及其状态
+seraph profile show coder     # 显示某个 profile 的详细信息
+seraph profile rename coder dev-bot   # 重命名（更新别名；移除旧名称的网关服务）
+seraph profile export coder   # 导出为 coder.tar.gz
+seraph profile import coder.tar.gz   # 从归档文件导入
 ```
 
 ## 删除 profile
 
 ```bash
-hermes profile delete coder
+seraph profile delete coder
 ```
 
 此操作将停止 gateway、移除 systemd/launchd 服务、移除命令别名并删除所有 profile 数据。系统会要求你输入 profile 名称以确认。
 
-使用 `--yes` 跳过确认：`hermes profile delete coder --yes`
+使用 `--yes` 跳过确认：`seraph profile delete coder --yes`
 
 :::note
-你无法删除默认 profile（`~/.hermes`）。如需删除所有内容，请使用 `hermes uninstall`。
+你无法删除默认 profile（`~/.hermes`）。如需删除所有内容，请使用 `seraph uninstall`。
 :::
 
 ## Tab 补全
@@ -281,10 +281,10 @@ profile 使用 `HERMES_HOME` 环境变量。运行 `coder chat` 时，包装脚�
 
 ```bash
 # 从 git 仓库安装完整 agent
-hermes profile install github.com/you/research-bot --alias
+seraph profile install github.com/you/research-bot --alias
 
 # 当作者发布新版本时更新（保留你的记忆和 .env）
-hermes profile update research-bot
+seraph profile update research-bot
 ```
 
 完整指南请参阅 **[Profile 发行版：共享完整 Agent](./profile-distributions.md)**——包括编写、发布、更新语义、安全模型和使用场景。

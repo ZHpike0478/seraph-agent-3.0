@@ -352,6 +352,15 @@ test('locateHermes falls back to the login-shell command -v probe', async () => 
   assert.equal(await locateHermes(ssh, ''), '/home/u/.local/bin/hermes')
 })
 
+test('locateHermes prefers the Seraph command when it is on the remote PATH', async () => {
+  const ssh = fakeSsh([
+    [/command -v seraph/, '/home/u/.local/bin/seraph\n'],
+    [/\[ -x .*\.local\/bin\/seraph/, 'OK']
+  ])
+
+  assert.equal(await locateHermes(ssh, ''), '/home/u/.local/bin/seraph')
+})
+
 test('locateHermes preserves an installer wrapper instead of resolving its interpreter', async () => {
   // install.sh venv mode writes: exec "$HERMES_BIN" "$HERMES_ENTRYPOINT" "$@",
   // where $HERMES_BIN is the venv python. The old canonicalization returned
@@ -386,14 +395,14 @@ test('locateHermes returns an explicit remoteHermesPath unchanged', async () => 
   assert.ok(!ssh.calls.some(cmd => cmd.includes('python3 -c')), 'an explicit remoteHermesPath must never be rewritten')
 })
 
-test('locateHermes falls back to ~/.local/bin/hermes when the login-shell probe misses', async () => {
+test('locateHermes falls back to ~/.local/bin/seraph when the login-shell probe misses', async () => {
   // ~/.local/bin is the non-root installer's command location (scripts/install.sh).
   const ssh = fakeSsh([
     [/command -v hermes/, ''],
-    [/\[ -x .*\.local\/bin\/hermes/, 'OK']
+    [/\[ -x .*\.local\/bin\/seraph/, 'OK']
   ])
 
-  assert.equal(await locateHermes(ssh, ''), '~/.local/bin/hermes')
+  assert.equal(await locateHermes(ssh, ''), '~/.local/bin/seraph')
 })
 
 test('locateHermes tries the conventional venv path last', async () => {
@@ -1211,10 +1220,14 @@ test('managed SSH maps a local scope to a different non-default remote profile',
 
 test('connect() reuses a healthy dashboard when fingerprint + probe pass', async () => {
   const reuseToken = 'stored-token'
-  const lock = ownedLock({ tokenFingerprint: fingerprintToken(reuseToken) })
+  const lock = ownedLock({
+    hermesPath: '/home/u/.local/bin/hermes',
+    tokenFingerprint: fingerprintToken(reuseToken)
+  })
 
   const ssh = fakeSsh([
     [/uname/, 'Linux\nx86_64'],
+    [/command -v hermes/, '/home/u/.local/bin/hermes\n'],
     [/\[ -x/, 'OK'],
     [/cat .*lock\.json/, JSON.stringify(lock)],
     [/kill -0/, 'ALIVE'],
@@ -1556,10 +1569,14 @@ test('openForward retries bind collisions only', async () => {
 
 test('connect() preserves an owned backend when a reuse transport throws', async () => {
   const reuseToken = 'stored-token'
-  const lock = ownedLock({ tokenFingerprint: fingerprintToken(reuseToken) })
+  const lock = ownedLock({
+    hermesPath: '/home/u/.local/bin/hermes',
+    tokenFingerprint: fingerprintToken(reuseToken)
+  })
 
   const ssh = fakeSsh([
     [/uname/, 'Linux\nx86_64'],
+    [/command -v hermes/, '/home/u/.local/bin/hermes\n'],
     [/\[ -x/, 'OK'],
     [/cat .*lock\.json/, JSON.stringify(lock)],
     [/kill -0/, 'ALIVE'],
@@ -1783,10 +1800,14 @@ test('readLockfile accepts a complete owned lock', async () => {
 
 test('connect() reuse path does not write a token file', async () => {
   const reuseToken = 'stored-token'
-  const lock = ownedLock({ tokenFingerprint: fingerprintToken(reuseToken) })
+  const lock = ownedLock({
+    hermesPath: '/home/u/.local/bin/hermes',
+    tokenFingerprint: fingerprintToken(reuseToken)
+  })
 
   const ssh = fakeSsh([
     [/uname/, 'Linux\nx86_64'],
+    [/command -v hermes/, '/home/u/.local/bin/hermes\n'],
     [/\[ -x/, 'OK'],
     [/cat .*lock\.json/, JSON.stringify(lock)],
     [/kill -0/, 'ALIVE'],
@@ -1852,10 +1873,14 @@ test('connect removes the token file when a fresh backend fails after returning 
 
 test('connect preserves an exact-owned backend when reuse proof transport fails', async () => {
   const reuseToken = 'stored-token'
-  const lock = ownedLock({ tokenFingerprint: fingerprintToken(reuseToken) })
+  const lock = ownedLock({
+    hermesPath: '/home/u/.local/bin/hermes',
+    tokenFingerprint: fingerprintToken(reuseToken)
+  })
 
   const ssh = fakeSsh([
     [/uname/, 'Linux\nx86_64'],
+    [/command -v hermes/, '/home/u/.local/bin/hermes\n'],
     [/\[ -x/, 'OK'],
     [/cat .*lock\.json/, JSON.stringify(lock)],
     [/kill -0/, 'ALIVE'],

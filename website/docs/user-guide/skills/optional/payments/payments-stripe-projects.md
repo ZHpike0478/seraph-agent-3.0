@@ -14,10 +14,10 @@ Provision SaaS services + sync creds via Stripe Projects.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/payments/stripe-projects` |
+| Source | Optional — install with `seraph skills install official/payments/stripe-projects` |
 | Path | `optional-skills/payments/stripe-projects` |
 | Version | `0.1.0` |
-| Author | Teknium (teknium1), Hermes Agent |
+| Author | Teknium (teknium1), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos |
 | Tags | `Payments`, `Stripe`, `Projects`, `Provisioning`, `Infrastructure` |

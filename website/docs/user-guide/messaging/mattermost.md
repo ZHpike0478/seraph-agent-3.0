@@ -1,12 +1,12 @@
 ---
 sidebar_position: 8
 title: "Mattermost"
-description: "Set up Hermes Agent as a Mattermost bot"
+description: "Set up Seraph Agent 3.0 as a Mattermost bot"
 ---
 
 # Mattermost Setup
 
-Hermes Agent integrates with Mattermost as a bot, letting you chat with your AI assistant through direct messages or team channels. Mattermost is a self-hosted, open-source Slack alternative — you run it on your own infrastructure, keeping full control of your data. The bot connects via Mattermost's REST API (v4) and WebSocket for real-time events, processes messages through the Hermes Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, and slash commands.
+Seraph Agent 3.0 integrates with Mattermost as a bot, letting you chat with your AI assistant through direct messages or team channels. Mattermost is a self-hosted, open-source Slack alternative — you run it on your own infrastructure, keeping full control of your data. The bot connects via Mattermost's REST API (v4) and WebSocket for real-time events, processes messages through the Seraph Agent 3.0 pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, and slash commands.
 
 No external Mattermost library is required — the adapter uses `aiohttp`, which is already a Hermes dependency.
 
@@ -72,7 +72,7 @@ If you don't have System Admin access, ask your Mattermost administrator to enab
 2. Click **Add Bot Account**.
 3. Fill in the details:
    - **Username**: e.g., `hermes`
-   - **Display Name**: e.g., `Hermes Agent`
+   - **Display Name**: e.g., `Seraph Agent 3.0`
    - **Description**: optional
    - **Role**: `Member` is sufficient
 4. Click **Create Bot Account**.
@@ -100,7 +100,7 @@ For DMs, simply open a direct message with the bot — it will be able to respon
 
 ## Step 4: Find Your Mattermost User ID
 
-Hermes Agent uses your Mattermost User ID to control who can interact with the bot. The profile dialog (avatar → Profile) does not show it.
+Seraph Agent 3.0 uses your Mattermost User ID to control who can interact with the bot. The profile dialog (avatar → Profile) does not show it.
 
 Use one of these (see Mattermost's [Identify a user's ID](https://docs.mattermost.com/administration-guide/configure/user-management-configuration-settings#identify-a-users-id)):
 
@@ -126,14 +126,14 @@ Your User ID is **not** your username. The username is what appears after `@` (e
 To get a **Channel ID**: click the channel name → **View Info**. The Channel ID is shown in the info panel. You'll need this if you want to set a home channel manually.
 :::
 
-## Step 5: Configure Hermes Agent
+## Step 5: Configure Seraph Agent 3.0
 
 ### Option A: Interactive Setup (Recommended)
 
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 Select **Mattermost** when prompted, then paste your server URL, bot token, and user ID when asked.
@@ -180,13 +180,13 @@ group_sessions_per_user: true
 Once configured, start the Mattermost gateway:
 
 ```bash
-hermes gateway
+seraph gateway
 ```
 
 The bot should connect to your Mattermost server within a few seconds. Send it a message — either a DM or in a channel where it's been added — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `seraph gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## Home Channel
@@ -310,7 +310,7 @@ If this returns your bot's user info, the token is valid. If it returns an error
 
 **Cause**: The Hermes gateway isn't running, or it failed to connect.
 
-**Fix**: Check that `hermes gateway` is running. Look at the terminal output for error messages. Common issues: wrong URL, expired token, Mattermost server unreachable.
+**Fix**: Check that `seraph gateway` is running. Look at the terminal output for error messages. Common issues: wrong URL, expired token, Mattermost server unreachable.
 
 ### "User not allowed" / Bot ignores you
 
@@ -341,10 +341,10 @@ Keys are Mattermost channel IDs (find them in the channel URL or via the API). A
 Always set `MATTERMOST_ALLOWED_USERS` to restrict who can interact with the bot. Without it, the gateway denies all users by default as a safety measure. Only add User IDs of people you trust — authorized users have full access to the agent's capabilities, including tool use and system access.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your Seraph Agent 3.0 deployment, see the [Security Guide](../security.md).
 
 ## Notes
 
 - **Self-hosted friendly**: Works with any self-hosted Mattermost instance. No Mattermost Cloud account or subscription required.
-- **No extra dependencies**: The adapter uses `aiohttp` for HTTP and WebSocket, which is already included with Hermes Agent.
+- **No extra dependencies**: The adapter uses `aiohttp` for HTTP and WebSocket, which is already included with Seraph Agent 3.0.
 - **Team Edition compatible**: Works with both Mattermost Team Edition (free) and Enterprise Edition.

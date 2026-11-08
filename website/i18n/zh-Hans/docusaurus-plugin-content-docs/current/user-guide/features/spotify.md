@@ -2,40 +2,40 @@
 
 Hermes 通过[插件目录](./plugins.md)中的官方 **`spotify` 插件**控制 Spotify——播放、队列、搜索、播放列表、已保存的曲目/专辑以及收听历史——基于 Spotify 官方 Web API 配合 PKCE OAuth 实现。该插件由 Nous Research 在 [NousResearch/hermes-official-plugins](https://github.com/NousResearch/hermes-official-plugins/tree/main/spotify) 维护，不属于 Hermes 核心。Token（令牌）存储在 `~/.hermes/auth.json` 中，遇到 401 时自动刷新；每台机器只需登录一次。
 
-与 Hermes 内置的 OAuth 集成不同，Spotify 要求每位用户自行注册一个轻量级开发者应用。Spotify 不允许第三方发布可供所有人使用的公共 OAuth 应用。整个过程大约需要两分钟，`hermes spotify login` 会全程引导你完成。
+与 Hermes 内置的 OAuth 集成不同，Spotify 要求每位用户自行注册一个轻量级开发者应用。Spotify 不允许第三方发布可供所有人使用的公共 OAuth 应用。整个过程大约需要两分钟，`seraph spotify login` 会全程引导你完成。
 
 ## 安装
 
 ```bash
-hermes plugins install spotify
+seraph plugins install spotify
 ```
 
-插件按 profile 安装。若要在其他 profile 中使用 Spotify，请在该 profile 中同样安装（`hermes -p <profile> plugins install spotify`）。
+插件按 profile 安装。若要在其他 profile 中使用 Spotify，请在该 profile 中同样安装（`seraph -p <profile> plugins install spotify`）。
 
 :::info 从内置 Spotify 的版本升级
-无需任何操作。所有已在使用 Spotify 的 profile（`auth.json` 中存有 Spotify 登录，或 `platform_toolsets` 中列出了 `spotify` 工具集）都会由 `hermes update` 自动从插件目录安装该插件；若该步骤未能运行，则在该 profile 首次启动时安装（遵循 `security.allow_lazy_installs`）。你的登录、`spotify` 工具集和工具名称都保持不变。唯一可见的变化：`hermes auth spotify` 改为 `hermes spotify login`（`hermes auth status spotify` / `hermes auth logout spotify` 改为 `hermes spotify status` / `hermes spotify logout`）；旧写法会打印新命令。若之后移除插件（`hermes plugins remove spotify`），它将保持移除状态。
+无需任何操作。所有已在使用 Spotify 的 profile（`auth.json` 中存有 Spotify 登录，或 `platform_toolsets` 中列出了 `spotify` 工具集）都会由 `seraph update` 自动从插件目录安装该插件；若该步骤未能运行，则在该 profile 首次启动时安装（遵循 `security.allow_lazy_installs`）。你的登录、`spotify` 工具集和工具名称都保持不变。唯一可见的变化：`seraph auth spotify` 改为 `seraph spotify login`（`seraph auth status spotify` / `seraph auth logout spotify` 改为 `seraph spotify status` / `seraph spotify logout`）；旧写法会打印新命令。若之后移除插件（`seraph plugins remove spotify`），它将保持移除状态。
 :::
 
 ## 前提条件
 
 - 一个 Spotify 账号。**免费版**可使用搜索、播放列表、音乐库和活动工具。**Premium 版**才能使用播放控制（播放、暂停、跳曲、定位、音量、添加队列、切换设备）。
-- 已安装并运行 Hermes Agent。
+- 已安装并运行 Seraph Agent 3.0。
 - 使用播放工具时：需要一个**活跃的 Spotify Connect 设备**——至少一台设备（手机、桌面端、网页播放器、音箱）上必须打开 Spotify 应用，Web API 才有对象可控制。若无活跃设备，将收到 `403 Forbidden` 并提示"no active device"；在任意设备上打开 Spotify 后重试即可。
 
 ## 设置
 
 ### 1. 启用工具集
 
-插件的 `spotify` 工具集默认关闭，以避免不需要它的用户在每次 API 调用时额外传输工具 schema。在 `hermes tools` 中启用（选中 `🔌 Spotify` 后保存），或运行：
+插件的 `spotify` 工具集默认关闭，以避免不需要它的用户在每次 API 调用时额外传输工具 schema。在 `seraph tools` 中启用（选中 `🔌 Spotify` 后保存），或运行：
 
 ```bash
-hermes tools enable spotify
+seraph tools enable spotify
 ```
 
 ### 2. 登录
 
 ```bash
-hermes spotify login
+seraph spotify login
 ```
 
 7 个 Spotify 工具只有在登录后才会提供给 agent。
@@ -77,10 +77,10 @@ ssh -N -L 43827:127.0.0.1:43827 user@remote-host
 ## 验证
 
 ```bash
-hermes spotify status
+seraph spotify status
 ```
 
-显示 token 是否存在以及 access token 的过期时间。刷新是自动的：当任何 Spotify API 调用返回 401 时，客户端会用 refresh token 换取新 token 并重试一次。Refresh token 在 Hermes 重启后仍然有效，只有在你的 Spotify 账号设置中撤销该应用，或运行 `hermes spotify logout` 后才需要重新认证。
+显示 token 是否存在以及 access token 的过期时间。刷新是自动的：当任何 Spotify API 调用返回 401 时，客户端会用 refresh token 换取新 token 并重试一次。Refresh token 在 Hermes 重启后仍然有效，只有在你的 Spotify 账号设置中撤销该应用，或运行 `seraph spotify logout` 后才需要重新认证。
 
 ## 使用方法
 
@@ -186,7 +186,7 @@ hermes spotify status
 ### 早晨唤醒播放列表
 
 ```bash
-hermes cron add \
+seraph cron add \
   --name "morning-commute" \
   "0 7 * * 1-5" \
   "Transfer playback to my kitchen speaker and start my 'Morning Commute' playlist. Volume to 40. Shuffle on."
@@ -200,7 +200,7 @@ hermes cron add \
 ### 夜间收尾
 
 ```bash
-hermes cron add \
+seraph cron add \
   --name "wind-down" \
   "30 22 * * *" \
   "Pause Spotify. Then set volume to 20 so it's quiet when I start it again tomorrow."
@@ -210,7 +210,7 @@ hermes cron add \
 
 - **cron 触发时必须存在活跃设备。** 若没有 Spotify 客户端在运行（手机/桌面端/Connect 音箱），播放操作将返回 `403 no active device`。对于早晨播放列表，建议指定一个始终开机的设备（Sonos、Echo、智能音箱），而非手机。
 - **任何修改播放状态的操作都需要 Premium**——播放、暂停、跳曲、音量、切换设备。只读 cron 任务（例如定时"发送我最近播放的曲目"）在免费版上可正常使用。
-- **cron agent 继承你的活跃工具集。** Spotify 必须在 `hermes tools` 中启用，cron 会话才能看到 Spotify 工具。
+- **cron agent 继承你的活跃工具集。** Spotify 必须在 `seraph tools` 中启用，cron 会话才能看到 Spotify 工具。
 - **Cron 任务以 `skip_memory=True` 运行**，不会写入你的记忆存储。
 
 完整 cron 参考：[Cron Jobs](./cron)。
@@ -218,7 +218,7 @@ hermes cron add \
 ## 退出登录
 
 ```bash
-hermes spotify logout
+seraph spotify logout
 ```
 
 从 `~/.hermes/auth.json` 中移除 token。若还需清除应用配置，请从 `~/.hermes/.env` 中删除 `HERMES_SPOTIFY_CLIENT_ID`（以及 `HERMES_SPOTIFY_REDIRECT_URI`，如果你设置了的话），或重新运行向导。
@@ -237,7 +237,7 @@ hermes spotify logout
 
 **`429 Too Many Requests`** — Spotify 的速率限制。Hermes 会返回友好的错误提示；等待一分钟后重试。若持续出现，你可能在脚本中运行了紧密循环——Spotify 的配额大约每 30 秒重置一次。
 
-**`401 Unauthorized` 持续出现** — 你的 refresh token 已被撤销（通常是因为你从账号中移除了该应用，或应用被删除）。重新运行 `hermes spotify login`。
+**`401 Unauthorized` 持续出现** — 你的 refresh token 已被撤销（通常是因为你从账号中移除了该应用，或应用被删除）。重新运行 `seraph spotify login`。
 
 **向导未打开浏览器** — 若你通过 SSH 连接或在没有显示器的容器中运行，Hermes 会检测到并跳过自动打开。复制它打印的 dashboard URL 并手动打开。
 
@@ -246,7 +246,7 @@ hermes spotify logout
 默认情况下，Hermes 会请求所有已发布工具所需的 scope。若需限制访问权限，可覆盖默认值：
 
 ```bash
-hermes spotify login --scope "user-read-playback-state user-modify-playback-state playlist-read-private"
+seraph spotify login --scope "user-read-playback-state user-modify-playback-state playlist-read-private"
 ```
 
 Scope 参考：[Spotify Web API scopes](https://developer.spotify.com/documentation/web-api/concepts/scopes)。若请求的 scope 少于某个工具所需，该工具的调用将以 403 失败。
@@ -254,7 +254,7 @@ Scope 参考：[Spotify Web API scopes](https://developer.spotify.com/documentat
 ## 进阶：自定义 client ID / redirect URI
 
 ```bash
-hermes spotify login --client-id <id> --redirect-uri http://localhost:3000/callback
+seraph spotify login --client-id <id> --redirect-uri http://localhost:3000/callback
 ```
 
 或在 `~/.hermes/.env` 中永久设置：

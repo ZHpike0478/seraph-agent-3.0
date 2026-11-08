@@ -1,15 +1,15 @@
 ---
 sidebar_position: 8
 title: "Memory Provider Plugins"
-description: "How to build a memory provider plugin for Hermes Agent"
+description: "How to build a memory provider plugin for Seraph Agent 3.0"
 ---
 
 # Building a Memory Provider Plugin
 
-Memory provider plugins give Hermes Agent persistent, cross-session knowledge beyond the built-in MEMORY.md and USER.md. This guide covers how to build one.
+Memory provider plugins give Seraph Agent 3.0 persistent, cross-session knowledge beyond the built-in MEMORY.md and USER.md. This guide covers how to build one.
 
 :::tip
-Memory providers are one of two **provider plugin** types. The other is [Context Engine Plugins](./context-engine-plugin.md), which replace the built-in context compressor. Both follow the same pattern: single-select, config-driven, managed via `hermes plugins`.
+Memory providers are one of two **provider plugin** types. The other is [Context Engine Plugins](./context-engine-plugin.md), which replace the built-in context compressor. Both follow the same pattern: single-select, config-driven, managed via `seraph plugins`.
 :::
 
 ## Installation Layouts
@@ -38,7 +38,7 @@ Discovery only *enumerates* — it never imports a provider. Nothing runs until
 Entry-point discovery does not install packages. Do not inject a provider into
 Hermes's selected environment with pip. On PM-managed installations, ship a
 directory provider with declared Python dependencies; plugin admission and
-`hermes memory setup` prepare them through PM before use. Owner-managed builds
+`seraph memory setup` prepare them through PM before use. Owner-managed builds
 (such as Nix) can include an entry-point distribution declaratively.
 
 CLI and dashboard setup share candidate preparation. PM includes the provider's
@@ -80,7 +80,7 @@ package layout. No copy under `$HERMES_HOME/plugins/` is required.
 
 A package entry point gets everything a directory install does, including the
 two files Hermes reads from disk rather than importing — `config_schema.py`
-(the dashboard config panel) and `cli.py` (your `hermes <provider>`
+(the dashboard config panel) and `cli.py` (your `seraph <provider>`
 subcommands). Both are found next to your package's `__init__.py`, so point the
 entry point at a package rather than a single module if you ship either.
 
@@ -152,7 +152,7 @@ is best-effort: an image turn stored by an older Hermes, or one that repair or c
 with another turn, still carries its plugin and gateway notes, and
 other runtime notices a gateway replays after a restart (a cron delivery, a process
 heartbeat, a watch-disabled or batched-completion notice) can still come through. A process
-that resumed a session (`hermes chat --resume`, a gateway after a restart) never ran the previous
+that resumed a session (`seraph chat --resume`, a gateway after a restart) never ran the previous
 turn's end, so a provider that prepares recall in `queue_prefetch()` can redo that work from it, even
 when it stores no transcript of its own. Older Hermes omits it: read it with `kwargs.get`.
 
@@ -188,7 +188,7 @@ workspace; absent or empty cwd remains unpinned.
 
 | Method | Purpose | Must Implement? |
 |--------|---------|-----------------|
-| `get_config_schema()` | Declare config fields for `hermes memory setup` | **Yes** |
+| `get_config_schema()` | Declare config fields for `seraph memory setup` | **Yes** |
 | `save_config(values, hermes_home)` | Write non-secret config to native location | **Yes** (unless env-var-only) |
 
 ### Optional Hooks
@@ -362,18 +362,18 @@ own directory, so a provider installed from the plugin catalog keeps all of them
 | Surface | What the provider ships |
 |---|---|
 | Desktop → Capabilities → Tools → Memory (config panel) | `config_schema.py` (below) |
-| `hermes memory setup` wizard | `get_config_schema()` declares the fields the wizard prompts for, `save_config(config, hermes_home)` persists them, `post_setup(hermes_home, config)` runs afterwards for anything interactive (OAuth, first sync); `get_status_config()` feeds `hermes memory status` |
-| `hermes <provider> …` subcommands | `cli.py` with `register_cli(subparser)` ([Adding CLI Commands](#adding-cli-commands)) |
-| Python dependencies | `pyproject.toml` `[project] dependencies` (or `python_dependencies` in `plugin.yaml`); installed under Hermes' own pins at install time and re-applied across `hermes update` |
+| `seraph memory setup` wizard | `get_config_schema()` declares the fields the wizard prompts for, `save_config(config, hermes_home)` persists them, `post_setup(hermes_home, config)` runs afterwards for anything interactive (OAuth, first sync); `get_status_config()` feeds `seraph memory status` |
+| `seraph <provider> …` subcommands | `cli.py` with `register_cli(subparser)` ([Adding CLI Commands](#adding-cli-commands)) |
+| Python dependencies | `pyproject.toml` `[project] dependencies` (or `python_dependencies` in `plugin.yaml`); installed under Hermes' own pins at install time and re-applied across `seraph update` |
 
 Your provider's name, `memory.<name>` config section, data directory and tool names are the
 contract with existing users. A provider that moves out of core keeps all four; Hermes then
 installs the catalog plugin automatically for anyone whose `memory.provider` still names it
-(on `hermes update`, and once at agent start when `security.allow_lazy_installs` is on).
+(on `seraph update`, and once at agent start when `security.allow_lazy_installs` is on).
 
 ## Config Schema
 
-`get_config_schema()` returns a list of field descriptors used by `hermes memory setup`:
+`get_config_schema()` returns a list of field descriptors used by `seraph memory setup`:
 
 ```python
 def get_config_schema(self):
@@ -403,7 +403,7 @@ def get_config_schema(self):
 Fields with `secret: True` and `env_var` go to `.env`. Non-secret fields are passed to `save_config()`.
 
 :::tip Minimal vs Full Schema
-Every field in `get_config_schema()` is prompted during `hermes memory setup`. Providers with many options should keep the schema minimal — only include fields the user **must** configure (API key, required credentials). Document optional settings in a config file reference (e.g. `$HERMES_HOME/myprovider.json`) rather than prompting for them all during setup. This keeps the setup wizard fast while still supporting advanced configuration. See the [Supermemory provider](https://github.com/supermemoryai/hermes-supermemory) (a plugin catalog entry) for an example — it only prompts for the API key; all other options live in `supermemory.json`.
+Every field in `get_config_schema()` is prompted during `seraph memory setup`. Providers with many options should keep the schema minimal — only include fields the user **must** configure (API key, required credentials). Document optional settings in a config file reference (e.g. `$HERMES_HOME/myprovider.json`) rather than prompting for them all during setup. This keeps the setup wizard fast while still supporting advanced configuration. See the [Supermemory provider](https://github.com/supermemoryai/hermes-supermemory) (a plugin catalog entry) for an example — it only prompts for the API key; all other options live in `supermemory.json`.
 :::
 
 ### Provider-owned storage
@@ -533,7 +533,7 @@ One gateway process can serve several profiles at once, and their turns run conc
 - **Bind from `initialize()`.** Derive every store, path, client, bank and tenant from the `hermes_home` keyword (and secrets read through `get_secret()` during `initialize`), and keep that binding on `self`.
 - **Keep nothing profile-specific at module or class level.** No global "current store", and no rebinding a shared binding on each call. Two profiles' calls interleave, so a per-call rebind races.
 
-The manager enforces the other half. It runs tool calls and every lifecycle hook (`prefetch`, `queue_prefetch`, `sync_turn`, `on_memory_write`, `on_session_end`, …) only from the profile the instance was initialized for. On a multiplexed gateway a caller that names no profile is refused, and the refusal is logged as `memory_caller_profile_unresolved` in the profile's `errors.log` (`hermes logs errors`) and in `gateway.log`. Background hooks run under the owning profile's `HERMES_HOME`. `handle_tool_call(..., **kwargs)` also receives `hermes_home`, `agent_identity` and `caller_gsk`. They name the profile your instance is already bound to, so you can assert on them, but don't rebind from them.
+The manager enforces the other half. It runs tool calls and every lifecycle hook (`prefetch`, `queue_prefetch`, `sync_turn`, `on_memory_write`, `on_session_end`, …) only from the profile the instance was initialized for. On a multiplexed gateway a caller that names no profile is refused, and the refusal is logged as `memory_caller_profile_unresolved` in the profile's `errors.log` (`seraph logs errors`) and in `gateway.log`. Background hooks run under the owning profile's `HERMES_HOME`. `handle_tool_call(..., **kwargs)` also receives `hermes_home`, `agent_identity` and `caller_gsk`. They name the profile your instance is already bound to, so you can assert on them, but don't rebind from them.
 
 Hermes can't verify a provider's internals. A provider that keeps a process-wide binding still mixes profiles' memories, even with these checks in place.
 
@@ -559,16 +559,16 @@ mgr.shutdown_all()
 
 ## Adding CLI Commands
 
-Memory provider plugins can register their own CLI subcommand tree (e.g. `hermes my-provider status`, `hermes my-provider config`). This uses a convention-based discovery system — no changes to core files needed.
+Memory provider plugins can register their own CLI subcommand tree (e.g. `seraph my-provider status`, `seraph my-provider config`). This uses a convention-based discovery system — no changes to core files needed.
 
 ### How it works
 
 1. Add a `cli.py` file to your plugin directory
 2. Define a `register_cli(subparser)` function that builds the argparse tree
 3. The memory plugin system discovers it at startup via `discover_plugin_cli_commands()`
-4. Your commands appear under `hermes <provider-name> <subcommand>`
+4. Your commands appear under `seraph <provider-name> <subcommand>`
 
-**Active-provider gating:** Your CLI commands only appear when your provider is the active `memory.provider` in config. If a user hasn't configured your provider, your commands won't show in `hermes --help`.
+**Active-provider gating:** Your CLI commands only appear when your provider is the active `memory.provider` in config. If a user hasn't configured your provider, your commands won't show in `seraph --help`.
 
 ### Example
 
@@ -619,7 +619,7 @@ Only **one** external memory provider can be active at a time. If a user tries t
 For wrapper-style providers that keep their runtime in a sidecar venv outside Hermes-managed Python (no dependency surface — no `pyproject.toml`, `pip_dependencies`, or `python_dependencies` — at the scanned plugin root; a `pyproject.toml` belonging solely to an external or nested sidecar is not scanned):
 
 - **Location.** `$HERMES_HOME/plugins/<name>/` is the profile-scoped plugin location, and `HERMES_HOME` follows the active context override, then `$HERMES_HOME`, then the platform default. Propagate `HERMES_HOME` when launching the wrapper or sidecar so profile isolation holds; `MemoryManager.initialize_all` injects the active `hermes_home` into every provider.
-- **Survival.** Ordinary Hermes updates — including managed-venv rebuild/replacement by pm — do not delete or rewrite `$HERMES_HOME/plugins/**`. An installed wrapper directory and its marker file (e.g. `mnemosyne-wrapper.json`) survive. Explicit plugin updates and deletion flows (`hermes uninstall`, `hermes plugins remove`, profile deletion, user deletion) are excluded from this guarantee.
+- **Survival.** Ordinary Hermes updates — including managed-venv rebuild/replacement by pm — do not delete or rewrite `$HERMES_HOME/plugins/**`. An installed wrapper directory and its marker file (e.g. `mnemosyne-wrapper.json`) survive. Explicit plugin updates and deletion flows (`seraph uninstall`, `seraph plugins remove`, profile deletion, user deletion) are excluded from this guarantee.
 - **Sidecar isolation.** A plugin root with no dependency surface never joins the pm workspace dependency union; a resync or venv rebuild neither provisions deps for it nor touches its tree.
 - **Conflicts.** For native shared-venv plugins, an unsatisfiable dependency union fails loudly: the candidate plugin stays unenabled and unimported (the admission authority refuses before publishing config, reporting the plugin identity plus the resolver's reason, with a re-enable/retry path and a machine-readable pm receipt). Dependency resolution does not automatically disable other plugins or run a bisect. Explicit plugin updates, removal, and independent security gates are separate operations.
 

@@ -14,10 +14,10 @@ Build self-updating dashboards from live sources.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/productivity/live-dashboard` |
+| Source | Optional — install with `seraph skills install official/productivity/live-dashboard` |
 | Path | `optional-skills/productivity/live-dashboard` |
 | Version | `0.2.0` |
-| Author | Teknium (teknium1), Hermes Agent |
+| Author | Teknium (teknium1), Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux, macos, windows |
 | Tags | `dashboards`, `monitoring`, `status`, `automation`, `reporting` |

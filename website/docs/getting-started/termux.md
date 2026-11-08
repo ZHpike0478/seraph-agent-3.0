@@ -1,10 +1,16 @@
 ---
 sidebar_position: 3
-title: "Android / Termux"
-description: "Install Hermes Agent on Android from its signed Termux APT repository"
+title: "Upstream Hermes on Android / Termux"
+description: "Install Nous Research's upstream Hermes Agent on Android from its signed Termux APT repository; this package is not distributed by Seraph Agent 3.0."
 ---
 
-# Hermes on Android with Termux
+# Upstream Hermes on Android with Termux
+
+:::warning Upstream-only instructions
+This guide covers the Termux APT package published by Nous Research for
+upstream Hermes Agent. Seraph Agent 3.0 does not publish or support a Termux
+package; these steps do not install Seraph.
+:::
 
 :::danger Termux is currently broken
 The Termux package does not work right now. A fix is in progress and will

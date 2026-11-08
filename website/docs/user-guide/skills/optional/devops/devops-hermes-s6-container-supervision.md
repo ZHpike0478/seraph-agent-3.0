@@ -14,10 +14,10 @@ Modify or debug s6 services in the Hermes Docker image.
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/devops/hermes-s6-container-supervision` |
+| Source | Optional — install with `seraph skills install official/devops/hermes-s6-container-supervision` |
 | Path | `optional-skills/devops/hermes-s6-container-supervision` |
 | Version | `1.0.0` |
-| Author | Hermes Agent |
+| Author | Seraph Agent 3.0 |
 | License | MIT |
 | Platforms | linux |
 | Tags | `docker`, `s6`, `supervision`, `gateway`, `profiles` |
@@ -40,7 +40,7 @@ Load this skill when you're working on:
 - Modifying `cont-init.d` boot scripts (UID remap, volume seeding, profile reconciliation)
 - Changing the rendered run-script for per-profile gateways (Phase 4)
 
-If you're just running the Hermes Agent and want to use Docker, see `website/docs/user-guide/docker.md` instead.
+If you're just running the Seraph Agent 3.0 and want to use Docker, see `website/docs/user-guide/docker.md` instead.
 
 ## Architecture at a glance
 
@@ -62,7 +62,7 @@ If you're just running the Hermes Agent and want to use Docker, see `website/doc
 │
 ├── s6-rc.d (static services, in /etc/s6-overlay/s6-rc.d/)
 │   ├── main-hermes/run                ← exec sleep infinity (no-op slot)
-│   ├── dashboard/run                  ← if HERMES_DASHBOARD=1, runs `hermes dashboard`
+│   ├── dashboard/run                  ← if HERMES_DASHBOARD=1, runs `seraph dashboard`
 │   └── profile-gateways/run           ← `s6-setuidgid hermes s6-svscan /run/hermes-service`
 │
 ├── /run/hermes-service (hermes s6-svscan from s6-rc `profile-gateways` watches; tmpfs)
@@ -93,7 +93,7 @@ If you're just running the Hermes Agent and want to use Docker, see `website/doc
 | `docker/entrypoint.sh` | Back-compat shim that `exec`s the stage2 hook. External scripts that hard-coded the old entrypoint path still work. |
 | `hermes_cli/service_manager.py` | `S6ServiceManager`: `register_profile_gateway`, `unregister_profile_gateway`, `start/stop/restart/is_running`, `list_profile_gateways`. |
 | `hermes_cli/container_boot.py` | `reconcile_profile_gateways()` — walks persistent profiles, regenerates s6 slots, emits `container-boot.log`. |
-| `hermes_cli/gateway.py::_dispatch_via_service_manager_if_s6` | Intercepts `hermes gateway start/stop/restart` and routes to s6 when running in a container. |
+| `hermes_cli/gateway.py::_dispatch_via_service_manager_if_s6` | Intercepts `seraph gateway start/stop/restart` and routes to s6 when running in a container. |
 
 ## Why Architecture B (CMD as main program, not s6-supervised)
 
@@ -187,11 +187,11 @@ The service directory is on tmpfs and was wiped on container restart. Either the
 
 ### Gateway starts then immediately exits (`down (exitcode 1)` in svstat)
 
-Most likely the profile has no model or auth configured. The service slot is correct — the gateway itself is unconfigured. Run `hermes -p <profile> setup` first. The s6 supervisor will keep restarting it; that's the desired behavior (when you fix the config, the next attempt succeeds and stays up).
+Most likely the profile has no model or auth configured. The service slot is correct — the gateway itself is unconfigured. Run `seraph -p <profile> setup` first. The s6 supervisor will keep restarting it; that's the desired behavior (when you fix the config, the next attempt succeeds and stays up).
 
 ### Reconciler skipped a profile
 
-The reconciler keys on the **presence of `SOUL.md`** as the "real profile" marker. `hermes profile create` always seeds it. If a profile dir is missing SOUL.md (stray directory, partial restore, backup-in-progress), the reconciler skips it intentionally. Add a `SOUL.md` (even empty) to opt back in.
+The reconciler keys on the **presence of `SOUL.md`** as the "real profile" marker. `seraph profile create` always seeds it. If a profile dir is missing SOUL.md (stray directory, partial restore, backup-in-progress), the reconciler skips it intentionally. Add a `SOUL.md` (even empty) to opt back in.
 
 ### "Help, the container exits 143!"
 

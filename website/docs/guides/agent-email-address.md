@@ -36,7 +36,7 @@ Then create `~/.config/himalaya/config.toml` with the account's IMAP/SMTP settin
 [accounts.agent]
 default = true
 email = "my-agent@example.com"
-display-name = "My Hermes Agent"
+display-name = "My Seraph Agent 3.0"
 
 backend.type = "imap"
 backend.host = "imap.example.com"
@@ -67,7 +67,7 @@ Once `himalaya` works from your own shell, the agent can use it too — the bund
 The Himalaya path is pull-based: the agent only sees mail when it looks. Add a [cron job](automate-with-cron.md) so it looks regularly:
 
 ```
-hermes cron add
+seraph cron add
 ```
 
 A prompt along these lines works well:

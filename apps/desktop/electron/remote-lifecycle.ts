@@ -191,7 +191,7 @@ function expandRemotePath(p) {
   return shq(p)
 }
 
-// Resolve the remote hermes executable. An EXPLICIT path is honored strictly
+// Resolve the remote Seraph/Hermes executable. An EXPLICIT path is honored strictly
 // (throws a path-naming error if not executable — never silently falls back to a
 // different install). A BLANK path auto-detects: login-shell `command -v` (a
 // non-login `ssh host cmd` PATH misses user installs), then known install paths.
@@ -237,7 +237,7 @@ async function locateHermes(ssh, remoteHermesPath) {
   const candidates: string[] = []
 
   try {
-    const found = (await ssh.exec(`bash -lc ${shq('command -v hermes')}`)).trim()
+    const found = (await ssh.exec(`bash -lc ${shq('command -v seraph || command -v hermes')}`)).trim()
 
     if (found) {
       candidates.push(found.split('\n').pop().trim())
@@ -248,8 +248,11 @@ async function locateHermes(ssh, remoteHermesPath) {
 
   // Fallback candidates when the login-shell probe misses: the installer's
   // command locations (scripts/install.sh) — per-user, root/FHS, legacy venv.
+  candidates.push('~/.local/bin/seraph')
   candidates.push('~/.local/bin/hermes')
+  candidates.push('/usr/local/bin/seraph')
   candidates.push('/usr/local/bin/hermes')
+  candidates.push('~/.hermes/hermes-agent/venv/bin/seraph')
   candidates.push('~/.hermes/hermes-agent/venv/bin/hermes')
 
   for (const candidate of candidates) {
@@ -263,9 +266,9 @@ async function locateHermes(ssh, remoteHermesPath) {
   }
 
   const err: any = new Error(
-    'Hermes is not installed on the remote host (could not find a `hermes` executable). ' +
-      'Install it on the remote with:  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh  ' +
-      '— or set the Hermes path explicitly in the SSH connection settings.'
+    'Seraph Agent 3.0 is not installed on the remote host (could not find a `seraph` or `hermes` executable). ' +
+      'Install it on the remote with:  curl -fsSL https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.sh | sh  ' +
+      '— or set the Seraph/Hermes path explicitly in the SSH connection settings.'
   )
 
   err.kind = 'hermes-not-found'
@@ -1312,8 +1315,8 @@ async function spawnRemoteDashboard(
 ) {
   if (!(await remoteSupportsSshOwnership(ssh, hermesPath))) {
     const err: any = new Error(
-      'The remote Hermes install does not support --ssh-session-token-file and --ssh-owner-nonce. ' +
-        'Update Hermes on the remote host to continue using Desktop SSH mode.'
+      'The remote Seraph Agent install does not support --ssh-session-token-file and --ssh-owner-nonce. ' +
+        'Update Seraph Agent on the remote host to continue using Desktop SSH mode.'
     )
 
     err.kind = 'update-required'

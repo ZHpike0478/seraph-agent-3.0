@@ -30,7 +30,7 @@ The dispatcher matches `task.assignee` against either a Hermes profile name (the
 
 ### 2. A spawn mechanism
 
-For Hermes profile lanes, the dispatcher's `_default_spawn` runs `hermes -p <assignee> chat -q <prompt>` (or the equivalent module form when the `hermes` shim isn't on `$PATH`) inside the task's pinned workspace, with these env vars set:
+For Hermes profile lanes, the dispatcher's `_default_spawn` runs `seraph -p <assignee> chat -q <prompt>` (or the equivalent module form when the `hermes` shim isn't on `$PATH`) inside the task's pinned workspace, with these env vars set:
 
 | Variable | Carries |
 |---|---|
@@ -102,15 +102,15 @@ The dispatcher writes per-task worker stdout/stderr to `<board-root>/logs/<task_
 - `task_events` rows carry every state transition (`promoted`, `claimed`, `heartbeat`, `completed`, `blocked`, `review_requested`, `changes_requested`, `review_reopened`, `gave_up`, `crashed`, `timed_out`, `reclaimed`, `claim_extended`).
 - `kanban_show` returns both, so a reviewer (or a follow-up worker) reading the task gets the full history without needing dashboard access.
 
-The dashboard renders run history with summaries, metadata blocks, and exit-status badges. CLI users can run `hermes kanban tail <task_id>` to follow live, or `hermes kanban runs <task_id>` for the historical attempt list.
+The dashboard renders run history with summaries, metadata blocks, and exit-status badges. CLI users can run `seraph kanban tail <task_id>` to follow live, or `seraph kanban runs <task_id>` for the historical attempt list.
 
 ## Existing lane shapes
 
 ### Hermes profile lane (default)
 
-The shape every kanban worker takes today: the assignee is a profile name, the dispatcher spawns `hermes -p <profile>`, the worker gets the `KANBAN_GUIDANCE` system-prompt block injected automatically, and uses the `kanban_*` tools to terminate the run. No setup beyond defining the profile.
+The shape every kanban worker takes today: the assignee is a profile name, the dispatcher spawns `seraph -p <profile>`, the worker gets the `KANBAN_GUIDANCE` system-prompt block injected automatically, and uses the `kanban_*` tools to terminate the run. No setup beyond defining the profile.
 
-When you create profiles for your fleet, choose names that match the *role* you want the orchestrator to route to. The orchestrator (when there is one) discovers your profile names via `hermes profile list` — there's no fixed roster the system assumes (the orchestrator side of the contract is part of the injected `KANBAN_GUIDANCE`).
+When you create profiles for your fleet, choose names that match the *role* you want the orchestrator to route to. The orchestrator (when there is one) discovers your profile names via `seraph profile list` — there's no fixed roster the system assumes (the orchestrator side of the contract is part of the injected `KANBAN_GUIDANCE`).
 
 ### Orchestrator profile lane
 
@@ -118,7 +118,7 @@ A specialisation of the profile lane: an orchestrator is a Hermes profile whose 
 
 ## Adding an external CLI worker lane
 
-Wiring a non-Hermes CLI tool (Codex CLI, Claude Code CLI, OpenCode CLI, a local coding-model runner, etc.) as a kanban worker lane is *not yet a paved path*. The dispatcher's spawn function is pluggable (`spawn_fn` is a parameter on `dispatch_once`), and a plugin could register its own `spawn_fn` for a non-Hermes assignee, but the surrounding integration work — wrapping the CLI's exit code into `kanban_complete` / `kanban_block` calls, mapping the CLI's workspace/sandbox conventions onto the dispatcher's `HERMES_KANBAN_WORKSPACE` env, handling auth and per-CLI policy — is still per-integration design work.
+Wiring a non-Seraph CLI tool (Codex CLI, Claude Code CLI, OpenCode CLI, a local coding-model runner, etc.) as a kanban worker lane is *not yet a paved path*. The dispatcher's spawn function is pluggable (`spawn_fn` is a parameter on `dispatch_once`), and a plugin could register its own `spawn_fn` for a non-Hermes assignee, but the surrounding integration work — wrapping the CLI's exit code into `kanban_complete` / `kanban_block` calls, mapping the CLI's workspace/sandbox conventions onto the dispatcher's `HERMES_KANBAN_WORKSPACE` env, handling auth and per-CLI policy — is still per-integration design work.
 
 If you're considering adding a CLI lane, open an issue describing the specific CLI and the workflow you're trying to enable. The contract above is the constraints any such lane must satisfy; the implementation shape (one plugin per CLI vs a generic CLI-runner plugin parameterised by config) is open.
 
@@ -132,9 +132,9 @@ So lane authors don't have to reimplement these:
 - **Crashed worker** — a worker whose host-local PID has vanished is detected by `detect_crashed_workers` and reaped; the task increments `consecutive_failures` and may auto-block when the breaker trips.
 - **Run-level retry** — when a task is retried (post-block, post-crash, post-reclaim), the worker can use the `expected_run_id` parameter on terminating tools to fail fast if its own run was already superseded.
 - **Per-task max runtime** — `task.max_runtime_seconds` hard-caps wall-clock time per run, regardless of PID liveness. Catches genuinely-deadlocked workers that the live-PID extension would otherwise keep running.
-- **Stranded-task detection** — a ready task whose assignee never produces a claim within `kanban.stranded_threshold_seconds` (default 30 min) shows up in `hermes kanban diagnostics` as a `stranded_in_ready` warning. Severity escalates to error at 2x the threshold and critical at 6x. Catches typo'd assignees, deleted profiles, and down external worker pools in one signal — identity-agnostic, no per-board allowlist to curate.
-- **Dead attempt behind an unresolved owner receipt** — a worker killed by a restart can leave an `owner_admitted` receipt the dispatcher cannot resolve, and reclaims used to be refused on that ground alone, forever: the card stayed `running`, held its profile's `kanban.max_in_progress_per_profile` slot, and the alarms named the cards queued behind it rather than the cause. The refusal now lapses as soon as nothing can be executing the attempt — the owner's process is gone or recycled, no heartbeat inside `DEFAULT_CLAIM_HEARTBEAT_MAX_STALE_SECONDS`, and every pid the run recorded (`worker_pid`, `spawned`, `worker_bound`) is dead — including runs that never wrote a `worker_bound` event. Anything unprovable (a live pid, a missing fingerprint, no recorded pid, another host's lock) still holds the claim. A card that survives even that shows up in `hermes kanban diagnostics` as `stale_running`, escalated by age past `kanban.diagnostics.stale_running_grace_seconds` (default 1h).
-- **Running with open parents** — a `running` card whose direct parent is not `done`/`archived` (the parent reopened mid-run, or the link predates the running-child refusal) shows a `running_with_open_parents` warning: the dependency gate is not serialising the two runs and `kanban_complete` will be refused until the parent finishes. Read-only; suggests `hermes kanban unlink`.
+- **Stranded-task detection** — a ready task whose assignee never produces a claim within `kanban.stranded_threshold_seconds` (default 30 min) shows up in `seraph kanban diagnostics` as a `stranded_in_ready` warning. Severity escalates to error at 2x the threshold and critical at 6x. Catches typo'd assignees, deleted profiles, and down external worker pools in one signal — identity-agnostic, no per-board allowlist to curate.
+- **Dead attempt behind an unresolved owner receipt** — a worker killed by a restart can leave an `owner_admitted` receipt the dispatcher cannot resolve, and reclaims used to be refused on that ground alone, forever: the card stayed `running`, held its profile's `kanban.max_in_progress_per_profile` slot, and the alarms named the cards queued behind it rather than the cause. The refusal now lapses as soon as nothing can be executing the attempt — the owner's process is gone or recycled, no heartbeat inside `DEFAULT_CLAIM_HEARTBEAT_MAX_STALE_SECONDS`, and every pid the run recorded (`worker_pid`, `spawned`, `worker_bound`) is dead — including runs that never wrote a `worker_bound` event. Anything unprovable (a live pid, a missing fingerprint, no recorded pid, another host's lock) still holds the claim. A card that survives even that shows up in `seraph kanban diagnostics` as `stale_running`, escalated by age past `kanban.diagnostics.stale_running_grace_seconds` (default 1h).
+- **Running with open parents** — a `running` card whose direct parent is not `done`/`archived` (the parent reopened mid-run, or the link predates the running-child refusal) shows a `running_with_open_parents` warning: the dependency gate is not serialising the two runs and `kanban_complete` will be refused until the parent finishes. Read-only; suggests `seraph kanban unlink`.
 - **Legacy review dependency deadlock** — a parent sticky-blocked with `review-required:` while one or more direct children remain dependency-gated in `todo` produces an immediate `review_dependency_deadlock` error. The diagnostic is read-only: it suggests completing the finished phase or unlinking the incorrect edge but never removes a user block automatically.
 
 ## Related

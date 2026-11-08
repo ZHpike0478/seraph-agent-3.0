@@ -100,11 +100,12 @@ def installation_command(repo_root: Path, args=(), *, module: str = "hermes_cli.
 
 #: Launcher command names — keep in lockstep with scripts/install.ps1
 #: Publish-UserCommand and hermes_cli/_install_repair.py.
-WINDOWS_BIN_LAUNCHERS = ("hermes", "hermes-acp")
+WINDOWS_BIN_LAUNCHERS = ("seraph", "hermes", "hermes-acp")
 
 #: command name -> (entry module, callable) — mirrors pyproject.toml
 #: [project.scripts].
 ENTRY_POINTS = {
+    "seraph": ("hermes_cli.main", "main"),
     "hermes": ("hermes_cli.main", "main"),
     "hermes-acp": ("acp_adapter.entry", "main"),
 }
@@ -210,10 +211,12 @@ def exe_is_venv_bound(exe: Path, venv_dir: Path | None) -> bool:
         return False
     needles = set()
     for interpreter in (
+        venv_dir / "Scripts" / "seraph.exe",
         venv_dir / "Scripts" / "hermes.exe",
         venv_dir / "Scripts" / "hermes-acp.exe",
         venv_dir / "Scripts" / "python.exe",
         venv_dir / "bin" / "python3",
+        venv_dir / "bin" / "seraph",
         venv_dir / "bin" / "hermes",
         venv_dir / "bin" / "hermes-acp",
     ):
@@ -546,8 +549,9 @@ def _owns_launcher(target: Path, root: Path) -> bool:
         return False
     paths = {str(root / p) for p in (
         "hermes", "run_agent.py", "venv/bin/python", "venv/bin/python3",
-        "venv/bin/hermes",
+        "venv/bin/hermes", "venv/bin/seraph",
         ".hermes/bin/hermes", ".hermes/bin/hermes-acp",
+        ".hermes/bin/seraph",
     )}
     # Current store launchers pass this Python bootstrap as one shell argument.
     bootstrap = f"sys.path.insert(0, {str(root)!r})"
@@ -1132,7 +1136,7 @@ def _symlink_sealed_launchers(payload_bin) -> dict:
     written: list[str] = []
     try:
         link_dir.mkdir(parents=True, exist_ok=True)
-        for name in ("hermes", "hermes-agent", "hermes-acp"):
+        for name in ("seraph", "hermes", "hermes-agent", "hermes-acp"):
             source = payload_bin / name
             if not source.is_file():
                 continue

@@ -1,13 +1,13 @@
 ---
 title: "Windows (WSL2) 指南"
-description: "通过 WSL2 在 Windows 上运行 Hermes Agent —— 安装配置、Windows 与 Linux 之间的文件系统访问、网络设置及常见问题"
+description: "通过 WSL2 在 Windows 上运行 Seraph Agent 3.0 —— 安装配置、Windows 与 Linux 之间的文件系统访问、网络设置及常见问题"
 sidebar_label: "Windows (WSL2)"
 sidebar_position: 2
 ---
 
 # Windows (WSL2) 指南
 
-Hermes Agent 现已同时支持原生 Windows 和 WSL2。本页介绍 WSL2 路径；如需原生 PowerShell 安装方式，请参阅专属的 **[Windows（原生）指南](./windows-native.md)**。
+Seraph Agent 3.0 现已同时支持原生 Windows 和 WSL2。本页介绍 WSL2 路径；如需原生 PowerShell 安装方式，请参阅专属的 **[Windows（原生）指南](./windows-native.md)**。
 
 **何时选择 WSL2 而非原生：**
 - 你想使用 dashboard 内嵌终端（`/chat` 标签页）—— 该面板需要 POSIX PTY（伪终端），仅 WSL2 支持。
@@ -34,7 +34,7 @@ WSL2 在轻量级虚拟机中运行真实的 Linux 内核，因此其中的 Herm
 
 WSL2 的实际影响：
 
-- Hermes CLI、gateway、会话、内存、技能和工具运行时均位于 Linux 虚拟机内部。
+- Seraph CLI、gateway、会话、内存、技能和工具运行时均位于 Linux 虚拟机内部。
 - Windows 程序（浏览器、原生应用、带登录 profile 的 Chrome）位于虚拟机外部。
 - 每次需要两者通信时 —— 共享文件、打开 URL、控制 Chrome、访问本地模型服务器、将 Hermes gateway 暴露给手机 —— 都需要跨越一道边界。这些边界正是本指南要讲的内容。
 
@@ -100,9 +100,9 @@ wsl --shutdown
 打开 WSL2 shell 后执行：
 
 ```bash
-curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ZHpike0478/seraph-agent-3.0/main/scripts/install.sh | bash
 source ~/.bashrc
-hermes
+seraph
 ```
 
 安装程序将 WSL2 视为普通 Linux —— 无需任何 WSL 专属配置。完整目录结构请参阅[安装说明](../getting-started/installation.md)。
@@ -186,7 +186,7 @@ dos2unix path/to/script.sh
 
 ### "在 WSL 内 clone 还是在 `/mnt/c` 上 clone？"
 
-在 WSL 内 clone。始终如此，除非有特殊原因。典型的 Hermes 工作流（`hermes chat`、调用 `rg`/`ripgrep` 搜索仓库的工具、文件监听器、后台 gateway）在 `~/code/myrepo` 下会比在 `/mnt/c/Users/you/myrepo` 下快得多，也更可靠。
+在 WSL 内 clone。始终如此，除非有特殊原因。典型的 Hermes 工作流（`seraph chat`、调用 `rg`/`ripgrep` 搜索仓库的工具、文件监听器、后台 gateway）在 `~/code/myrepo` 下会比在 `/mnt/c/Users/you/myrepo` 下快得多，也更可靠。
 
 一个例外：**启动 Windows 二进制文件的 MCP bridge。** 如果你通过 `cmd.exe` 使用 `chrome-devtools-mcp`（参见 [MCP 指南：WSL → Windows Chrome](../guides/use-mcp-with-hermes.md#wsl2-bridge-hermes-in-wsl-to-windows-chrome)），当 Hermes 的当前工作目录是 `~` 时，Windows 可能会报 `UNC` 警告。此时请从 `/mnt/c/` 下的某个目录启动 Hermes，以便 Windows 进程拥有一个带盘符的工作目录。
 
@@ -214,7 +214,7 @@ WSL2 在轻量级虚拟机中运行，拥有独立的网络栈。这意味着 WS
 这是反向情况，其他地方较少记录，但以下场景需要用到：
 
 - 从 Windows 浏览器使用 Hermes **Web Dashboard**。
-- 从 Windows 侧工具使用 **OpenAI 兼容 API 服务器**（当 `API_SERVER_ENABLED=true` 时由 `hermes gateway` 暴露）。参见 [API Server 功能页](./features/api-server.md)。
+- 从 Windows 侧工具使用 **OpenAI 兼容 API 服务器**（当 `API_SERVER_ENABLED=true` 时由 `seraph gateway` 暴露）。参见 [API Server 功能页](./features/api-server.md)。
 - 测试**消息 gateway**（Telegram、Discord 等），平台会向本地 webhook URL 发送请求 —— 通常建议使用 `cloudflared`/`ngrok` 而非原始端口转发。
 
 #### 子情况 2a：从 Windows 宿主机本身访问
@@ -262,10 +262,10 @@ Hermes 的 [Tool Gateway](./features/tool-gateway.md) 和 API 服务器都是长
 
 ### 在 WSL 内使用 systemd（推荐）
 
-如果你按照上面的安装步骤启用了 systemd，`hermes gateway` 和 API 服务器的使用方式与任何 Linux 机器上完全相同。使用 gateway 设置向导：
+如果你按照上面的安装步骤启用了 systemd，`seraph gateway` 和 API 服务器的使用方式与任何 Linux 机器上完全相同。使用 gateway 设置向导：
 
 ```bash
-hermes gateway setup
+seraph gateway setup
 ```
 
 它会提示是否安装 systemd 用户单元，以便在 WSL 启动时自动拉起 gateway。
@@ -294,7 +294,7 @@ AMD ROCm 和 Intel Arc 在 WSL2 内的支持仍在发展中，不在 Hermes 的�
 **连接 Windows 上的 Ollama / LM Studio 时报"Connection refused"。**
 参见 [WSL2 网络配置](../integrations/providers.md#wsl2-networking-windows-users)。九成情况是服务绑定在 `127.0.0.1` 上，需要改为 `0.0.0.0`（Ollama：`OLLAMA_HOST=0.0.0.0`），或者缺少防火墙规则。
 
-**`git status` / `hermes chat` 在仓库中极慢。**
+**`git status` / `seraph chat` 在仓库中极慢。**
 你很可能在 `/mnt/c/...` 下工作。将仓库移到 `~/code/...`（Linux 侧），速度会有数量级的提升。
 
 **脚本报错 `bad interpreter: /bin/bash^M`。**
